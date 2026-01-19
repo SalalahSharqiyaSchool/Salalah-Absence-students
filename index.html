@@ -60,6 +60,9 @@
             font-size: 0.75rem; z-index: 1501; border-top: 2px solid var(--accent); 
         }
 
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: right; font-size: 0.9rem; }
+
         .btn { border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; font-size: 1rem; }
         .btn-primary { background: var(--primary); color: var(--accent); }
         .btn-success { background: var(--success); color: white; }
@@ -67,6 +70,12 @@
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        @media print {
+            .bottom-nav, .footer-rights, .official-header, .btn, label, select, input { display: none !important; }
+            .card { border: none; box-shadow: none; }
+            .section { display: block !important; }
+        }
     </style>
 </head>
 <body>
@@ -90,29 +99,60 @@
                         <option value="">-- اختر --</option>
                         <option value="خامس-1">خامس / 1</option>
                         <option value="خامس-2">خامس / 2</option>
-                        <option value="خامس-3">خامس / 3</option>
                         <option value="سادس-4">سادس / 4</option>
                     </select>
                 </div>
                 <div style="flex:1"><label>التاريخ</label><input type="date" id="absentDate"></div>
             </div>
-            <label>اختر الطالب:</label>
+            <label>اختر الطالب لإضافته للقائمة:</label>
             <select id="studentDropdown" onchange="addStudentToAbsentList()"></select>
             <div id="selectedList" style="margin-top:20px;"></div>
-            <button class="btn btn-primary" onclick="saveAttendanceToCloud()"><i class="fas fa-cloud-upload-alt"></i> حفظ الغياب سحابياً</button>
+            <button class="btn btn-primary" onclick="saveAttendanceToCloud()" style="margin-top:15px;"><i class="fas fa-cloud-upload-alt"></i> حفظ جميع الغائبين سحابياً</button>
         </div>
     </section>
 
     <section id="manage-section" class="section">
         <div class="card">
             <div class="card-title"><i class="fas fa-user-plus"></i> إضافة طالب جديد</div>
-            <input type="text" id="newName" placeholder="الاسم الرباعي">
-            <input type="tel" id="newPhone" placeholder="رقم الهاتف 968">
+            <input type="text" id="newName" placeholder="اسم الطالب الرباعي">
+            <input type="tel" id="newPhone" placeholder="رقم ولي الأمر 968">
             <select id="newClass">
+                <option value="خامس-1">خامس / 1</option>
+                <option value="خامس-2">خامس / 2</option>
+                <option value="سادس-4">سادس / 4</option>
+            </select>
+            <button class="btn btn-success" onclick="addNewStudent()">حفظ في المستودع</button>
+        </div>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-users-cog"></i> قائمة الطلاب الحاليين</div>
+            <select id="filterClass" onchange="renderManagerList()">
                 <option value="خامس-1">خامس / 1</option>
                 <option value="سادس-4">سادس / 4</option>
             </select>
-            <button class="btn btn-success" onclick="addNewStudent()">حفظ الطالب</button>
+            <div id="managerListArea"></div>
+        </div>
+    </section>
+
+    <section id="report-section" class="section">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-file-invoice"></i> نظام التقارير والطباعة</div>
+            <select id="reportMode" onchange="toggleReportMode()">
+                <option value="student">غياب طالب محدد</option>
+                <option value="day">كشف غياب صف ليوم</option>
+            </select>
+            <div id="repStudentDiv"><label>اسم الطالب</label><select id="repStudentSelect"></select></div>
+            <div id="repClassDiv" style="display:none;">
+                <label>الصف</label>
+                <select id="repClassSelect">
+                    <option value="خامس-1">خامس / 1</option>
+                    <option value="خامس-2">خامس / 2</option>
+                    <option value="سادس-4">سادس / 4</option>
+                </select>
+            </div>
+            <label>التاريخ</label><input type="date" id="repDate">
+            <button class="btn btn-primary" onclick="generateReport()"><i class="fas fa-search"></i> عرض التقرير</button>
+            <button class="btn" onclick="window.print()" style="margin-top:10px; background:#e2e8f0;"><i class="fas fa-print"></i> طباعة / حفظ PDF</button>
+            <div id="reportResult"></div>
         </div>
     </section>
 </div>
@@ -120,6 +160,7 @@
 <nav class="bottom-nav">
     <div class="nav-item active" onclick="switchTab('absent-section', this)"><i class="fas fa-calendar-alt"></i><span>الرصد</span></div>
     <div class="nav-item" onclick="switchTab('manage-section', this)"><i class="fas fa-user-graduate"></i><span>الطلاب</span></div>
+    <div class="nav-item" onclick="switchTab('report-section', this)"><i class="fas fa-chart-line"></i><span>التقارير</span></div>
 </nav>
 
 <footer class="footer-rights">تنفيذ وتصميم الأستاذ: <b>فيصل العريبي</b> &copy; 2026</footer>
@@ -135,25 +176,23 @@
             const hRes = await fetch(`attendance_history.json?v=${v}`);
             history = await hRes.json();
             document.getElementById('absentDate').valueAsDate = new Date();
-        } catch (e) { console.error("Data Load Error"); }
+            updateReportStudentList();
+        } catch (e) { console.error("Error Loading Data"); }
     }
 
     function switchTab(id, el) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active'); el.classList.add('active');
+        if(id === 'manage-section') renderManagerList();
     }
 
-    // المنطق المطور للربط مع JSON المستخرج
     function updateStudentDropdown() {
         const cls = document.getElementById('classSelect').value;
         if (!cls) return;
         const [grade, section] = cls.split('-');
-        
         const drop = document.getElementById('studentDropdown');
         drop.innerHTML = '<option value="">-- اختر الاسم لإضافته --</option>';
-        
-        // البحث باستخدام grade و section كما تم استخراجها من الـ PDF
         students.filter(s => s.grade.includes(grade) && String(s.section) === section)
                 .forEach(s => {
                     drop.innerHTML += `<option value="${s.name}" data-phone="${s.phone}">${s.name}</option>`;
@@ -172,7 +211,7 @@
 
     function renderBatch() {
         const area = document.getElementById('selectedList');
-        area.innerHTML = '<strong>القائمة المبدئية للغياب:</strong>';
+        area.innerHTML = '<strong>قائمة الغياب الحالية:</strong>';
         currentBatch.forEach((s, i) => {
             area.innerHTML += `<div class="absent-item">
                 <span>${s.name}</span>
@@ -194,12 +233,7 @@
         const date = document.getElementById('absentDate').value;
         const cls = document.getElementById('classSelect').value;
         const entries = currentBatch.map(b => ({ name: b.name, date, class: cls }));
-        
-        const res = await fetch('/api/save-attendance', { 
-            method: 'POST', 
-            body: JSON.stringify(entries), 
-            headers: {'Content-Type': 'application/json'} 
-        });
+        const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type': 'application/json'} });
         if(res.ok) { alert("تم الحفظ بنجاح"); location.reload(); }
     }
 
@@ -209,16 +243,56 @@
         const cls = document.getElementById('newClass').value;
         const [grade, section] = cls.split('-');
         if(!name || !phone) return alert("أكمل البيانات");
-        
-        const res = await fetch('/api/update-students', { 
-            method: 'POST', 
-            body: JSON.stringify([...students, {name, phone, grade, section}]), 
-            headers: {'Content-Type':'application/json'} 
-        });
+        const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify([...students, {name, phone, grade, section}]), headers: {'Content-Type':'application/json'} });
         if(res.ok) location.reload();
+    }
+
+    function renderManagerList() {
+        const cls = document.getElementById('filterClass').value;
+        const [grade, section] = cls.split('-');
+        let html = '<table><tr><th>الاسم</th><th>حذف</th></tr>';
+        students.filter(s => s.grade.includes(grade) && String(s.section) === section).forEach(s => {
+            const idx = students.findIndex(x => x.name === s.name);
+            html += `<tr><td>${s.name}</td><td onclick="deleteStudent(${idx})" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></td></tr>`;
+        });
+        document.getElementById('managerListArea').innerHTML = html + '</table>';
+    }
+
+    async function deleteStudent(i) {
+        if(!confirm("حذف الطالب؟")) return;
+        students.splice(i, 1);
+        const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify(students), headers: {'Content-Type':'application/json'} });
+        if(res.ok) renderManagerList();
+    }
+
+    function toggleReportMode() {
+        const m = document.getElementById('reportMode').value;
+        document.getElementById('repStudentDiv').style.display = m === 'student' ? 'block' : 'none';
+        document.getElementById('repClassDiv').style.display = m === 'day' ? 'block' : 'none';
+    }
+
+    function updateReportStudentList() {
+        const sel = document.getElementById('repStudentSelect');
+        sel.innerHTML = "";
+        students.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
+    }
+
+    function generateReport() {
+        const m = document.getElementById('reportMode').value;
+        const d = document.getElementById('repDate').value;
+        let res = [];
+        if(m === 'student') {
+            res = history.filter(h => h.name === document.getElementById('repStudentSelect').value);
+        } else {
+            res = history.filter(h => h.class === document.getElementById('repClassSelect').value && h.date === d);
+        }
+        let html = `<p><b>إجمالي الغيابات: ${res.length}</b></p><table><tr><th>الاسم</th><th>التاريخ</th></tr>`;
+        res.forEach(r => html += `<tr><td>${r.name}</td><td>${r.date}</td></tr>`);
+        document.getElementById('reportResult').innerHTML = html + '</table>';
     }
 
     window.onload = loadAllData;
 </script>
+
 </body>
 </html>
