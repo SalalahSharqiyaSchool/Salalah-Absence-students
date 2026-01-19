@@ -104,9 +104,17 @@
         <div class="card">
             <div class="card-title"><i class="fas fa-user-check"></i> رصد الغياب الجماعي</div>
             <div style="display: flex; gap:10px;">
-                <div style="flex:1"><label>الصف</label><select id="classSelect" onchange="updateStudentDropdown()"><option value="">-- اختر --</option><option value="5-1">5-1</option><option value="5-2">5-2</option></select></div>
-                <div style="flex:1"><label>التاريخ</label><input type="date" id="absentDate"></div>
-            </div>
+    <div style="flex:1">
+        <label>الصف</label>
+        <select id="classSelect" onchange="updateStudentDropdown()">
+            <option value="">-- اختر --</option>
+            <option value="خامس-1">خامس / 1</option>
+            <option value="خامس-2">خامس / 2</option>
+            <option value="سادس-4">سادس / 4</option> 
+        </select>
+    </div>
+    <div style="flex:1"><label>التاريخ</label><input type="date" id="absentDate"></div>
+</div>
             <label>اختر الطالب لإضافته للقائمة:</label>
             <select id="studentDropdown" onchange="addStudentToAbsentList()"><option value="">-- اختر الاسم --</option></select>
             
@@ -186,14 +194,18 @@
     }
 
     // --- الرصد ---
-    function updateStudentDropdown() {
-        const cls = document.getElementById('classSelect').value;
-        const drop = document.getElementById('studentDropdown');
-        drop.innerHTML = '<option value="">-- اختر الاسم لإضافته --</option>';
-        students.filter(s => s.class === cls).forEach(s => {
-            drop.innerHTML += `<option value="${s.name}" data-phone="${s.phone}">${s.name}</option>`;
-        });
-    }
+  function updateStudentDropdown() {
+    const cls = document.getElementById('classSelect').value; // مثلاً سيعطيك "5-1"
+    const [grade, section] = cls.split('-'); // سيفصلها إلى grade="5" و section="1"
+    
+    const drop = document.getElementById('studentDropdown');
+    drop.innerHTML = '<option value="">-- اختر الاسم لإضافته --</option>';
+
+    // البحث في الطلاب مع تحويل الأرقام لنصوص لضمان المطابقة
+    students.filter(s => String(s.grade).includes(grade) && String(s.section) === section).forEach(s => {
+        drop.innerHTML += `<option value="${s.name}" data-phone="${s.phone}">${s.name}</option>`;
+    });
+}
 
     function addStudentToAbsentList() {
         const drop = document.getElementById('studentDropdown');
@@ -234,13 +246,26 @@
 
     // --- الإدارة ---
     async function addNewStudent() {
-        const name = document.getElementById('newName').value;
-        const phone = document.getElementById('newPhone').value;
-        const cls = document.getElementById('newClass').value;
-        if(!name || !phone) return alert("أكمل البيانات");
-        const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify([...students, {name, phone, class:cls}]), headers: {'Content-Type':'application/json'} });
-        if(res.ok) location.reload();
+    const name = document.getElementById('newName').value;
+    const phone = document.getElementById('newPhone').value;
+    const cls = document.getElementById('newClass').value; // "5-1"
+    const [grade, section] = cls.split('-');
+
+    if(!name || !phone) return alert("أكمل البيانات");
+
+    const newStudent = { name, phone, grade, section };
+    
+    const res = await fetch('/api/update-students', { 
+        method: 'POST', 
+        body: JSON.stringify([...students, newStudent]), 
+        headers: {'Content-Type':'application/json'} 
+    });
+    
+    if(res.ok) {
+        alert("تمت إضافة الطالب بنجاح");
+        location.reload();
     }
+}
 
     function renderManagerList() {
         const cls = document.getElementById('filterClass').value;
