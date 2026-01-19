@@ -158,14 +158,25 @@
 <script>
     let students = []; let history = []; let currentBatch = [];
 
-    async function loadAllData() {
-        try {
-            const sRes = await fetch('student_fone.json'); students = await sRes.json();
-            const hRes = await fetch('attendance_history.json'); history = await hRes.json();
-            document.getElementById('absentDate').valueAsDate = new Date();
-            updateReportStudentList();
-        } catch (e) { console.error("Load error"); }
+   async function loadAllData() {
+    try {
+        // إضافة رقم عشوائي (تاريخ اللحظة) لنمنع المتصفح من استخدام النسخة القديمة
+        const version = new Date().getTime(); 
+        
+        const sRes = await fetch(`student_fone.json?v=${version}`); 
+        students = await sRes.json();
+        
+        const hRes = await fetch(`attendance_history.json?v=${version}`); 
+        history = await hRes.json();
+
+        document.getElementById('absentDate').valueAsDate = new Date();
+        updateReportStudentList();
+        
+        console.log("تم جلب أحدث البيانات من السحابة بنجاح");
+    } catch (e) { 
+        console.error("خطأ في تحديث البيانات"); 
     }
+}
 
     function switchTab(id, el) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
