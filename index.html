@@ -63,9 +63,10 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: right; font-size: 0.9rem; }
 
-        .btn { border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; font-size: 1rem; }
+        .btn { border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; font-size: 1rem; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: var(--accent); }
         .btn-success { background: var(--success); color: white; }
+        .btn:active { transform: scale(0.98); }
 
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.4s ease; }
@@ -73,8 +74,9 @@
 
         @media print {
             .bottom-nav, .footer-rights, .official-header, .btn, label, select, input { display: none !important; }
-            .card { border: none; box-shadow: none; }
+            .card { border: none; box-shadow: none; margin: 0; padding: 0; }
             .section { display: block !important; }
+            body { padding: 0; background: white; }
         }
     </style>
 </head>
@@ -132,19 +134,35 @@
     <section id="report-section" class="section">
         <div class="card">
             <div class="card-title"><i class="fas fa-file-invoice"></i> نظام التقارير والطباعة</div>
+            
+            <label>نوع التقرير</label>
             <select id="reportMode" onchange="toggleReportMode()">
                 <option value="student">غياب طالب محدد</option>
                 <option value="day">كشف غياب صف ليوم</option>
             </select>
-            <div id="repStudentDiv"><label>اسم الطالب</label><select id="repStudentSelect"></select></div>
+
+            <div id="repStudentDiv">
+                <label>اختر الصف أولاً</label>
+                <select id="repClassFilter" onchange="updateReportStudentListByClass()">
+                    <option value="">-- اختر الصف --</option>
+                </select>
+                <label>اختر الطالب</label>
+                <select id="repStudentSelect">
+                    <option value="">-- حدد الصف لعرض الطلاب --</option>
+                </select>
+            </div>
+
             <div id="repClassDiv" style="display:none;">
-                <label>الصف</label>
+                <label>اختر الصف</label>
                 <select id="repClassSelect"></select>
             </div>
+
             <label>التاريخ</label><input type="date" id="repDate">
-            <button class="btn btn-primary" onclick="generateReport()"><i class="fas fa-search"></i> عرض التقرير</button>
+            
+            <button class="btn btn-primary" onclick="generateReport()"><i class="fas fa-search"></i> عرض التقرير المباشر</button>
             <button class="btn" onclick="window.print()" style="margin-top:10px; background:#e2e8f0;"><i class="fas fa-print"></i> طباعة / حفظ PDF</button>
-            <div id="reportResult"></div>
+            
+            <div id="reportResult" style="margin-top: 20px;"></div>
         </div>
     </section>
 </div>
@@ -169,27 +187,42 @@
             history = await hRes.json();
             
             document.getElementById('absentDate').valueAsDate = new Date();
+            document.getElementById('repDate').valueAsDate = new Date();
             
-            // ميزة التوليد التلقائي لصفوف المدرسة بالكامل
             generateClassOptions();
-            updateReportStudentList();
         } catch (e) { console.error("Error Loading Data"); }
     }
 
     function generateClassOptions() {
-        // استخراج كافة الصفوف والشعب الفريدة من ملف الـ JSON
         const uniqueClasses = [...new Set(students.map(s => `${s.grade}-${s.section}`))].sort();
-        const selectIds = ['classSelect', 'filterClass', 'repClassSelect'];
+        // أضفنا القائمة الجديدة repClassFilter للفلترة في التقارير
+        const selectIds = ['classSelect', 'filterClass', 'repClassSelect', 'repClassFilter'];
         
         selectIds.forEach(id => {
             const el = document.getElementById(id);
             if(!el) return;
-            el.innerHTML = id === 'classSelect' ? '<option value="">-- اختر الصف --</option>' : '';
+            el.innerHTML = (id === 'classSelect' || id === 'repClassFilter') ? '<option value="">-- اختر الصف --</option>' : '';
             uniqueClasses.forEach(cls => {
                 const [g, s] = cls.split('-');
                 el.innerHTML += `<option value="${cls}">${g} / ${s}</option>`;
             });
         });
+    }
+
+    // فلترة قائمة الطلاب في التقارير بناءً على الصف المختار
+    function updateReportStudentListByClass() {
+        const selectedCls = document.getElementById('repClassFilter').value;
+        const studentSelect = document.getElementById('repStudentSelect');
+        studentSelect.innerHTML = '<option value="">-- اختر الطالب --</option>';
+        
+        if(!selectedCls) return;
+        const [g, s] = selectedCls.split('-');
+        
+        students.filter(st => st.grade === g && String(st.section) === s)
+                .sort((a,b) => a.name.localeCompare(b.name))
+                .forEach(st => {
+                    studentSelect.innerHTML += `<option value="${st.name}">${st.name}</option>`;
+                });
     }
 
     function switchTab(id, el) {
@@ -202,18 +235,11 @@
     function updateStudentDropdown() {
         const cls = document.getElementById('classSelect').value;
         if (!cls) return;
-        const [selectedGrade, selectedSection] = cls.split('-');
-        
+        const [g, s] = cls.split('-');
         const drop = document.getElementById('studentDropdown');
         drop.innerHTML = '<option value="">-- اختر الاسم --</option>';
-        
-        // منطق بحث ذكي يتجاهل "الـ" التعريف
-        students.filter(s => {
-            const sG = s.grade.replace('ال', '').trim();
-            const tG = selectedGrade.replace('ال', '').trim();
-            return sG === tG && String(s.section) === selectedSection;
-        }).forEach(s => {
-            drop.innerHTML += `<option value="${s.name}" data-phone="${s.phone}">${s.name}</option>`;
+        students.filter(st => st.grade === g && String(st.section) === s).forEach(st => {
+            drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`;
         });
     }
 
@@ -246,58 +272,35 @@
         window.open(`https://wa.me/${p}?text=${encodeURIComponent('مدرسة صلالة الشرقية: نبلغكم بغياب الطالب '+n+' بتاريخ '+d)}`, '_blank');
     }
 
-  // 1. تحديث دالة حفظ الغياب لتجلب البيانات الجديدة فوراً
-async function saveAttendanceToCloud() {
-    if(currentBatch.length === 0) return alert("القائمة فارغة");
-    
-    const date = document.getElementById('absentDate').value;
-    const cls = document.getElementById('classSelect').value;
-    const entries = currentBatch.map(b => ({ name: b.name, date, class: cls }));
-    
-    try {
-        const res = await fetch('/api/save-attendance', { 
-            method: 'POST', 
-            body: JSON.stringify(entries), 
-            headers: {'Content-Type': 'application/json'} 
-        });
-
+    async function saveAttendanceToCloud() {
+        if(currentBatch.length === 0) return alert("القائمة فارغة");
+        const date = document.getElementById('absentDate').value;
+        const cls = document.getElementById('classSelect').value;
+        const entries = currentBatch.map(b => ({ name: b.name, date, class: cls }));
+        
+        const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type': 'application/json'} });
         if(res.ok) { 
-            alert("تم الحفظ بنجاح وتحديث التقارير");
-            
-            // بدلاً من reload، نقوم بتفريغ القائمة الحالية وجلب البيانات الجديدة
+            alert("تم الحفظ بنجاح وتحديث التقرير"); 
             currentBatch = [];
             renderBatch();
-            await loadAllData(); // تحديث ملف history و students تلقائياً
+            await loadAllData(); // تحديث مباشر للبيانات
         }
-    } catch (e) {
-        alert("حدث خطأ أثناء الحفظ");
     }
-}
 
-   // 2. تحديث دالة إضافة طالب جديد لتعمل بنفس الطريقة
-async function addNewStudent() {
-    const name = document.getElementById('newName').value;
-    const phone = document.getElementById('newPhone').value;
-    const grade = document.getElementById('newGrade').value;
-    const section = document.getElementById('newSection').value;
-    
-    if(!name || !phone || !grade || !section) return alert("أكمل البيانات");
-    
-    const res = await fetch('/api/update-students', { 
-        method: 'POST', 
-        body: JSON.stringify([...students, {name, phone, grade, section}]), 
-        headers: {'Content-Type':'application/json'} 
-    });
-
-    if(res.ok) {
-        alert("تمت إضافة الطالب وتحديث القائمة فوراً");
-        // مسح الخانات بعد الإضافة
-        document.getElementById('newName').value = "";
-        document.getElementById('newPhone').value = "";
-        
-        await loadAllData(); // تحديث القوائم فوراً بدون ريفريش
+    async function addNewStudent() {
+        const name = document.getElementById('newName').value;
+        const phone = document.getElementById('newPhone').value;
+        const grade = document.getElementById('newGrade').value;
+        const section = document.getElementById('newSection').value;
+        if(!name || !phone || !grade || !section) return alert("أكمل البيانات");
+        const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify([...students, {name, phone, grade, section}]), headers: {'Content-Type':'application/json'} });
+        if(res.ok) {
+            alert("تمت الإضافة");
+            document.getElementById('newName').value = "";
+            document.getElementById('newPhone').value = "";
+            await loadAllData();
+        }
     }
-}
 
     function renderManagerList() {
         const cls = document.getElementById('filterClass').value;
@@ -324,23 +327,26 @@ async function addNewStudent() {
         document.getElementById('repClassDiv').style.display = m === 'day' ? 'block' : 'none';
     }
 
-    function updateReportStudentList() {
-        const sel = document.getElementById('repStudentSelect');
-        sel.innerHTML = "";
-        students.sort((a,b) => a.name.localeCompare(a.name)).forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name} (${s.grade}/${s.section})</option>`);
-    }
-
     function generateReport() {
         const m = document.getElementById('reportMode').value;
         const d = document.getElementById('repDate').value;
         let res = [];
+        let title = "";
+
         if(m === 'student') {
-            res = history.filter(h => h.name === document.getElementById('repStudentSelect').value);
+            const sName = document.getElementById('repStudentSelect').value;
+            if(!sName) return alert("اختر الطالب");
+            res = history.filter(h => h.name === sName);
+            title = `تقرير غياب الطالب: ${sName}`;
         } else {
-            res = history.filter(h => h.class === document.getElementById('repClassSelect').value && h.date === d);
+            const cName = document.getElementById('repClassSelect').value;
+            if(!cName) return alert("اختر الصف");
+            res = history.filter(h => h.class === cName && h.date === d);
+            title = `كشف غياب صف ${cName} بتاريخ ${d}`;
         }
-        let html = `<p><b>إجمالي الغيابات: ${res.length}</b></p><table><tr><th>الاسم</th><th>التاريخ</th></tr>`;
-        res.forEach(r => html += `<tr><td>${r.name}</td><td>${r.date}</td></tr>`);
+
+        let html = `<h3>${title}</h3><p><b>إجمالي الأيام: ${res.length}</b></p><table><tr><th>الاسم</th><th>التاريخ</th><th>الصف</th></tr>`;
+        res.forEach(r => html += `<tr><td>${r.name}</td><td>${r.date}</td><td>${r.class}</td></tr>`);
         document.getElementById('reportResult').innerHTML = html + '</table>';
     }
 
