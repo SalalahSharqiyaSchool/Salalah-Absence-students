@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منصة مدرسة صلالة الشرقية الرقمية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; --wa: #25d366; --danger: #ef4444; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; color: var(--primary); }
+        
+        /* الهيدر الرسمي */
+        .official-header {
+            background: var(--primary); color: white; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 4px solid var(--accent); position: sticky; top: 0; z-index: 1000;
+        }
+        .school-info h1 { margin: 0; font-size: 1.1rem; color: var(--accent); }
+
+        /* التصميم العام */
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        .card { background: var(--card-bg); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .card-title { display: flex; align-items: center; gap: 10px; font-weight: 800; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        
+        label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: #64748b; }
+        select, input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; }
+        
+        .btn { border: none; border-radius: 10px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; font-size: 1rem; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: var(--accent); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #64748b; }
+
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; border-radius: 10px; margin-bottom: 8px; border: 1px solid #eee; border-right: 5px solid var(--accent); }
+        .del-btn { color: var(--danger); cursor: pointer; }
+
+        /* جداول التقارير */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th, td { padding: 10px; border: 1px solid #e2e8f0; text-align: center; font-size: 0.9rem; }
+        th { background: #f8fafc; font-weight: 800; }
+
+        /* التقرير المطبوع */
+        .report-header { display: none; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .report-footer { display: none; margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 10px; font-size: 0.85rem; }
+
+        @media print {
+            .no-print { display: none !important; }
+            .report-header, .report-footer { display: block !important; }
+            .card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+            body { background: white; }
+            table { border: 2px solid #000; }
+            th, td { border: 1px solid #000 !important; color: #000; }
+        }
+
+        /* القائمة السفلية */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+        .nav-item.active { color: var(--primary); }
+        .section { display: none; }
+        .section.active { display: block; }
+    </style>
+</head>
+<body>
+
+<header class="official-header">
+    <div class="school-info"><h1>مدرسة صلالة الشرقية (5-9)</h1></div>
+    <div id="headerDate" style="font-size: 0.9rem;"></div>
+</header>
+
+<div class="container">
+    
+    <section id="absent-section" class="section active">
+        <div class="card no-print">
+            <div class="card-title"><i class="fas fa-user-check"></i> رصد الغياب اليومي</div>
+            <label>تاريخ اليوم</label>
+            <input type="date" id="absentDate">
+            <div style="display: flex; gap:10px;">
+                <div style="flex:1"><label>الصف</label><select id="mainGradeSelect" onchange="updateSections('mainGradeSelect','mainSectionSelect')"></select></div>
+                <div style="flex:1"><label>الشعبة</label><select id="mainSectionSelect" onchange="updateStudents()"></select></div>
+            </div>
+            <label>اختيار الطالب</label>
+            <select id="studentDropdown" onchange="addToList()"><option value="">-- اختر الصف أولاً --</option></select>
+            <div id="selectedList" style="margin-top:15px;"></div>
+            <button class="btn btn-primary" onclick="saveData()"><i class="fas fa-save"></i> حفظ في السجلات</button>
+        </div>
+    </section>
+
+    <section id="report-section" class="section">
+        <div class="card">
+            <div class="no-print">
+                <div class="card-title"><i class="fas fa-file-invoice"></i> نظام التقارير والطباعة</div>
+                <label>نوع التقرير</label>
+                <select id="reportMode" onchange="toggleReportUI()">
+                    <option value="student">تقرير طالب مفصل</option>
+                    <option value="class">كشف غياب الصف الكامل</option>
+                </select>
+                <div style="display: flex; gap:10px;">
+                    <div style="flex:1"><label>الصف</label><select id="repGradeSelect" onchange="updateSections('repGradeSelect','repSectionSelect'); updateReportStudentList();"></select></div>
+                    <div style="flex:1"><label>الشعبة</label><select id="repSectionSelect" onchange="updateReportStudentList()"></select></div>
+                </div>
+                <div id="studentSelectDiv">
+                    <label>اسم الطالب</label>
+                    <select id="repStudentSelect"></select>
+                </div>
+                <div style="display: flex; gap:10px;">
+                    <div style="flex:1"><label>من تاريخ</label><input type="date" id="repDateStart"></div>
+                    <div style="flex:1"><label>إلى تاريخ</label><input type="date" id="repDateEnd"></div>
+                </div>
+                <button class="btn btn-primary" onclick="generateReport()"><i class="fas fa-search"></i> استخراج التقرير</button>
+            </div>
+
+            <div id="reportResult"></div>
+            
+            <button class="btn btn-outline no-print" id="printBtn" onclick="window.print()" style="display:none; margin-top:15px;">
+                <i class="fas fa-print"></i> طباعة التقرير / تصدير PDF
+            </button>
+        </div>
+    </section>
+
+    <section id="manage-section" class="section">
+        <div class="card no-print">
+            <div class="card-title"><i class="fas fa-user-plus"></i> إضافة طالب جديد</div>
+            <input type="text" id="newName" placeholder="الاسم الرباعي">
+            <input type="tel" id="newPhone" placeholder="رقم ولي الأمر (968xxxxxx)">
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="newGrade" placeholder="الصف">
+                <input type="number" id="newSection" placeholder="الشعبة">
+            </div>
+            <button class="btn btn-success" onclick="addNewStudent()">إضافة للقاعدة</button>
+        </div>
+    </section>
+</div>
+
+<nav class="bottom-nav no-print">
+    <div class="nav-item active" onclick="switchTab('absent-section', this)"><i class="fas fa-edit"></i><span>الرصد</span></div>
+    <div class="nav-item" onclick="switchTab('report-section', this)"><i class="fas fa-print"></i><span>التقارير</span></div>
+    <div class="nav-item" onclick="switchTab('manage-section', this)"><i class="fas fa-users-cog"></i><span>الإدارة</span></div>
+</nav>
+
+<script>
+    let students = []; let history = []; let currentBatch = [];
+
+    // تحميل البيانات
+    async function loadData() {
+        const v = Date.now();
+        try {
+            const [sR, hR] = await Promise.all([
+                fetch(`student_fone.json?v=${v}`),
+                fetch(`attendance_history.json?v=${v}`)
+            ]);
+            students = await sR.json();
+            history = await hR.json();
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
+            document.getElementById('headerDate').innerText = new Date().toLocaleDateString('ar-OM');
+            initGrades();
+        } catch(e) { console.error("Data Load Error"); }
+    }
+
+    function initGrades() {
+        const grades = [...new Set(students.map(s => s.grade))].sort((a,b)=>a-b);
+        ['mainGradeSelect', 'repGradeSelect'].forEach(id => {
+            const el = document.getElementById(id);
+            el.innerHTML = '<option value="">الصف</option>';
+            grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
+        });
+    }
+
+    function updateSections(gId, sId) {
+        const g = document.getElementById(gId).value;
+        const sEl = document.getElementById(sId);
+        sEl.innerHTML = '<option value="">الشعبة</option>';
+        if(!g) return;
+        const sections = [...new Set(students.filter(s => s.grade == g).map(s => s.section))].sort((a,b)=>a-b);
+        sections.forEach(s => sEl.innerHTML += `<option value="${s}">${s}</option>`);
+    }
+
+    function updateStudents() {
+        const g = document.getElementById('mainGradeSelect').value;
+        const s = document.getElementById('mainSectionSelect').value;
+        const drop = document.getElementById('studentDropdown');
+        drop.innerHTML = '<option value="">-- اختر الطالب --</option>';
+        students.filter(x => x.grade == g && String(x.section) == s)
+                .sort((a,b)=>a.name.localeCompare(b.name, 'ar'))
+                .forEach(st => drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`);
+    }
+
+    function addToList() {
+        const d = document.getElementById('studentDropdown');
+        if(!d.value || currentBatch.find(x => x.name === d.value)) return;
+        currentBatch.push({ name: d.value, phone: d.options[d.selectedIndex].getAttribute('data-phone') });
+        renderBatch(); d.selectedIndex = 0;
+    }
+
+    function renderBatch() {
+        const date = document.getElementById('absentDate').value;
+        document.getElementById('selectedList').innerHTML = currentBatch.map((s,i)=>`
+            <div class="item-row">
+                <span>${s.name}</span>
+                <div>
+                    <i class="fab fa-whatsapp" style="color:#25d366; cursor:pointer; margin-left:15px;" onclick="sendWA('${s.phone}','${s.name}','${date}')"></i>
+                    <i class="fas fa-times-circle del-btn" onclick="currentBatch.splice(${i},1);renderBatch();"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function sendWA(phone, name, date) {
+        const day = new Date(date).toLocaleDateString('ar-OM', {weekday: 'long'});
+        const text = `مدرسة صلالة الشرقية%0Aنحيطكم علماً بغياب الطالب: *${name}*%0Aيوم: *${day}* الموافق: *${date}*`;
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+    }
+
+    async function saveData() {
+        if(!currentBatch.length) return alert("لا يوجد طلاب في القائمة");
+        const date = document.getElementById('absentDate').value;
+        const g = document.getElementById('mainGradeSelect').value;
+        const s = document.getElementById('mainSectionSelect').value;
+        const entries = currentBatch.map(b => ({ name: b.name, date, class: `${g}-${s}` }));
+        
+        const res = await fetch('/api/save-attendance', { 
+            method: 'POST', 
+            headers: {'Content-Type':'application/json'}, 
+            body: JSON.stringify(entries) 
+        });
+        if(res.ok) { history.push(...entries); currentBatch = []; renderBatch(); alert("تم حفظ الغياب بنجاح"); }
+    }
+
+    // --- نظام التقارير الاحترافي ---
+    function updateReportStudentList() {
+        const g = document.getElementById('repGradeSelect').value;
+        const s = document.getElementById('repSectionSelect').value;
+        const sel = document.getElementById('repStudentSelect');
+        sel.innerHTML = '<option value="">-- اختر الطالب --</option>';
+        if(!g || !s) return;
+        students.filter(x => x.grade == g && String(x.section) == s)
+                .sort((a,b)=>a.name.localeCompare(b.name, 'ar'))
+                .forEach(st => sel.innerHTML += `<option value="${st.name}">${st.name}</option>`);
+    }
+
+    function generateReport() {
+        const mode = document.getElementById('reportMode').value;
+        const start = document.getElementById('repDateStart').value;
+        const end = document.getElementById('repDateEnd').value;
+        const resDiv = document.getElementById('reportResult');
+        const rDate = new Date().toLocaleDateString('ar-OM');
+        let html = "";
+
+        if (mode === 'student') {
+            const name = document.getElementById('repStudentSelect').value;
+            if(!name) return alert("اختر طالب");
+            const data = history.filter(h => h.name === name && h.date >= start && h.date <= end);
+            const g = document.getElementById('repGradeSelect').value;
+            const s = document.getElementById('repSectionSelect').value;
+
+            html = `
+                <div class="report-header" style="text-align:center;">
+                    <h2>تقرير غياب الطالب التفصيلي</h2>
+                    <p>مدرسة صلالة الشرقية (5-9)</p>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; border:1px solid #000; padding:10px;">
+                    <span>الطالب: ${name}</span>
+                    <span>الصف: ${g} / ${s}</span>
+                </div>
+                <p>الفترة من: ${start} إلى: ${end}</p>
+                <table>
+                    <thead><tr><th>م</th><th>اليوم</th><th>التاريخ</th><th class="no-print">إجراء</th></tr></thead>
+                    <tbody>
+                        ${data.map((r,i)=>`<tr>
+                            <td>${i+1}</td>
+                            <td>${new Date(r.date).toLocaleDateString('ar-OM',{weekday:'long'})}</td>
+                            <td>${r.date}</td>
+                            <td class="no-print"><i class="fas fa-trash del-btn" onclick="deleteHistoryItem('${r.name}','${r.date}')"></i></td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+                <div class="report-footer">
+                    <p><b>إجمالي أيام الغياب: ${data.length} يوم</b></p>
+                    <p style="margin-top:20px;">* تنبيه: نسخة إلكترونية معتمدة مستخرجة بتاريخ ${rDate}</p>
+                </div>
+            `;
+        } else {
+            const g = document.getElementById('repGradeSelect').value;
+            const s = document.getElementById('repSectionSelect').value;
+            const cKey = `${g}-${s}`;
+            const cData = history.filter(h => h.class === cKey && h.date >= start && h.date <= end);
+            const log = {};
+            
+            // ترتيب الطلاب والتواريخ
+            students.filter(st => st.grade == g && String(st.section) == s).forEach(st => {
+                const dates = cData.filter(d => d.name === st.name).map(d => d.date).sort();
+                if(dates.length > 0) log[st.name] = dates;
+            });
+
+            html = `
+                <div class="report-header" style="text-align:center;">
+                    <h2>كشف غياب الصف الكامل (${cKey})</h2>
+                    <p>الفترة من: ${start} إلى: ${end}</p>
+                </div>
+                <table>
+                    <thead><tr><th>م</th><th>اسم الطالب</th><th>تواريخ الغياب</th><th>الإجمالي</th></tr></thead>
+                    <tbody>
+                        ${Object.keys(log).sort().map((n, i)=>`<tr>
+                            <td>${i+1}</td>
+                            <td style="text-align:right">${n}</td>
+                            <td style="font-size:0.8rem;">${log[n].join(' | ')}</td>
+                            <td><b>${log[n].length}</b></td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+                <div class="report-footer">
+                    <p>* تنبيه: نسخة إلكترونية معتمدة مستخرجة بتاريخ ${rDate}</p>
+                </div>
+            `;
+        }
+        resDiv.innerHTML = html;
+        document.getElementById('printBtn').style.display = 'flex';
+    }
+
+    async function deleteHistoryItem(name, date) {
+        if(!confirm(`حذف سجل ${name} بتاريخ ${date}؟`)) return;
+        history = history.filter(h => !(h.name === name && h.date === date));
+        const res = await fetch('/api/save-attendance-full', { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(history) 
+        });
+        if(res.ok) { alert("تم الحذف"); generateReport(); }
+    }
+
+    async function addNewStudent() {
+        const n = document.getElementById('newName').value, p = document.getElementById('newPhone').value;
+        const g = document.getElementById('newGrade').value, s = document.getElementById('newSection').value;
+        if(!n || !p || !g || !s) return alert("أكمل البيانات");
+        students.push({name:n, phone:p, grade:g, section:s});
+        const res = await fetch('/api/update-students', { 
+            method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(students) 
+        });
+        if(res.ok) { alert("تمت الإضافة"); location.reload(); }
+    }
+
+    function switchTab(id, el) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active'); el.classList.add('active');
+    }
+    function toggleReportUI() { document.getElementById('studentSelectDiv').style.display = (document.getElementById('reportMode').value==='student'?'block':'none'); }
+
+    window.onload = loadData;
+</script>
+</body>
+</html>
