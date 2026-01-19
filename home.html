@@ -239,13 +239,52 @@
         window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
 
-    async function saveData() {
-        if(currentBatch.length === 0) return;
-        const cls = `${document.getElementById('mainGradeSelect').value}-${document.getElementById('mainSectionSelect').value}`;
-        const entries = currentBatch.map(b => ({ name: b.name, date: document.getElementById('absentDate').value, class: cls }));
-        const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type':'application/json'} });
-        if(res.ok) { alert("تم الحفظ بنجاح"); currentBatch=[]; renderBatch(); loadData(); }
+async function saveData() {
+    if (currentBatch.length === 0) return;
+    
+    const dateInput = document.getElementById('absentDate').value;
+    const g = document.getElementById('mainGradeSelect').value;
+    const s = document.getElementById('mainSectionSelect').value;
+    const cls = `${g}-${s}`;
+    
+    const entries = currentBatch.map(b => ({ 
+        name: b.name, 
+        date: dateInput, 
+        class: cls 
+    }));
+
+    try {
+        const res = await fetch('/api/save-attendance', { 
+            method: 'POST', 
+            body: JSON.stringify(entries), 
+            headers: {'Content-Type':'application/json'} 
+        });
+
+        if (res.ok) {
+            // تحديث البيانات محلياً للتحديث اللحظي
+            history.push(...entries); 
+            
+            // إظهار البطاقة العائمة للنجاح
+            document.getElementById('successModal').style.display = 'flex';
+            
+            // مسح القائمة الحالية
+            currentBatch = []; 
+            renderBatch(); 
+            
+            // تحديث التقرير إذا كان مفتوحاً
+            if (document.getElementById('reportResult').innerHTML !== "") {
+                generateReport(); 
+            }
+        }
+    } catch (error) {
+        alert("حدث خطأ في الاتصال بالسيرفر");
     }
+}
+
+// دالة إغلاق البطاقة
+function closeSuccessModal() {
+    document.getElementById('successModal').style.display = 'none';
+}
 
     function renderManager() {
         const g = document.getElementById('manageGradeSelect').value;
@@ -387,6 +426,14 @@
 
     document.getElementById('reportResult').innerHTML = reportHtml;
     document.getElementById('electronic-notice').style.display = 'block';
+
+    // أضف هذا في آخر دالة generateReport()
+const resultArea = document.getElementById('reportResult');
+resultArea.style.animation = 'none';
+setTimeout(() => {
+    resultArea.style.animation = 'fadeIn 0.5s ease-in';
+}, 10);
+      
 }
     async function deleteStudent(i) {
         if(!confirm("حذف الطالب؟")) return;
@@ -411,5 +458,23 @@
 
     window.onload = loadData;
 </script>
+<div class="modal-overlay" id="successModal">
+    <div class="floating-card" style="text-align: center; border-top: 5px solid var(--success);">
+        <div style="font-size: 4rem; color: var(--success); margin-bottom: 15px; animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 style="color: var(--primary); margin-bottom: 10px;">تم الحفظ بنجاح</h2>
+        <p style="color: #64748b; margin-bottom: 25px;">تم تسجيل بيانات الغياب وتحديث السجلات اللحظية للمنصة.</p>
+        <button class="btn btn-primary" onclick="closeSuccessModal()" style="width: 120px; margin: 0 auto; background: var(--primary); color: var(--accent);">موافق</button>
+    </div>
+</div>
+
+<style>
+@keyframes scaleIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+</style>
+    
 </body>
 </html>
