@@ -186,18 +186,37 @@
         document.getElementById(id).classList.add('active'); el.classList.add('active');
         if(id === 'manage-section') renderManagerList();
     }
+function updateStudentDropdown() {
+    const cls = document.getElementById('classSelect').value;
+    if (!cls) return;
 
-    function updateStudentDropdown() {
-        const cls = document.getElementById('classSelect').value;
-        if (!cls) return;
-        const [grade, section] = cls.split('-');
-        const drop = document.getElementById('studentDropdown');
-        drop.innerHTML = '<option value="">-- اختر الاسم لإضافته --</option>';
-        students.filter(s => s.grade.includes(grade) && String(s.section) === section)
-                .forEach(s => {
-                    drop.innerHTML += `<option value="${s.name}" data-phone="${s.phone}">${s.name}</option>`;
-                });
+    // تقسيم النص، مثلاً "سادس-4" تصبح grade="سادس" و section="4"
+    const [selectedGrade, selectedSection] = cls.split('-');
+    
+    const drop = document.getElementById('studentDropdown');
+    drop.innerHTML = '<option value="">-- اختر الاسم لإضافته --</option>';
+
+    // فلترة الطلاب بمنطق مرن
+    const filteredStudents = students.filter(s => {
+        // تنظيف النصوص من ال التعريف والزيادات للمقارنة الصحيحة
+        const sGrade = String(s.grade).replace('ال', '').trim(); // "السادس" تصبح "سادس"
+        const targetGrade = selectedGrade.replace('ال', '').trim();
+        
+        const sSection = String(s.section).trim();
+        const targetSection = selectedSection.trim();
+
+        return sGrade.includes(targetGrade) && sSection === targetSection;
+    });
+
+    if (filteredStudents.length === 0) {
+        drop.innerHTML = '<option value="">⚠️ لم يتم العثور على طلاب</option>';
+        console.log("البيانات الحالية:", students); // للتصحيح في المتصفح
+    } else {
+        filteredStudents.forEach(s => {
+            drop.innerHTML += `<option value="${s.name}" data-phone="${s.phone}">${s.name}</option>`;
+        });
     }
+}
 
     function addStudentToAbsentList() {
         const drop = document.getElementById('studentDropdown');
