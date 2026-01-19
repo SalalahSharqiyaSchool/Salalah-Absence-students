@@ -295,32 +295,49 @@
         students.filter(x => x.grade === g && String(x.section) === s).sort((a,b)=>a.name.localeCompare(b.name)).forEach(st => sel.innerHTML += `<option value="${st.name}">${st.name}</option>`);
     }
 
-    function generateReport() {
-        const mode = document.getElementById('reportMode').value;
-        const start = document.getElementById('repDateStart').value;
-        const g = document.getElementById('repGradeSelect').value;
-        const s = document.getElementById('repSectionSelect').value;
-        let res = []; let title = "";
+   function generateReport() {
+    const mode = document.getElementById('reportMode').value;
+    const start = document.getElementById('repDateStart').value;
+    const end = document.getElementById('repDateEnd').value;
+    const g = document.getElementById('repGradeSelect').value;
+    const s = document.getElementById('repSectionSelect').value;
+    let res = [];
+    let title = "";
 
-        if(mode === 'student') {
-            const name = document.getElementById('repStudentSelect').value;
-            res = history.filter(h => h.name === name && h.date >= start && h.date <= document.getElementById('repDateEnd').value);
-            title = `<div style="text-align:right; border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:15px;">
-                        <p><b>الاسم:</b> ${name}</p><p><b>الصف:</b> ${g} / ${s}</p>
-                     </div>`;
-        } else {
-            res = history.filter(h => h.class === `${g}-${s}` && h.date === start);
-            title = `<h4>كشف غياب صف: ${g} / ${s} بتاريخ ${start}</h4>`;
-        }
+    if (mode === 'student') {
+        const name = document.getElementById('repStudentSelect').value;
+        // تعديل: الآن سيعرض كل غيابات الطالب المسجلة في النظام بين التاريخين
+        res = history.filter(h => h.name === name && h.date >= start && h.date <= end);
+        
+        // ترتيب التواريخ من الأحدث إلى الأقدم
+        res.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        let html = `${title}<table><tr><th>م</th><th>البيان</th><th>اليوم</th></tr>`;
-        res.forEach((r, i) => {
-            const day = new Date(r.date).toLocaleDateString('ar-OM', {weekday: 'long'});
-            html += `<tr><td>${i+1}</td><td>${mode==='student'?r.date:r.name}</td><td>${day}</td></tr>`;
-        });
-        document.getElementById('reportResult').innerHTML = html + `</table><div class="total-box">إجمالي الغياب: ( ${res.length} ) يوماً</div>`;
-        document.getElementById('electronic-notice').style.display = 'block';
+        title = `<div style="text-align:right; border:2px solid var(--accent); padding:15px; border-radius:15px; margin-bottom:15px; background:#fcfcfc;">
+                    <p><b>اسم الطالب:</b> ${name}</p>
+                    <p><b>الصف:</b> ${g} / ${s}</p>
+                    <p><b>الفترة من:</b> ${start} <b>إلى:</b> ${end}</p>
+                 </div>`;
+    } else {
+        // تقرير الصف ليوم محدد
+        res = history.filter(h => h.class === `${g}-${s}` && h.date === start);
+        title = `<h3 style="text-align:center;">كشف غياب صف (${g}/${s}) ليوم ${start}</h3>`;
     }
+
+    if (res.length === 0) {
+        document.getElementById('reportResult').innerHTML = "<p style='text-align:center; color:red; font-weight:bold;'>لا يوجد سجلات غياب مسجلة لهذه الفترة.</p>";
+        return;
+    }
+
+    let html = `${title}<table><tr><th>م</th><th>التاريخ</th><th>اليوم</th></tr>`;
+    res.forEach((r, i) => {
+        const day = new Date(r.date).toLocaleDateString('ar-OM', {weekday: 'long'});
+        html += `<tr><td>${i+1}</td><td>${r.date}</td><td>${day}</td></tr>`;
+    });
+    
+    document.getElementById('reportResult').innerHTML = html + `</table>
+        <div class="total-box">إجمالي أيام الغياب في هذه الفترة: ( ${res.length} ) أيام</div>`;
+    document.getElementById('electronic-notice').style.display = 'block';
+}
 
     async function deleteStudent(i) {
         if(!confirm("حذف الطالب؟")) return;
