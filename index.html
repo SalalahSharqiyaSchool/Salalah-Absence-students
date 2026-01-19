@@ -11,6 +11,7 @@
             --primary: #0f172a;
             --accent: #d4af37;
             --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.03);
         }
         
         body, html {
@@ -20,11 +21,44 @@
             background-color: var(--primary);
             overflow: hidden;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
         }
 
-        /* خلفية مزينة بزخارف خفيفة */
+        /* الشريط العلوي الرسمي */
+        .top-official-bar {
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            border-bottom: 2px solid var(--accent);
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            z-index: 10;
+        }
+
+        .ministry-info {
+            text-align: right;
+            line-height: 1.4;
+        }
+
+        .ministry-info span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .ministry-info .main-name {
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .bar-logo {
+            height: 60px;
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.2));
+        }
+
+        /* خلفية مزينة */
         body::before {
             content: "";
             position: absolute;
@@ -35,13 +69,25 @@
             z-index: 0;
         }
 
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
         .welcome-card {
             text-align: center;
-            z-index: 1;
             padding: 40px;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
             animation: fadeIn 1.5s ease-out;
+            background: var(--glass);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.1);
         }
 
         @keyframes fadeIn {
@@ -49,106 +95,98 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .logos-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .logos-container img {
-            height: 90px;
-            width: auto;
-            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+        .center-logo {
+            height: 120px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
         }
 
         h1 {
-            color: var(--accent);
-            font-size: 1.8rem;
+            color: var(--white);
+            font-size: 2.2rem;
             font-weight: 900;
             margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
         }
 
         h2 {
-            color: var(--white);
-            font-size: 1.2rem;
-            font-weight: 600;
+            color: var(--accent);
+            font-size: 1.4rem;
+            font-weight: 700;
             margin-bottom: 40px;
-            opacity: 0.9;
         }
 
         .enter-btn {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            background-color: var(--accent);
+            gap: 15px;
+            background: linear-gradient(45deg, var(--accent), #f3d06b);
             color: var(--primary);
             text-decoration: none;
-            padding: 15px 45px;
+            padding: 18px 50px;
             border-radius: 50px;
-            font-weight: 800;
-            font-size: 1.1rem;
+            font-weight: 900;
+            font-size: 1.2rem;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .enter-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 25px rgba(212, 175, 55, 0.4);
-            background-color: #e5c150;
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.5);
         }
 
         .copyright-area {
-            position: absolute;
-            bottom: 30px;
-            color: rgba(255, 255, 255, 0.6);
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.5);
             font-size: 0.85rem;
-            width: 100%;
             text-align: center;
-            line-height: 1.8;
+            background: rgba(0,0,0,0.2);
+            z-index: 10;
         }
 
         .designer-name {
             color: var(--accent);
             font-weight: 700;
-            display: block;
-            font-size: 0.95rem;
-            margin-top: 5px;
+            margin: 0 5px;
         }
 
-        /* تحسين مظهر الأيقونات */
-        .fa-chevron-left {
-            font-size: 0.9rem;
-            transition: transform 0.3s;
-        }
-        .enter-btn:hover .fa-chevron-left {
-            transform: translateX(-5px);
+        @media (max-width: 600px) {
+            .top-official-bar { padding: 10px 15px; }
+            .bar-logo { height: 45px; }
+            h1 { font-size: 1.6rem; }
+            .enter-btn { padding: 15px 35px; font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="welcome-card">
-        <div class="logos-container">
-           
-            <img src="data/logo.jpeg" alt="شعار المدرسة" onerror="this.src='https://via.placeholder.com/100?text=School'">
+    <div class="top-official-bar">
+        <div class="ministry-info">
+            <span class="main-name">وزارة التربية والتعليم</span>
+            <span>المديرية العامة للتربية والتعليم بمحافظة ظفار</span>
+            <span>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</span>
         </div>
+        <img src="data/logo.jpeg" class="bar-logo" alt="شعار">
+    </div>
 
-        <h1>سلطنة عمان</h1>
-        <h2>منصة مدرسة صلالة الشرقية (5-9)</h2>
-        
-        <a href="home.html" class="enter-btn">
-            دخول المنصة
-            <i class="fas fa-chevron-left"></i>
-        </a>
+    <div class="main-content">
+        <div class="welcome-card">
+            <img src="data/logo.jpeg" class="center-logo" alt="شعار المدرسة الكبير">
+            <h1>سلطنة عمان</h1>
+            <h2>المنصة الرقمية لإدارة الغياب</h2>
+            
+            <a href="home.html" class="enter-btn">
+                دخول المنصة التعليمية
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
     </div>
 
     <div class="copyright-area">
-        جميع حقوق الملكية محفوظة &copy; 2026
-        <span class="designer-name">تصميم وتنفيذ الأستاذ: فيصل العريبي</span>
-        وزارة التربية والتعليم - مديرية التربية والتعليم بمحافظة ظفار
+        جميع حقوق الملكية الفكرية محفوظة &copy; 2026
+        <br>
+        تصميم وتنفيذ الأستاذ: <span class="designer-name">فيصل العريبي</span>
     </div>
 
 </body>
