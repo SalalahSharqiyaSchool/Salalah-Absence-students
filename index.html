@@ -49,8 +49,8 @@
             padding: 10px 0; border-top: 1px solid #eee; z-index: 1500;
             box-shadow: 0 -5px 15px rgba(0,0,0,0.05); border-top-left-radius: 25px; border-top-right-radius: 25px;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
-        .nav-item.active { color: var(--primary); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: 0.3s; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
         .nav-item.active i { color: var(--accent); }
 
         .footer-rights { 
@@ -83,7 +83,7 @@
 <header class="official-header">
     <div class="school-info">
         <p>وزارة التربية والتعليم</p>
-        <h1>مدرسة صلالة الشرقية (5-6)</h1>
+        <h1>مدرسة صلالة الشرقية (5-9)</h1>
     </div>
     <div class="ministry-logo"><img src="data/logo.jpeg" alt="Logo"></div>
 </header>
@@ -94,18 +94,17 @@
             <div class="card-title"><i class="fas fa-user-check"></i> رصد الغياب الجماعي</div>
             <div style="display: flex; gap:10px;">
                 <div style="flex:1">
-                    <label>الصف</label>
+                    <label>الصف والشعبة</label>
                     <select id="classSelect" onchange="updateStudentDropdown()">
-                        <option value="">-- اختر --</option>
-                        <option value="خامس-1">خامس / 1</option>
-                        <option value="خامس-2">خامس / 2</option>
-                        <option value="سادس-4">سادس / 4</option>
+                        <option value="">-- جاري التحميل... --</option>
                     </select>
                 </div>
                 <div style="flex:1"><label>التاريخ</label><input type="date" id="absentDate"></div>
             </div>
             <label>اختر الطالب لإضافته للقائمة:</label>
-            <select id="studentDropdown" onchange="addStudentToAbsentList()"></select>
+            <select id="studentDropdown" onchange="addStudentToAbsentList()">
+                <option value="">-- اختر الصف أولاً --</option>
+            </select>
             <div id="selectedList" style="margin-top:20px;"></div>
             <button class="btn btn-primary" onclick="saveAttendanceToCloud()" style="margin-top:15px;"><i class="fas fa-cloud-upload-alt"></i> حفظ جميع الغائبين سحابياً</button>
         </div>
@@ -116,19 +115,16 @@
             <div class="card-title"><i class="fas fa-user-plus"></i> إضافة طالب جديد</div>
             <input type="text" id="newName" placeholder="اسم الطالب الرباعي">
             <input type="tel" id="newPhone" placeholder="رقم ولي الأمر 968">
-            <select id="newClass">
-                <option value="خامس-1">خامس / 1</option>
-                <option value="خامس-2">خامس / 2</option>
-                <option value="سادس-4">سادس / 4</option>
-            </select>
+            <label>حدد الصف والشعبة</label>
+            <div style="display: flex; gap: 5px;">
+                <input type="text" id="newGrade" placeholder="مثال: السادس">
+                <input type="text" id="newSection" placeholder="الشعبة: 4">
+            </div>
             <button class="btn btn-success" onclick="addNewStudent()">حفظ في المستودع</button>
         </div>
         <div class="card">
-            <div class="card-title"><i class="fas fa-users-cog"></i> قائمة الطلاب الحاليين</div>
-            <select id="filterClass" onchange="renderManagerList()">
-                <option value="خامس-1">خامس / 1</option>
-                <option value="سادس-4">سادس / 4</option>
-            </select>
+            <div class="card-title"><i class="fas fa-users-cog"></i> استعراض طلاب الصف</div>
+            <select id="filterClass" onchange="renderManagerList()"></select>
             <div id="managerListArea"></div>
         </div>
     </section>
@@ -143,11 +139,7 @@
             <div id="repStudentDiv"><label>اسم الطالب</label><select id="repStudentSelect"></select></div>
             <div id="repClassDiv" style="display:none;">
                 <label>الصف</label>
-                <select id="repClassSelect">
-                    <option value="خامس-1">خامس / 1</option>
-                    <option value="خامس-2">خامس / 2</option>
-                    <option value="سادس-4">سادس / 4</option>
-                </select>
+                <select id="repClassSelect"></select>
             </div>
             <label>التاريخ</label><input type="date" id="repDate">
             <button class="btn btn-primary" onclick="generateReport()"><i class="fas fa-search"></i> عرض التقرير</button>
@@ -175,9 +167,29 @@
             students = await sRes.json();
             const hRes = await fetch(`attendance_history.json?v=${v}`);
             history = await hRes.json();
+            
             document.getElementById('absentDate').valueAsDate = new Date();
+            
+            // ميزة التوليد التلقائي لصفوف المدرسة بالكامل
+            generateClassOptions();
             updateReportStudentList();
         } catch (e) { console.error("Error Loading Data"); }
+    }
+
+    function generateClassOptions() {
+        // استخراج كافة الصفوف والشعب الفريدة من ملف الـ JSON
+        const uniqueClasses = [...new Set(students.map(s => `${s.grade}-${s.section}`))].sort();
+        const selectIds = ['classSelect', 'filterClass', 'repClassSelect'];
+        
+        selectIds.forEach(id => {
+            const el = document.getElementById(id);
+            if(!el) return;
+            el.innerHTML = id === 'classSelect' ? '<option value="">-- اختر الصف --</option>' : '';
+            uniqueClasses.forEach(cls => {
+                const [g, s] = cls.split('-');
+                el.innerHTML += `<option value="${cls}">${g} / ${s}</option>`;
+            });
+        });
     }
 
     function switchTab(id, el) {
@@ -186,37 +198,24 @@
         document.getElementById(id).classList.add('active'); el.classList.add('active');
         if(id === 'manage-section') renderManagerList();
     }
-function updateStudentDropdown() {
-    const cls = document.getElementById('classSelect').value;
-    if (!cls) return;
 
-    // تقسيم النص، مثلاً "سادس-4" تصبح grade="سادس" و section="4"
-    const [selectedGrade, selectedSection] = cls.split('-');
-    
-    const drop = document.getElementById('studentDropdown');
-    drop.innerHTML = '<option value="">-- اختر الاسم لإضافته --</option>';
-
-    // فلترة الطلاب بمنطق مرن
-    const filteredStudents = students.filter(s => {
-        // تنظيف النصوص من ال التعريف والزيادات للمقارنة الصحيحة
-        const sGrade = String(s.grade).replace('ال', '').trim(); // "السادس" تصبح "سادس"
-        const targetGrade = selectedGrade.replace('ال', '').trim();
+    function updateStudentDropdown() {
+        const cls = document.getElementById('classSelect').value;
+        if (!cls) return;
+        const [selectedGrade, selectedSection] = cls.split('-');
         
-        const sSection = String(s.section).trim();
-        const targetSection = selectedSection.trim();
-
-        return sGrade.includes(targetGrade) && sSection === targetSection;
-    });
-
-    if (filteredStudents.length === 0) {
-        drop.innerHTML = '<option value="">⚠️ لم يتم العثور على طلاب</option>';
-        console.log("البيانات الحالية:", students); // للتصحيح في المتصفح
-    } else {
-        filteredStudents.forEach(s => {
+        const drop = document.getElementById('studentDropdown');
+        drop.innerHTML = '<option value="">-- اختر الاسم --</option>';
+        
+        // منطق بحث ذكي يتجاهل "الـ" التعريف
+        students.filter(s => {
+            const sG = s.grade.replace('ال', '').trim();
+            const tG = selectedGrade.replace('ال', '').trim();
+            return sG === tG && String(s.section) === selectedSection;
+        }).forEach(s => {
             drop.innerHTML += `<option value="${s.name}" data-phone="${s.phone}">${s.name}</option>`;
         });
     }
-}
 
     function addStudentToAbsentList() {
         const drop = document.getElementById('studentDropdown');
@@ -259,20 +258,21 @@ function updateStudentDropdown() {
     async function addNewStudent() {
         const name = document.getElementById('newName').value;
         const phone = document.getElementById('newPhone').value;
-        const cls = document.getElementById('newClass').value;
-        const [grade, section] = cls.split('-');
-        if(!name || !phone) return alert("أكمل البيانات");
+        const grade = document.getElementById('newGrade').value;
+        const section = document.getElementById('newSection').value;
+        if(!name || !phone || !grade || !section) return alert("أكمل البيانات");
         const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify([...students, {name, phone, grade, section}]), headers: {'Content-Type':'application/json'} });
         if(res.ok) location.reload();
     }
 
     function renderManagerList() {
         const cls = document.getElementById('filterClass').value;
-        const [grade, section] = cls.split('-');
+        if(!cls) return;
+        const [g, s] = cls.split('-');
         let html = '<table><tr><th>الاسم</th><th>حذف</th></tr>';
-        students.filter(s => s.grade.includes(grade) && String(s.section) === section).forEach(s => {
-            const idx = students.findIndex(x => x.name === s.name);
-            html += `<tr><td>${s.name}</td><td onclick="deleteStudent(${idx})" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></td></tr>`;
+        students.filter(st => st.grade === g && String(st.section) === s).forEach(st => {
+            const idx = students.findIndex(x => x.name === st.name);
+            html += `<tr><td>${st.name}</td><td onclick="deleteStudent(${idx})" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></td></tr>`;
         });
         document.getElementById('managerListArea').innerHTML = html + '</table>';
     }
@@ -293,7 +293,7 @@ function updateStudentDropdown() {
     function updateReportStudentList() {
         const sel = document.getElementById('repStudentSelect');
         sel.innerHTML = "";
-        students.forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name}</option>`);
+        students.sort((a,b) => a.name.localeCompare(a.name)).forEach(s => sel.innerHTML += `<option value="${s.name}">${s.name} (${s.grade}/${s.section})</option>`);
     }
 
     function generateReport() {
