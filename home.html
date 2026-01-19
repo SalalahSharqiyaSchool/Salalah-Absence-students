@@ -330,15 +330,36 @@
     }
 
     async function deleteHistoryItem(name, date) {
-        if(!confirm(`حذف غياب ${name} بتاريخ ${date}؟`)) return;
-        const newHistory = history.filter(h => !(h.name === name && h.date === date));
+    if(!confirm(`تأكيد حذف سجل غياب الطالب: ${name} بتاريخ: ${date}؟`)) return;
+
+    // 1. تحديث المصفوفة محلياً بحذف السجل المختار
+    const initialLength = history.length;
+    history = history.filter(h => !(h.name === name && h.date === date));
+
+    if (history.length === initialLength) {
+        alert("لم يتم العثور على السجل لحذفه");
+        return;
+    }
+
+    try {
+        // 2. إرسال المصفوفة كاملة بعد الحذف إلى ملف التحديث الشامل
         const res = await fetch('/api/save-attendance-full', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(newHistory)
+            body: JSON.stringify(history)
         });
-        if(res.ok) { history = newHistory; generateReport(); }
+
+        if(res.ok) {
+            alert("تم حذف السجل بنجاح");
+            generateReport(); // إعادة عرض التقرير لتحديث الجدول أمامك
+        } else {
+            alert("فشل الحذف من السيرفر، يرجى التحقق من الصلاحيات");
+        }
+    } catch (e) {
+        console.error("Error:", e);
+        alert("خطأ في الاتصال بالسيرفر");
     }
+}
 
     // 8. وظائف الإدارة
     function renderManagerList() {
