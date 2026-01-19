@@ -29,21 +29,20 @@
         .btn-primary { background: var(--primary); color: var(--accent); }
         .btn-success { background: var(--success); color: white; }
 
+        .absent-item { display: flex; justify-content: space-between; padding: 12px; background: #fff8e1; border-radius: 12px; margin-bottom: 8px; border-right: 5px solid var(--accent); }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 0.9rem; }
-        th { background: #f8fafc; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
 
         .section { display: none; }
         .section.active { display: block; }
 
-        /* إعدادات الطباعة */
+        /* الطباعة */
         #print-header { display: none; }
         @media print {
             .official-header, .bottom-nav, .footer-rights, .btn, label, select, input, .card-title, .no-print { display: none !important; }
-            #print-header { display: flex !important; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; }
+            #print-header { display: flex !important; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 15px; }
             .electronic-copy { display: block !important; text-align: center; margin-top: 30px; border: 1px dashed #ccc; padding: 10px; font-weight: bold; }
-            .card { box-shadow: none; border: none; padding: 0; }
-            table { width: 100%; border: 1px solid #000; }
         }
 
         .bottom-nav { position: fixed; bottom: 40px; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1000; }
@@ -62,15 +61,27 @@
 <div class="container">
     <section id="absent-section" class="section active">
         <div class="card">
-            <div class="card-title"><i class="fas fa-edit"></i> رصد الغياب اليومي</div>
+            <div class="card-title"><i class="fas fa-edit"></i> رصد الغياب</div>
+            
+            <label>التاريخ</label>
+            <input type="date" id="absentDate">
+
             <div style="display: flex; gap:10px;">
-                <div style="flex:1"><label>الصف</label><select id="classSelect" onchange="updateStudentDropdown()"></select></div>
-                <div style="flex:1"><label>التاريخ</label><input type="date" id="absentDate"></div>
+                <div style="flex:1">
+                    <label>الصف</label>
+                    <select id="mainGradeSelect" onchange="updateSectionDropdown('mainGradeSelect', 'mainSectionSelect')"></select>
+                </div>
+                <div style="flex:1">
+                    <label>الشعبة</label>
+                    <select id="mainSectionSelect" onchange="updateStudentDropdown()"></select>
+                </div>
             </div>
-            <label>اسم الطالب:</label>
-            <select id="studentDropdown" onchange="addStudentToAbsentList()"></select>
-            <div id="selectedList" style="margin: 15px 0;"></div>
-            <button class="btn btn-primary" onclick="saveAttendanceToCloud()">حفظ البيانات سحابياً</button>
+
+            <label>اسم الطالب</label>
+            <select id="studentDropdown" onchange="addStudentToList()"></select>
+
+            <div id="selectedList" style="margin-top: 15px;"></div>
+            <button class="btn btn-primary" onclick="saveData()">حفظ الغياب سحابياً</button>
         </div>
     </section>
 
@@ -78,16 +89,19 @@
         <div class="card">
             <div class="card-title"><i class="fas fa-plus-circle"></i> إضافة طالب</div>
             <input type="text" id="newName" placeholder="الاسم الرباعي">
-            <input type="tel" id="newPhone" placeholder="هاتف ولي الأمر">
+            <input type="tel" id="newPhone" placeholder="رقم ولي الأمر">
             <div style="display: flex; gap: 5px;">
                 <input type="text" id="newGrade" placeholder="الصف">
                 <input type="text" id="newSection" placeholder="الشعبة">
             </div>
-            <button class="btn btn-success" onclick="addNewStudent()">إضافة الطالب</button>
+            <button class="btn btn-success" onclick="addNewStudent()">حفظ الطالب</button>
         </div>
         <div class="card">
             <div class="card-title"><i class="fas fa-users"></i> إدارة القوائم</div>
-            <select id="filterClass" onchange="renderManagerList()"></select>
+            <div style="display: flex; gap:10px;">
+                <select id="manageGradeSelect" onchange="updateSectionDropdown('manageGradeSelect', 'manageSectionSelect')"></select>
+                <select id="manageSectionSelect" onchange="renderManagerList()"></select>
+            </div>
             <div id="managerListArea"></div>
         </div>
     </section>
@@ -95,43 +109,33 @@
     <section id="report-section" class="section">
         <div class="card">
             <div id="print-header">
-                <img src="data/logo.jpeg" style="height:70px;">
-                <div style="text-align:center;">
-                    <p>وزارة التربية والتعليم</p>
-                    <h3>مدرسة صلالة الشرقية (5-9)</h3>
-                </div>
-                <img src="data/logo.jpeg" style="height:70px;">
+                <img src="data/logo.jpeg" style="height:60px;">
+                <div style="text-align:center;"><h3>مدرسة صلالة الشرقية (5-9)</h3><p>تقرير غياب رسمي</p></div>
+                <img src="data/logo.jpeg" style="height:60px;">
             </div>
 
-            <div class="card-title no-print"><i class="fas fa-file-alt"></i> استخراج التقارير</div>
-            
-            <label class="no-print">نوع التقرير</label>
+            <div class="card-title no-print"><i class="fas fa-file-alt"></i> التقارير</div>
             <select id="reportMode" onchange="toggleReportUI()" class="no-print">
-                <option value="student">تقرير غياب طالب محدد</option>
-                <option value="class">كشف غياب صف بالكامل</option>
+                <option value="student">تقرير غياب طالب</option>
+                <option value="class">كشف غياب صف</option>
             </select>
 
-            <div id="studentReportUI">
-                <label>اختر الصف ثم الطالب</label>
-                <div style="display: flex; gap: 10px;">
-                    <select id="repClassFilter" onchange="updateReportStudentList()" style="flex:1;"></select>
-                    <select id="repStudentSelect" style="flex:2;"></select>
-                </div>
+            <div style="display: flex; gap:10px;">
+                <select id="repGradeSelect" onchange="updateSectionDropdown('repGradeSelect', 'repSectionSelect')"></select>
+                <select id="repSectionSelect" onchange="updateReportStudentList()"></select>
+            </div>
+            
+            <div id="studentSelectDiv">
+                <select id="repStudentSelect"></select>
             </div>
 
-            <div id="classReportUI" style="display:none;">
-                <label>اختر الصف</label>
-                <select id="repFullClassSelect"></select>
-            </div>
-
-            <div style="display: flex; gap: 10px;" class="no-print">
+            <div style="display: flex; gap:10px;" class="no-print">
                 <div style="flex:1"><label>من تاريخ</label><input type="date" id="repDateStart"></div>
-                <div style="flex:1"><label id="dateLabelEnd">إلى تاريخ</label><input type="date" id="repDateEnd"></div>
+                <div style="flex:1" id="endContainer"><label>إلى تاريخ</label><input type="date" id="repDateEnd"></div>
             </div>
 
             <button class="btn btn-primary no-print" onclick="generateReport()">عرض التقرير</button>
-            <button class="btn no-print" onclick="window.print()" style="margin-top:10px; background:#e2e8f0;">طباعة النسخة الرسمية</button>
-            
+            <button class="btn no-print" onclick="window.print()" style="margin-top:10px; background:#e2e8f0;">طباعة</button>
             <div id="reportResult"></div>
             <div id="electronic-notice" class="electronic-copy" style="display:none;">نسخة إلكترونية معتمدة من نظام المدرسة.</div>
         </div>
@@ -144,132 +148,137 @@
     <div class="nav-item" onclick="switchTab('report-section', this)"><i class="fas fa-file-alt"></i><span>التقارير</span></div>
 </nav>
 
-<footer class="footer-rights no-print">تصميم: فيصل العريبي &copy; 2026</footer>
+<footer class="footer-rights">تصميم: فيصل العريبي &copy; 2026</footer>
 
 <script>
     let students = []; let history = []; let currentBatch = [];
 
-    async function loadAllData() {
+    async function loadData() {
         const v = Date.now();
         const [sR, hR] = await Promise.all([fetch(`student_fone.json?v=${v}`), fetch(`attendance_history.json?v=${v}`)]);
         students = await sR.json(); history = await hR.json();
+        
         const today = new Date().toISOString().split('T')[0];
-        ['absentDate', 'repDateStart', 'repDateEnd'].forEach(id => document.getElementById(id).value = today);
-        generateClassOptions();
+        document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
+        
+        populateGradeDropdowns();
     }
 
-    function generateClassOptions() {
-        const classes = [...new Set(students.map(s => `${s.grade}-${s.section}`))].sort();
-        ['classSelect', 'filterClass', 'repClassFilter', 'repFullClassSelect'].forEach(id => {
+    // 1. ملء قائمة الصفوف (خامس، سادس...)
+    function populateGradeDropdowns() {
+        const grades = [...new Set(students.map(s => s.grade))].sort();
+        ['mainGradeSelect', 'manageGradeSelect', 'repGradeSelect'].forEach(id => {
             const el = document.getElementById(id);
-            el.innerHTML = '<option value="">-- اختر --</option>';
-            classes.forEach(c => el.innerHTML += `<option value="${c}">${c.replace('-',' / ')}</option>`);
+            el.innerHTML = '<option value="">-- اختر الصف --</option>';
+            grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
         });
     }
 
+    // 2. تحديث قائمة الشعب بناءً على الصف المختار
+    function updateSectionDropdown(gradeId, sectionId) {
+        const gradeVal = document.getElementById(gradeId).value;
+        const sectionEl = document.getElementById(sectionId);
+        sectionEl.innerHTML = '<option value="">-- الشعبة --</option>';
+        if(!gradeVal) return;
+
+        const sections = [...new Set(students.filter(s => s.grade === gradeVal).map(s => s.section))].sort((a,b)=>a-b);
+        sections.forEach(sec => sectionEl.innerHTML += `<option value="${sec}">${sec}</option>`);
+        
+        // مسح قائمة الطلاب إذا تغير الصف
+        if(gradeId === 'mainGradeSelect') document.getElementById('studentDropdown').innerHTML = '';
+    }
+
+    // 3. تحديث قائمة الطلاب بناءً على الصف والشعبة
+    function updateStudentDropdown() {
+        const g = document.getElementById('mainGradeSelect').value;
+        const s = document.getElementById('mainSectionSelect').value;
+        const drop = document.getElementById('studentDropdown');
+        drop.innerHTML = '<option value="">-- اختر الطالب --</option>';
+        if(!g || !s) return;
+
+        students.filter(x => x.grade === g && String(x.section) === s)
+                .sort((a,b)=>a.name.localeCompare(b.name))
+                .forEach(st => drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`);
+    }
+
+    function addStudentToList() {
+        const d = document.getElementById('studentDropdown');
+        if(!d.value || currentBatch.find(x => x.name === d.value)) return;
+        currentBatch.push({ name: d.value, phone: d.options[d.selectedIndex].getAttribute('data-phone') });
+        renderBatch();
+    }
+
+    function renderBatch() {
+        document.getElementById('selectedList').innerHTML = currentBatch.map((s,i)=>`<div class="absent-item">${s.name} <i class="fas fa-times" onclick="currentBatch.splice(${i},1);renderBatch();" style="color:red"></i></div>`).join('');
+    }
+
+    async function saveData() {
+        if(currentBatch.length === 0) return alert("اختر طلاباً أولاً");
+        const cls = `${document.getElementById('mainGradeSelect').value}-${document.getElementById('mainSectionSelect').value}`;
+        const entries = currentBatch.map(b => ({ name: b.name, date: document.getElementById('absentDate').value, class: cls }));
+        const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type': 'application/json'} });
+        if(res.ok) { alert("تم الحفظ"); currentBatch=[]; renderBatch(); loadData(); }
+    }
+
+    // إدارة الطلاب
+    function renderManagerList() {
+        const g = document.getElementById('manageGradeSelect').value;
+        const s = document.getElementById('manageSectionSelect').value;
+        let html = '<table><tr><th>الاسم</th><th>حذف</th></tr>';
+        students.filter(st => st.grade === g && String(st.section) === s).forEach(st => {
+            const idx = students.findIndex(x => x.name === st.name);
+            html += `<tr><td>${st.name}</td><td><i class="fas fa-trash" onclick="deleteStudent(${idx})" style="color:red"></i></td></tr>`;
+        });
+        document.getElementById('managerListArea').innerHTML = html + '</table>';
+    }
+
+    // التقارير
     function toggleReportUI() {
-        const mode = document.getElementById('reportMode').value;
-        document.getElementById('studentReportUI').style.display = mode === 'student' ? 'block' : 'none';
-        document.getElementById('classReportUI').style.display = mode === 'class' ? 'block' : 'none';
-        document.getElementById('repDateEnd').parentElement.style.display = mode === 'student' ? 'block' : 'none';
-        document.getElementById('dateLabelEnd').parentElement.style.display = mode === 'student' ? 'block' : 'none';
+        const isStudent = document.getElementById('reportMode').value === 'student';
+        document.getElementById('studentSelectDiv').style.display = isStudent ? 'block' : 'none';
+        document.getElementById('endContainer').style.display = isStudent ? 'block' : 'none';
     }
 
     function updateReportStudentList() {
-        const cls = document.getElementById('repClassFilter').value;
+        const g = document.getElementById('repGradeSelect').value;
+        const s = document.getElementById('repSectionSelect').value;
         const sel = document.getElementById('repStudentSelect');
-        sel.innerHTML = '<option value="">-- الطالب --</option>';
-        if(!cls) return;
-        const [g, s] = cls.split('-');
-        students.filter(x => x.grade === g && String(x.section) === s).sort((a,b)=>a.name.localeCompare(b.name))
-                .forEach(st => sel.innerHTML += `<option value="${st.name}">${st.name}</option>`);
+        sel.innerHTML = '<option value="">-- اختر الطالب --</option>';
+        students.filter(x => x.grade === g && String(x.section) === s).forEach(st => sel.innerHTML += `<option value="${st.name}">${st.name}</option>`);
     }
 
     function generateReport() {
         const mode = document.getElementById('reportMode').value;
         const start = document.getElementById('repDateStart').value;
-        const end = document.getElementById('repDateEnd').value;
+        const g = document.getElementById('repGradeSelect').value;
+        const s = document.getElementById('repSectionSelect').value;
         let res = []; let title = "";
 
         if(mode === 'student') {
             const name = document.getElementById('repStudentSelect').value;
-            if(!name) return alert("اختر الطالب");
-            res = history.filter(h => h.name === name && h.date >= start && h.date <= end);
-            title = `تقرير غياب الطالب: ${name}`;
+            res = history.filter(h => h.name === name && h.date >= start && h.date <= document.getElementById('repDateEnd').value);
+            title = `تقرير الطالب: ${name}`;
         } else {
-            const cls = document.getElementById('repFullClassSelect').value;
-            if(!cls) return alert("اختر الصف");
-            res = history.filter(h => h.class === cls && h.date === start);
-            title = `كشف غياب صف: ${cls.replace('-','/')} بتاريخ ${start}`;
+            res = history.filter(h => h.class === `${g}-${s}` && h.date === start);
+            title = `غياب صف: ${g}/${s} بتاريخ ${start}`;
         }
 
-        let html = `<div style="margin:15px 0;"><h4>${title}</h4></div><table><tr><th>م</th><th>الاسم / التاريخ</th><th>اليوم</th></tr>`;
+        let html = `<h4>${title}</h4><table><tr><th>م</th><th>البيان</th><th>اليوم</th></tr>`;
         res.forEach((r, i) => {
             const day = new Date(r.date).toLocaleDateString('ar-OM', {weekday: 'long'});
-            html += `<tr><td>${i+1}</td><td>${mode==='student' ? r.date : r.name}</td><td>${day}</td></tr>`;
+            html += `<tr><td>${i+1}</td><td>${mode==='student'?r.date:r.name}</td><td>${day}</td></tr>`;
         });
-        document.getElementById('reportResult').innerHTML = html + `</table><p><b>الإجمالي: ${res.length}</b></p>`;
+        document.getElementById('reportResult').innerHTML = html + "</table>";
         document.getElementById('electronic-notice').style.display = 'block';
     }
 
-    // دوال مساعدة (رصد وإدارة)
     function switchTab(id, el) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active'); el.classList.add('active');
-        if(id === 'manage-section') renderManagerList();
     }
 
-    function updateStudentDropdown() {
-        const cls = document.getElementById('classSelect').value;
-        const [g, s] = cls.split('-');
-        const drop = document.getElementById('studentDropdown');
-        drop.innerHTML = '<option value="">-- اختر --</option>';
-        students.filter(x => x.grade === g && String(x.section) === s).forEach(st => {
-            drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`;
-        });
-    }
-
-    function addStudentToAbsentList() {
-        const d = document.getElementById('studentDropdown');
-        if(!d.value || currentBatch.find(x => x.name === d.value)) return;
-        currentBatch.push({ name: d.value, phone: d.options[d.selectedIndex].getAttribute('data-phone') });
-        document.getElementById('selectedList').innerHTML = currentBatch.map((s,i)=>`<div class="absent-item">${s.name} <i class="fas fa-times" onclick="currentBatch.splice(${i},1);renderBatch();" style="color:red"></i></div>`).join('');
-    }
-
-    async function saveAttendanceToCloud() {
-        if(currentBatch.length===0) return;
-        const entries = currentBatch.map(b => ({ name: b.name, date: document.getElementById('absentDate').value, class: document.getElementById('classSelect').value }));
-        const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type': 'application/json'} });
-        if(res.ok) { alert("تم الحفظ"); currentBatch=[]; loadAllData(); document.getElementById('selectedList').innerHTML=""; }
-    }
-
-    async function addNewStudent() {
-        const n = document.getElementById('newName').value, p = document.getElementById('newPhone').value;
-        const g = document.getElementById('newGrade').value, s = document.getElementById('newSection').value;
-        if(!n||!p||!g||!s) return alert("أكمل البيانات");
-        const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify([...students, {name:n, phone:p, grade:g, section:s}]), headers: {'Content-Type':'application/json'} });
-        if(res.ok) { alert("تمت الإضافة"); loadAllData(); }
-    }
-
-    function renderManagerList() {
-        const cls = document.getElementById('filterClass').value; if(!cls) return;
-        const [g, s] = cls.split('-');
-        let html = '<table><tr><th>الاسم</th><th>حذف</th></tr>';
-        students.filter(st => st.grade === g && String(st.section) === s).forEach(st => {
-            const idx = students.findIndex(x => x.name === st.name);
-            html += `<tr><td>${st.name}</td><td><i class="fas fa-trash" onclick="deleteStudent(${idx})" style="color:red;cursor:pointer"></i></td></tr>`;
-        });
-        document.getElementById('managerListArea').innerHTML = html + '</table>';
-    }
-
-    async function deleteStudent(i) {
-        if(!confirm("حذف؟")) return; students.splice(i,1);
-        await fetch('/api/update-students', { method: 'POST', body: JSON.stringify(students), headers: {'Content-Type':'application/json'} });
-        loadAllData(); renderManagerList();
-    }
-
-    window.onload = loadAllData;
+    window.onload = loadData;
 </script>
 </body>
 </html>
