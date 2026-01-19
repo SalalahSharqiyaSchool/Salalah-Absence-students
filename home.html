@@ -336,6 +336,36 @@ function closeSuccessModal() {
         document.getElementById('endContainer').style.display = isSt ? 'block' : 'none';
     }
 
+async function deleteAttendanceRecord(name, date) {
+        if (!confirm(`هل أنت متأكد من حذف غياب الطالب ${name} بتاريخ ${date}؟`)) return;
+
+        // 1. فلترة المصفوفة لحذف السجل المحدد فقط
+        const initialLength = history.length;
+        history = history.filter(h => !(h.name === name && h.date === date));
+
+        if (history.length < initialLength) {
+            try {
+                // 2. إرسال المصفوفة الجديدة كاملة للسيرفر لتحديث ملف JSON
+                // ملاحظة: تأكد أن السيرفر يدعم تحديث ملف attendance_history.json بالكامل
+                const res = await fetch('/api/save-attendance-full', { 
+                    method: 'POST', 
+                    body: JSON.stringify(history), 
+                    headers: {'Content-Type':'application/json'} 
+                });
+
+                if (res.ok) {
+                    alert("تم حذف السجل بنجاح");
+                    generateReport(); // إعادة تحديث الجدول أمامك فوراً
+                } else {
+                    alert("فشل تحديث السيرفر");
+                }
+            } catch (e) {
+                alert("خطأ في الاتصال");
+            }
+        }
+    }
+
+    
     function updateReportStudentList() {
         const g = document.getElementById('repGradeSelect').value;
         const s = document.getElementById('repSectionSelect').value;
@@ -358,32 +388,29 @@ function closeSuccessModal() {
         return;
     }
 
-    if (mode === 'student') {
-        // --- تقرير طالب محدد (كما هو مع تحسين العرض) ---
-        const name = document.getElementById('repStudentSelect').value;
-        const res = history.filter(h => h.name === name && h.date >= start && h.date <= end);
-        res.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        reportHtml = `
-            <div style="text-align:right; border:2px solid var(--accent); padding:15px; border-radius:15px; margin-bottom:15px; background:#fff;">
-                <p><b>اسم الطالب:</b> ${name}</p>
-                <p><b>الصف:</b> ${g} / ${s}</p>
-                <p><b>الفترة:</b> من ${start} إلى ${end}</p>
-            </div>
-            <table>
-                <tr><th>م</th><th>التاريخ</th><th>اليوم</th></tr>`;
-        
-        if(res.length === 0) {
-            reportHtml += `<tr><td colspan="3">لا توجد غيابات مسجلة</td></tr>`;
-        } else {
+   if (mode === 'student') {
+            const name = document.getElementById('repStudentSelect').value;
+            const res = history.filter(h => h.name === name && h.date >= start && h.date <= end).sort((a,b)=>new Date(b.date)-new Date(a.date));
+            
+            html = `<h4>سجل غياب الطالب: ${name}</h4>
+                    <table id="reportTable">
+                        <tr><th>التاريخ</th><th>اليوم</th><th>إجراء</th></tr>`;
+            
             res.forEach((r, i) => {
                 const dayName = new Date(r.date).toLocaleDateString('ar-OM', {weekday: 'long'});
-                reportHtml += `<tr><td>${i+1}</td><td>${r.date}</td><td>${dayName}</td></tr>`;
+                html += `
+                    <tr>
+                        <td>${r.date}</td>
+                        <td>${dayName}</td>
+                        <td>
+                            <button onclick="deleteAttendanceRecord('${name}', '${r.date}')" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:1.2rem;">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>`;
             });
-        }
-        reportHtml += `</table><div class="total-box">إجمالي الغياب: ${res.length} يوم</div>`;
-
-    } else {
+            html += `</table><div class="total-box">إجمالي الغياب: ${res.length} أيام</div>`;
+        } else {
         // --- التقرير المطور: تقرير صف كامل لفترة زمنية ---
         const classKey = `${g}-${s}`;
         // جلب كل الغيابات المسجلة لهذا الصف في هذه الفترة
