@@ -88,6 +88,7 @@
             <div class="card-title"><i class="fas fa-calendar-check"></i> رصد الغياب وإرسال التنبيهات</div>
             <label>التاريخ</label>
             <input type="date" id="absentDate">
+            <input type="date" id="absentDate" onchange="handleDateChange()">
             <div style="display: flex; gap:10px;">
                 <div style="flex:1"><label>الصف</label><select id="mainGradeSelect" onchange="updateSections('mainGradeSelect','mainSectionSelect')"></select></div>
                 <div style="flex:1"><label>الشعبة</label><select id="mainSectionSelect" onchange="updateStudents()"></select></div>
@@ -215,11 +216,20 @@
     }
 
     function addToList() {
-        const d = document.getElementById('studentDropdown');
-        if(!d.value || currentBatch.find(x => x.name === d.value)) return;
-        currentBatch.push({ name: d.value, phone: d.options[d.selectedIndex].getAttribute('data-phone') });
-        renderBatch();
-    }
+    const d = document.getElementById('studentDropdown');
+    // إذا لم يتم اختيار طالب أو الطالب موجود مسبقاً في القائمة الحالية (Batch)
+    if(!d.value || currentBatch.find(x => x.name === d.value)) return;
+    
+    currentBatch.push({ 
+        name: d.value, 
+        phone: d.options[d.selectedIndex].getAttribute('data-phone') 
+    });
+    
+    renderBatch();
+    
+    // سطر إضافي هام: تصفير القائمة بعد الإضافة مباشرة
+    d.selectedIndex = 0; 
+}
 
     function renderBatch() {
         const date = document.getElementById('absentDate').value;
@@ -450,6 +460,23 @@ setTimeout(() => {
         if(res.ok) { alert("تمت الإضافة"); loadData(); }
     }
 
+// دالة تتعامل مع تغيير التاريخ لتسمح برصد الطالب مجدداً
+function handleDateChange() {
+    // 1. إعادة اختيار القائمة إلى الوضع الافتراضي
+    const drop = document.getElementById('studentDropdown');
+    drop.selectedIndex = 0; 
+    
+    // 2. مسح القائمة المؤقتة (الاختياري) إذا كنت تريد البدء بصفحة بيضاء عند تغيير التاريخ
+    // currentBatch = [];
+    // renderBatch();
+
+    // 3. إعادة تحديث قائمة الطلاب للتأكد من ربطها بالتاريخ الجديد
+    updateStudents();
+    
+    console.log("تم تغيير التاريخ وإعادة ضبط قائمة الطلاب");
+}
+
+    
     function switchTab(id, el) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
