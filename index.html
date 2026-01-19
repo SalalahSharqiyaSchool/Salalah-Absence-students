@@ -49,8 +49,8 @@
             padding: 10px 0; border-top: 1px solid #eee; z-index: 1500;
             box-shadow: 0 -5px 15px rgba(0,0,0,0.05); border-top-left-radius: 25px; border-top-right-radius: 25px;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+        .nav-item.active { color: var(--primary); }
         .nav-item.active i { color: var(--accent); }
 
         .footer-rights { 
@@ -63,10 +63,9 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: right; font-size: 0.9rem; }
 
-        .btn { border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; font-size: 1rem; transition: 0.2s; }
+        .btn { border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; font-size: 1rem; }
         .btn-primary { background: var(--primary); color: var(--accent); }
         .btn-success { background: var(--success); color: white; }
-        .btn:active { transform: scale(0.98); }
 
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.4s ease; }
@@ -74,9 +73,8 @@
 
         @media print {
             .bottom-nav, .footer-rights, .official-header, .btn, label, select, input { display: none !important; }
-            .card { border: none; box-shadow: none; margin: 0; padding: 0; }
+            .card { border: none; box-shadow: none; padding: 0; }
             .section { display: block !important; }
-            body { padding: 0; background: white; }
         }
     </style>
 </head>
@@ -96,33 +94,30 @@
             <div class="card-title"><i class="fas fa-user-check"></i> رصد الغياب الجماعي</div>
             <div style="display: flex; gap:10px;">
                 <div style="flex:1">
-                    <label>الصف والشعبة</label>
+                    <label>الصف</label>
                     <select id="classSelect" onchange="updateStudentDropdown()">
-                        <option value="">-- جاري التحميل... --</option>
+                        <option value="">-- جاري التحميل --</option>
                     </select>
                 </div>
                 <div style="flex:1"><label>التاريخ</label><input type="date" id="absentDate"></div>
             </div>
-            <label>اختر الطالب لإضافته للقائمة:</label>
-            <select id="studentDropdown" onchange="addStudentToAbsentList()">
-                <option value="">-- اختر الصف أولاً --</option>
-            </select>
+            <label>اختر الطالب:</label>
+            <select id="studentDropdown" onchange="addStudentToAbsentList()"></select>
             <div id="selectedList" style="margin-top:20px;"></div>
-            <button class="btn btn-primary" onclick="saveAttendanceToCloud()" style="margin-top:15px;"><i class="fas fa-cloud-upload-alt"></i> حفظ جميع الغائبين سحابياً</button>
+            <button class="btn btn-primary" onclick="saveAttendanceToCloud()"><i class="fas fa-cloud-upload-alt"></i> حفظ الغياب سحابياً</button>
         </div>
     </section>
 
     <section id="manage-section" class="section">
         <div class="card">
             <div class="card-title"><i class="fas fa-user-plus"></i> إضافة طالب جديد</div>
-            <input type="text" id="newName" placeholder="اسم الطالب الرباعي">
-            <input type="tel" id="newPhone" placeholder="رقم ولي الأمر 968">
-            <label>حدد الصف والشعبة</label>
-            <div style="display: flex; gap: 5px;">
-                <input type="text" id="newGrade" placeholder="مثال: السادس">
-                <input type="text" id="newSection" placeholder="الشعبة: 4">
+            <input type="text" id="newName" placeholder="الاسم الرباعي">
+            <input type="tel" id="newPhone" placeholder="رقم الهاتف 968">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="newGrade" placeholder="الصف (مثال: سادس)">
+                <input type="text" id="newSection" placeholder="الشعبة (مثال: 4)">
             </div>
-            <button class="btn btn-success" onclick="addNewStudent()">حفظ في المستودع</button>
+            <button class="btn btn-success" onclick="addNewStudent()">حفظ الطالب</button>
         </div>
         <div class="card">
             <div class="card-title"><i class="fas fa-users-cog"></i> استعراض طلاب الصف</div>
@@ -137,8 +132,8 @@
             
             <label>نوع التقرير</label>
             <select id="reportMode" onchange="toggleReportMode()">
-                <option value="student">غياب طالب محدد</option>
-                <option value="day">كشف غياب صف ليوم</option>
+                <option value="student">غياب طالب محدد (فترة زمنية)</option>
+                <option value="day">كشف غياب صف (يوم محدد)</option>
             </select>
 
             <div id="repStudentDiv">
@@ -148,7 +143,7 @@
                 </select>
                 <label>اختر الطالب</label>
                 <select id="repStudentSelect">
-                    <option value="">-- حدد الصف لعرض الطلاب --</option>
+                    <option value="">-- حدد الصف أولاً --</option>
                 </select>
             </div>
 
@@ -157,7 +152,16 @@
                 <select id="repClassSelect"></select>
             </div>
 
-            <label>التاريخ</label><input type="date" id="repDate">
+            <div id="dateRangeDiv" style="display: flex; gap: 10px; margin-top: 10px;">
+                <div style="flex:1">
+                    <label id="dateLabel1">من تاريخ / التاريخ</label>
+                    <input type="date" id="repDateStart">
+                </div>
+                <div style="flex:1" id="repDateEndDiv">
+                    <label>إلى تاريخ</label>
+                    <input type="date" id="repDateEnd">
+                </div>
+            </div>
             
             <button class="btn btn-primary" onclick="generateReport()"><i class="fas fa-search"></i> عرض التقرير المباشر</button>
             <button class="btn" onclick="window.print()" style="margin-top:10px; background:#e2e8f0;"><i class="fas fa-print"></i> طباعة / حفظ PDF</button>
@@ -186,8 +190,10 @@
             const hRes = await fetch(`attendance_history.json?v=${v}`);
             history = await hRes.json();
             
-            document.getElementById('absentDate').valueAsDate = new Date();
-            document.getElementById('repDate').valueAsDate = new Date();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('absentDate').value = today;
+            document.getElementById('repDateStart').value = today;
+            document.getElementById('repDateEnd').value = today;
             
             generateClassOptions();
         } catch (e) { console.error("Error Loading Data"); }
@@ -195,9 +201,7 @@
 
     function generateClassOptions() {
         const uniqueClasses = [...new Set(students.map(s => `${s.grade}-${s.section}`))].sort();
-        // أضفنا القائمة الجديدة repClassFilter للفلترة في التقارير
         const selectIds = ['classSelect', 'filterClass', 'repClassSelect', 'repClassFilter'];
-        
         selectIds.forEach(id => {
             const el = document.getElementById(id);
             if(!el) return;
@@ -209,15 +213,12 @@
         });
     }
 
-    // فلترة قائمة الطلاب في التقارير بناءً على الصف المختار
     function updateReportStudentListByClass() {
         const selectedCls = document.getElementById('repClassFilter').value;
         const studentSelect = document.getElementById('repStudentSelect');
         studentSelect.innerHTML = '<option value="">-- اختر الطالب --</option>';
-        
         if(!selectedCls) return;
         const [g, s] = selectedCls.split('-');
-        
         students.filter(st => st.grade === g && String(st.section) === s)
                 .sort((a,b) => a.name.localeCompare(b.name))
                 .forEach(st => {
@@ -277,13 +278,10 @@
         const date = document.getElementById('absentDate').value;
         const cls = document.getElementById('classSelect').value;
         const entries = currentBatch.map(b => ({ name: b.name, date, class: cls }));
-        
         const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type': 'application/json'} });
         if(res.ok) { 
-            alert("تم الحفظ بنجاح وتحديث التقرير"); 
-            currentBatch = [];
-            renderBatch();
-            await loadAllData(); // تحديث مباشر للبيانات
+            alert("تم الحفظ بنجاح"); 
+            currentBatch = []; renderBatch(); await loadAllData();
         }
     }
 
@@ -294,12 +292,7 @@
         const section = document.getElementById('newSection').value;
         if(!name || !phone || !grade || !section) return alert("أكمل البيانات");
         const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify([...students, {name, phone, grade, section}]), headers: {'Content-Type':'application/json'} });
-        if(res.ok) {
-            alert("تمت الإضافة");
-            document.getElementById('newName').value = "";
-            document.getElementById('newPhone').value = "";
-            await loadAllData();
-        }
+        if(res.ok) { alert("تم الحفظ"); document.getElementById('newName').value=""; await loadAllData(); }
     }
 
     function renderManagerList() {
@@ -325,33 +318,41 @@
         const m = document.getElementById('reportMode').value;
         document.getElementById('repStudentDiv').style.display = m === 'student' ? 'block' : 'none';
         document.getElementById('repClassDiv').style.display = m === 'day' ? 'block' : 'none';
+        
+        // إخفاء تاريخ "إلى" إذا كان البحث ليوم واحد فقط
+        document.getElementById('repDateEndDiv').style.display = m === 'day' ? 'none' : 'block';
+        document.getElementById('dateLabel1').innerText = m === 'day' ? 'التاريخ المحدد' : 'من تاريخ';
     }
 
     function generateReport() {
         const m = document.getElementById('reportMode').value;
-        const d = document.getElementById('repDate').value;
+        const start = document.getElementById('repDateStart').value;
+        const end = document.getElementById('repDateEnd').value;
         let res = [];
         let title = "";
 
         if(m === 'student') {
             const sName = document.getElementById('repStudentSelect').value;
             if(!sName) return alert("اختر الطالب");
-            res = history.filter(h => h.name === sName);
-            title = `تقرير غياب الطالب: ${sName}`;
+            // الفلترة بين تاريخين للطالب
+            res = history.filter(h => h.name === sName && h.date >= start && h.date <= end);
+            title = `تقرير غياب: ${sName} (من ${start} إلى ${end})`;
         } else {
             const cName = document.getElementById('repClassSelect').value;
             if(!cName) return alert("اختر الصف");
-            res = history.filter(h => h.class === cName && h.date === d);
-            title = `كشف غياب صف ${cName} بتاريخ ${d}`;
+            // الفلترة ليوم واحد للصف
+            res = history.filter(h => h.class === cName && h.date === start);
+            title = `غياب صف ${cName} بتاريخ ${start}`;
         }
 
-        let html = `<h3>${title}</h3><p><b>إجمالي الأيام: ${res.length}</b></p><table><tr><th>الاسم</th><th>التاريخ</th><th>الصف</th></tr>`;
-        res.forEach(r => html += `<tr><td>${r.name}</td><td>${r.date}</td><td>${r.class}</td></tr>`);
+        let html = `<h3>${title}</h3><p><b>إجمالي الأيام: ${res.length}</b></p><table><tr><th>الاسم</th><th>التاريخ</th></tr>`;
+        res.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(r => {
+            html += `<tr><td>${r.name}</td><td>${r.date}</td></tr>`;
+        });
         document.getElementById('reportResult').innerHTML = html + '</table>';
     }
 
     window.onload = loadAllData;
 </script>
-
 </body>
 </html>
