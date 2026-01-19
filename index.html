@@ -7,16 +7,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; }
+        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; --wa: #25d366; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 120px; color: var(--primary); }
         
+        /* الهيدر الرئيسي للموقع */
         .official-header {
-            background: var(--primary); color: white; padding: 15px 20px;
+            background: var(--primary); color: white; padding: 12px 20px;
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 4px solid var(--accent); position: sticky; top: 0; z-index: 2000;
         }
         .school-info h1 { margin: 0; font-size: 1.1rem; color: var(--accent); }
-        .ministry-logo img { height: 50px; filter: brightness(0) invert(1); }
+        .ministry-logo img { height: 55px; width: auto; display: block; filter: brightness(1.1); }
 
         .container { max-width: 650px; margin: 20px auto; padding: 0 15px; }
         .card { background: var(--card-bg); border-radius: 20px; padding: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
@@ -25,80 +26,78 @@
         label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: #64748b; }
         select, input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; font-family: 'Cairo'; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; }
 
-        .btn { border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; font-size: 1rem; }
+        .btn { border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; font-size: 1rem; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: var(--accent); }
         .btn-success { background: var(--success); color: white; }
 
-        .absent-item { display: flex; justify-content: space-between; padding: 12px; background: #fff8e1; border-radius: 12px; margin-bottom: 8px; border-right: 5px solid var(--accent); }
+        /* قائمة الطلاب المرصودين */
+        .absent-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #fff; border: 1px solid #eee; border-radius: 15px; margin-bottom: 8px; border-right: 5px solid var(--accent); }
+        .wa-btn { color: var(--wa); font-size: 1.6rem; cursor: pointer; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        /* الجدول الإحترافي */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background: #f8fafc; font-weight: 900; }
 
         .section { display: none; }
         .section.active { display: block; }
 
-        /* الطباعة */
+        /* --- إعدادات الطباعة الرسمية --- */
         #print-header { display: none; }
+        .total-box { margin-top: 15px; padding: 12px; border: 2px solid #000; display: inline-block; font-weight: 900; border-radius: 8px; }
+
         @media print {
-            .official-header, .bottom-nav, .footer-rights, .btn, label, select, input, .card-title, .no-print { display: none !important; }
-            #print-header { display: flex !important; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 15px; }
-            .electronic-copy { display: block !important; text-align: center; margin-top: 30px; border: 1px dashed #ccc; padding: 10px; font-weight: bold; }
+            .official-header, .bottom-nav, .footer-rights, .btn, label, select, input, .no-print, .card-title, .del-btn { display: none !important; }
+            #print-header { display: flex !important; justify-content: space-between; align-items: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 20px; }
+            .print-logo { height: 80px; }
+            .electronic-copy { display: block !important; text-align: center; margin-top: 40px; border: 1px dashed #000; padding: 10px; font-weight: bold; }
+            body { background: white; }
+            .card { border: none; box-shadow: none; padding: 0; }
+            .wa-btn { display: none; }
         }
 
-        .bottom-nav { position: fixed; bottom: 40px; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 40px; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
         .nav-item.active { color: var(--primary); }
-        .footer-rights { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); color: #fff; text-align: center; height: 40px; line-height: 40px; font-size: 0.75rem; }
+        .footer-rights { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); color: #fff; text-align: center; height: 40px; line-height: 40px; font-size: 0.75rem; border-top: 2px solid var(--accent); }
     </style>
 </head>
 <body>
 
 <header class="official-header">
-    <div class="school-info"><h1>مدرسة صلالة الشرقية (5-9)</h1></div>
-    <div class="ministry-logo"><img src="data/logo.jpeg"></div>
+    <div class="school-info"><h1>مدرسة صلالة الشرقية (5-9)</h1><small>المنصة الرقمية لإدارة الغياب</small></div>
+    <div class="ministry-logo"><img src="data/logo.jpeg" onerror="this.src='https://via.placeholder.com/60?text=Logo'"></div>
 </header>
 
 <div class="container">
+    
     <section id="absent-section" class="section active">
         <div class="card">
-            <div class="card-title"><i class="fas fa-edit"></i> رصد الغياب</div>
-            
-            <label>التاريخ</label>
+            <div class="card-title"><i class="fas fa-user-check"></i> رصد الغياب اليومي</div>
+            <label>تاريخ الرصد</label>
             <input type="date" id="absentDate">
-
             <div style="display: flex; gap:10px;">
-                <div style="flex:1">
-                    <label>الصف</label>
-                    <select id="mainGradeSelect" onchange="updateSectionDropdown('mainGradeSelect', 'mainSectionSelect')"></select>
-                </div>
-                <div style="flex:1">
-                    <label>الشعبة</label>
-                    <select id="mainSectionSelect" onchange="updateStudentDropdown()"></select>
-                </div>
+                <div style="flex:1"><label>الصف</label><select id="mainGradeSelect" onchange="updateSectionDropdown('mainGradeSelect', 'mainSectionSelect')"></select></div>
+                <div style="flex:1"><label>الشعبة</label><select id="mainSectionSelect" onchange="updateStudentDropdown()"></select></div>
             </div>
-
-            <label>اسم الطالب</label>
+            <label>اختيار الطالب</label>
             <select id="studentDropdown" onchange="addStudentToList()"></select>
-
-            <div id="selectedList" style="margin-top: 15px;"></div>
-            <button class="btn btn-primary" onclick="saveData()">حفظ الغياب سحابياً</button>
+            <div id="selectedList" style="margin: 15px 0;"></div>
+            <button class="btn btn-primary" onclick="saveData()">حفظ البيانات سحابياً</button>
         </div>
     </section>
 
     <section id="manage-section" class="section">
         <div class="card">
-            <div class="card-title"><i class="fas fa-plus-circle"></i> إضافة طالب</div>
+            <div class="card-title"><i class="fas fa-user-plus"></i> إضافة طالب جديد</div>
             <input type="text" id="newName" placeholder="الاسم الرباعي">
-            <input type="tel" id="newPhone" placeholder="رقم ولي الأمر">
-            <div style="display: flex; gap: 5px;">
-                <input type="text" id="newGrade" placeholder="الصف">
-                <input type="text" id="newSection" placeholder="الشعبة">
-            </div>
-            <button class="btn btn-success" onclick="addNewStudent()">حفظ الطالب</button>
+            <input type="tel" id="newPhone" placeholder="رقم ولي الأمر (968xxxx)">
+            <div style="display:flex; gap:5px;"><input type="text" id="newGrade" placeholder="مثال: خامس"><input type="text" id="newSection" placeholder="مثال: 1"></div>
+            <button class="btn btn-success" onclick="addNewStudent()">إضافة للمستودع</button>
         </div>
         <div class="card">
-            <div class="card-title"><i class="fas fa-users"></i> إدارة القوائم</div>
-            <div style="display: flex; gap:10px;">
+            <div class="card-title"><i class="fas fa-users-cog"></i> عرض الطلاب</div>
+            <div style="display:flex; gap:10px;">
                 <select id="manageGradeSelect" onchange="updateSectionDropdown('manageGradeSelect', 'manageSectionSelect')"></select>
                 <select id="manageSectionSelect" onchange="renderManagerList()"></select>
             </div>
@@ -109,96 +108,85 @@
     <section id="report-section" class="section">
         <div class="card">
             <div id="print-header">
-                <img src="data/logo.jpeg" style="height:60px;">
-                <div style="text-align:center;"><h3>مدرسة صلالة الشرقية (5-9)</h3><p>تقرير غياب رسمي</p></div>
-                <img src="data/logo.jpeg" style="height:60px;">
+                <img src="data/logo.jpeg" class="print-logo">
+                <div style="text-align:center;"><p>سلطنة عمان</p><p>وزارة التربية والتعليم</p><h3>مدرسة صلالة الشرقية (5-9)</h3></div>
+                <img src="data/logo.jpeg" class="print-logo">
             </div>
 
-            <div class="card-title no-print"><i class="fas fa-file-alt"></i> التقارير</div>
-            <select id="reportMode" onchange="toggleReportUI()" class="no-print">
-                <option value="student">تقرير غياب طالب</option>
-                <option value="class">كشف غياب صف</option>
-            </select>
-
-            <div style="display: flex; gap:10px;">
-                <select id="repGradeSelect" onchange="updateSectionDropdown('repGradeSelect', 'repSectionSelect')"></select>
-                <select id="repSectionSelect" onchange="updateReportStudentList()"></select>
+            <div class="no-print">
+                <div class="card-title"><i class="fas fa-file-pdf"></i> استخراج التقارير</div>
+                <label>نوع التقرير</label>
+                <select id="reportMode" onchange="toggleReportUI()">
+                    <option value="student">تقرير غياب طالب محدد</option>
+                    <option value="class">كشف غياب صف بالكامل</option>
+                </select>
+                <div style="display: flex; gap:10px;">
+                    <select id="repGradeSelect" onchange="updateSectionDropdown('repGradeSelect', 'repSectionSelect')"></select>
+                    <select id="repSectionSelect" onchange="updateReportStudentList()"></select>
+                </div>
+                <div id="studentSelectDiv"><label>اسم الطالب</label><select id="repStudentSelect"></select></div>
+                <div style="display: flex; gap:10px;">
+                    <div style="flex:1"><label>من تاريخ</label><input type="date" id="repDateStart"></div>
+                    <div style="flex:1" id="endContainer"><label>إلى تاريخ</label><input type="date" id="repDateEnd"></div>
+                </div>
+                <button class="btn btn-primary" onclick="generateReport()">عرض البيانات</button>
+                <button class="btn" onclick="window.print()" style="margin-top:10px; background:#e2e8f0;"><i class="fas fa-print"></i> طباعة النسخة الرسمية</button>
             </div>
-            
-            <div id="studentSelectDiv">
-                <select id="repStudentSelect"></select>
-            </div>
 
-            <div style="display: flex; gap:10px;" class="no-print">
-                <div style="flex:1"><label>من تاريخ</label><input type="date" id="repDateStart"></div>
-                <div style="flex:1" id="endContainer"><label>إلى تاريخ</label><input type="date" id="repDateEnd"></div>
-            </div>
-
-            <button class="btn btn-primary no-print" onclick="generateReport()">عرض التقرير</button>
-            <button class="btn no-print" onclick="window.print()" style="margin-top:10px; background:#e2e8f0;">طباعة</button>
             <div id="reportResult"></div>
-            <div id="electronic-notice" class="electronic-copy" style="display:none;">نسخة إلكترونية معتمدة من نظام المدرسة.</div>
+            <div id="electronic-notice" class="electronic-copy" style="display:none;">نسخة إلكترونية معتمدة من نظام غياب المدرسة ولا تحتاج لتوقيع.</div>
         </div>
     </section>
 </div>
 
 <nav class="bottom-nav">
     <div class="nav-item active" onclick="switchTab('absent-section', this)"><i class="fas fa-edit"></i><span>الرصد</span></div>
-    <div class="nav-item" onclick="switchTab('manage-section', this)"><i class="fas fa-user-plus"></i><span>الطلاب</span></div>
-    <div class="nav-item" onclick="switchTab('report-section', this)"><i class="fas fa-file-alt"></i><span>التقارير</span></div>
+    <div class="nav-item" onclick="switchTab('manage-section', this)"><i class="fas fa-users"></i><span>الطلاب</span></div>
+    <div class="nav-item" onclick="switchTab('report-section', this)"><i class="fas fa-file-pdf"></i><span>التقارير</span></div>
 </nav>
 
-<footer class="footer-rights">تصميم: فيصل العريبي &copy; 2026</footer>
+<footer class="footer-rights">تنفيذ وتصميم الأستاذ: فيصل العريبي &copy; 2026</footer>
 
 <script>
     let students = []; let history = []; let currentBatch = [];
 
     async function loadData() {
         const v = Date.now();
-        const [sR, hR] = await Promise.all([fetch(`student_fone.json?v=${v}`), fetch(`attendance_history.json?v=${v}`)]);
-        students = await sR.json(); history = await hR.json();
-        
-        const today = new Date().toISOString().split('T')[0];
-        document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
-        
-        populateGradeDropdowns();
+        try {
+            const [sR, hR] = await Promise.all([fetch(`student_fone.json?v=${v}`), fetch(`attendance_history.json?v=${v}`)]);
+            students = await sR.json(); history = await hR.json();
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
+            populateGrades();
+        } catch(e) { console.log("خطأ في تحميل البيانات"); }
     }
 
-    // 1. ملء قائمة الصفوف (خامس، سادس...)
-    function populateGradeDropdowns() {
+    function populateGrades() {
         const grades = [...new Set(students.map(s => s.grade))].sort();
         ['mainGradeSelect', 'manageGradeSelect', 'repGradeSelect'].forEach(id => {
             const el = document.getElementById(id);
-            el.innerHTML = '<option value="">-- اختر الصف --</option>';
+            el.innerHTML = '<option value="">-- الصف --</option>';
             grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
         });
     }
 
-    // 2. تحديث قائمة الشعب بناءً على الصف المختار
-    function updateSectionDropdown(gradeId, sectionId) {
-        const gradeVal = document.getElementById(gradeId).value;
-        const sectionEl = document.getElementById(sectionId);
-        sectionEl.innerHTML = '<option value="">-- الشعبة --</option>';
+    function updateSectionDropdown(gId, sId) {
+        const gradeVal = document.getElementById(gId).value;
+        const sEl = document.getElementById(sId);
+        sEl.innerHTML = '<option value="">-- الشعبة --</option>';
         if(!gradeVal) return;
-
-        const sections = [...new Set(students.filter(s => s.grade === gradeVal).map(s => s.section))].sort((a,b)=>a-b);
-        sections.forEach(sec => sectionEl.innerHTML += `<option value="${sec}">${sec}</option>`);
-        
-        // مسح قائمة الطلاب إذا تغير الصف
-        if(gradeId === 'mainGradeSelect') document.getElementById('studentDropdown').innerHTML = '';
+        const secs = [...new Set(students.filter(s => s.grade === gradeVal).map(s => s.section))].sort();
+        secs.forEach(s => sEl.innerHTML += `<option value="${s}">${s}</option>`);
     }
 
-    // 3. تحديث قائمة الطلاب بناءً على الصف والشعبة
     function updateStudentDropdown() {
         const g = document.getElementById('mainGradeSelect').value;
         const s = document.getElementById('mainSectionSelect').value;
         const drop = document.getElementById('studentDropdown');
         drop.innerHTML = '<option value="">-- اختر الطالب --</option>';
-        if(!g || !s) return;
-
-        students.filter(x => x.grade === g && String(x.section) === s)
-                .sort((a,b)=>a.name.localeCompare(b.name))
-                .forEach(st => drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`);
+        students.filter(x => x.grade === g && String(x.section) === s).sort((a,b)=>a.name.localeCompare(b.name)).forEach(st => {
+            drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`;
+        });
     }
 
     function addStudentToList() {
@@ -209,30 +197,32 @@
     }
 
     function renderBatch() {
-        document.getElementById('selectedList').innerHTML = currentBatch.map((s,i)=>`<div class="absent-item">${s.name} <i class="fas fa-times" onclick="currentBatch.splice(${i},1);renderBatch();" style="color:red"></i></div>`).join('');
+        const date = document.getElementById('absentDate').value;
+        document.getElementById('selectedList').innerHTML = currentBatch.map((s,i)=>`
+            <div class="absent-item">
+                <div><strong>${s.name}</strong></div>
+                <div style="display:flex; gap:15px; align-items:center;">
+                    <i class="fab fa-whatsapp wa-btn" onclick="sendWA('${s.phone}','${s.name}','${date}')"></i>
+                    <i class="fas fa-trash del-btn" style="color:red; cursor:pointer;" onclick="currentBatch.splice(${i},1);renderBatch();"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function sendWA(phone, name, date) {
+        const day = new Date(date).toLocaleDateString('ar-OM', {weekday: 'long'});
+        const msg = `مدرسة صلالة الشرقية (5-9)%0Aنحيطكم علماً بأن الطالب: *${name}*%0Aكان غائباً يوم: *${day}* الموافق: *${date}*%0Aنرجو المتابعة مع إدارة المدرسة.`;
+        window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     }
 
     async function saveData() {
-        if(currentBatch.length === 0) return alert("اختر طلاباً أولاً");
+        if(currentBatch.length === 0) return alert("القائمة فارغة");
         const cls = `${document.getElementById('mainGradeSelect').value}-${document.getElementById('mainSectionSelect').value}`;
         const entries = currentBatch.map(b => ({ name: b.name, date: document.getElementById('absentDate').value, class: cls }));
-        const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type': 'application/json'} });
-        if(res.ok) { alert("تم الحفظ"); currentBatch=[]; renderBatch(); loadData(); }
+        const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type':'application/json'} });
+        if(res.ok) { alert("تم الحفظ"); currentBatch=[]; document.getElementById('selectedList').innerHTML=""; loadData(); }
     }
 
-    // إدارة الطلاب
-    function renderManagerList() {
-        const g = document.getElementById('manageGradeSelect').value;
-        const s = document.getElementById('manageSectionSelect').value;
-        let html = '<table><tr><th>الاسم</th><th>حذف</th></tr>';
-        students.filter(st => st.grade === g && String(st.section) === s).forEach(st => {
-            const idx = students.findIndex(x => x.name === st.name);
-            html += `<tr><td>${st.name}</td><td><i class="fas fa-trash" onclick="deleteStudent(${idx})" style="color:red"></i></td></tr>`;
-        });
-        document.getElementById('managerListArea').innerHTML = html + '</table>';
-    }
-
-    // التقارير
     function toggleReportUI() {
         const isStudent = document.getElementById('reportMode').value === 'student';
         document.getElementById('studentSelectDiv').style.display = isStudent ? 'block' : 'none';
@@ -243,33 +233,69 @@
         const g = document.getElementById('repGradeSelect').value;
         const s = document.getElementById('repSectionSelect').value;
         const sel = document.getElementById('repStudentSelect');
-        sel.innerHTML = '<option value="">-- اختر الطالب --</option>';
-        students.filter(x => x.grade === g && String(x.section) === s).forEach(st => sel.innerHTML += `<option value="${st.name}">${st.name}</option>`);
+        sel.innerHTML = '<option value="">-- الطالب --</option>';
+        students.filter(x => x.grade === g && String(x.section) === s).sort((a,b)=>a.name.localeCompare(b.name)).forEach(st => {
+            sel.innerHTML += `<option value="${st.name}">${st.name}</option>`;
+        });
     }
 
     function generateReport() {
         const mode = document.getElementById('reportMode').value;
         const start = document.getElementById('repDateStart').value;
+        const end = document.getElementById('repDateEnd').value;
         const g = document.getElementById('repGradeSelect').value;
         const s = document.getElementById('repSectionSelect').value;
         let res = []; let title = "";
 
         if(mode === 'student') {
             const name = document.getElementById('repStudentSelect').value;
-            res = history.filter(h => h.name === name && h.date >= start && h.date <= document.getElementById('repDateEnd').value);
-            title = `تقرير الطالب: ${name}`;
+            if(!name) return alert("اختر طالب");
+            res = history.filter(h => h.name === name && h.date >= start && h.date <= end);
+            title = `<div style="text-align:right; border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:15px;">
+                        <p><b>اسم الطالب:</b> ${name}</p>
+                        <p><b>الصف والشعبة:</b> ${g} / ${s}</p>
+                        <p><b>الفترة:</b> من ${start} إلى ${end}</p>
+                     </div>`;
         } else {
             res = history.filter(h => h.class === `${g}-${s}` && h.date === start);
-            title = `غياب صف: ${g}/${s} بتاريخ ${start}`;
+            title = `<h3>كشف غياب صف: ${g} / ${s} بتاريخ: ${start}</h3>`;
         }
 
-        let html = `<h4>${title}</h4><table><tr><th>م</th><th>البيان</th><th>اليوم</th></tr>`;
-        res.forEach((r, i) => {
+        let html = `${title}<table><tr><th>م</th><th>البيان</th><th>اليوم</th></tr>`;
+        res.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach((r, i) => {
             const day = new Date(r.date).toLocaleDateString('ar-OM', {weekday: 'long'});
             html += `<tr><td>${i+1}</td><td>${mode==='student'?r.date:r.name}</td><td>${day}</td></tr>`;
         });
-        document.getElementById('reportResult').innerHTML = html + "</table>";
+        
+        html += `</table><div class="total-box">إجمالي عدد أيام الغياب: ( ${res.length} ) يوماً</div>`;
+        document.getElementById('reportResult').innerHTML = html;
         document.getElementById('electronic-notice').style.display = 'block';
+    }
+
+    async function addNewStudent() {
+        const n = document.getElementById('newName').value, p = document.getElementById('newPhone').value;
+        const g = document.getElementById('newGrade').value, s = document.getElementById('newSection').value;
+        if(!n||!p||!g||!s) return alert("أكمل البيانات");
+        const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify([...students, {name:n, phone:p, grade:g, section:s}]), headers: {'Content-Type':'application/json'} });
+        if(res.ok) { alert("تمت الإضافة"); loadData(); }
+    }
+
+    function renderManagerList() {
+        const g = document.getElementById('manageGradeSelect').value;
+        const s = document.getElementById('manageSectionSelect').value;
+        let html = '<table><tr><th>الاسم</th><th>حذف</th></tr>';
+        students.filter(st => st.grade === g && String(st.section) === s).forEach(st => {
+            const idx = students.findIndex(x => x.name === st.name);
+            html += `<tr><td>${st.name}</td><td><i class="fas fa-trash" onclick="deleteStudent(${idx})" style="color:red; cursor:pointer;"></i></td></tr>`;
+        });
+        document.getElementById('managerListArea').innerHTML = html + '</table>';
+    }
+
+    async function deleteStudent(i) {
+        if(!confirm("حذف الطالب؟")) return;
+        students.splice(i,1);
+        await fetch('/api/update-students', { method: 'POST', body: JSON.stringify(students), headers: {'Content-Type':'application/json'} });
+        loadData(); renderManagerList();
     }
 
     function switchTab(id, el) {
