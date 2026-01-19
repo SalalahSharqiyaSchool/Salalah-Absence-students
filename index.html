@@ -246,24 +246,58 @@
         window.open(`https://wa.me/${p}?text=${encodeURIComponent('مدرسة صلالة الشرقية: نبلغكم بغياب الطالب '+n+' بتاريخ '+d)}`, '_blank');
     }
 
-    async function saveAttendanceToCloud() {
-        if(currentBatch.length === 0) return alert("القائمة فارغة");
-        const date = document.getElementById('absentDate').value;
-        const cls = document.getElementById('classSelect').value;
-        const entries = currentBatch.map(b => ({ name: b.name, date, class: cls }));
-        const res = await fetch('/api/save-attendance', { method: 'POST', body: JSON.stringify(entries), headers: {'Content-Type': 'application/json'} });
-        if(res.ok) { alert("تم الحفظ بنجاح"); location.reload(); }
-    }
+  // 1. تحديث دالة حفظ الغياب لتجلب البيانات الجديدة فوراً
+async function saveAttendanceToCloud() {
+    if(currentBatch.length === 0) return alert("القائمة فارغة");
+    
+    const date = document.getElementById('absentDate').value;
+    const cls = document.getElementById('classSelect').value;
+    const entries = currentBatch.map(b => ({ name: b.name, date, class: cls }));
+    
+    try {
+        const res = await fetch('/api/save-attendance', { 
+            method: 'POST', 
+            body: JSON.stringify(entries), 
+            headers: {'Content-Type': 'application/json'} 
+        });
 
-    async function addNewStudent() {
-        const name = document.getElementById('newName').value;
-        const phone = document.getElementById('newPhone').value;
-        const grade = document.getElementById('newGrade').value;
-        const section = document.getElementById('newSection').value;
-        if(!name || !phone || !grade || !section) return alert("أكمل البيانات");
-        const res = await fetch('/api/update-students', { method: 'POST', body: JSON.stringify([...students, {name, phone, grade, section}]), headers: {'Content-Type':'application/json'} });
-        if(res.ok) location.reload();
+        if(res.ok) { 
+            alert("تم الحفظ بنجاح وتحديث التقارير");
+            
+            // بدلاً من reload، نقوم بتفريغ القائمة الحالية وجلب البيانات الجديدة
+            currentBatch = [];
+            renderBatch();
+            await loadAllData(); // تحديث ملف history و students تلقائياً
+        }
+    } catch (e) {
+        alert("حدث خطأ أثناء الحفظ");
     }
+}
+
+   // 2. تحديث دالة إضافة طالب جديد لتعمل بنفس الطريقة
+async function addNewStudent() {
+    const name = document.getElementById('newName').value;
+    const phone = document.getElementById('newPhone').value;
+    const grade = document.getElementById('newGrade').value;
+    const section = document.getElementById('newSection').value;
+    
+    if(!name || !phone || !grade || !section) return alert("أكمل البيانات");
+    
+    const res = await fetch('/api/update-students', { 
+        method: 'POST', 
+        body: JSON.stringify([...students, {name, phone, grade, section}]), 
+        headers: {'Content-Type':'application/json'} 
+    });
+
+    if(res.ok) {
+        alert("تمت إضافة الطالب وتحديث القائمة فوراً");
+        // مسح الخانات بعد الإضافة
+        document.getElementById('newName').value = "";
+        document.getElementById('newPhone').value = "";
+        
+        await loadAllData(); // تحديث القوائم فوراً بدون ريفريش
+    }
+}
 
     function renderManagerList() {
         const cls = document.getElementById('filterClass').value;
