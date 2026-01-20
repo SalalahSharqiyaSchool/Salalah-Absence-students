@@ -9,51 +9,40 @@
     <style>
         :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; --wa: #25d366; --danger: #ef4444; --edit: #3b82f6; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 160px; color: var(--primary); }
-        
-        /* الهيدر الرسمي */
         .official-header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
         .school-info h1 { margin: 0; font-size: 1.1rem; color: var(--accent); }
-
-        /* البطاقات والحاويات */
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
         .card { background: var(--card-bg); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .card-title { display: flex; align-items: center; gap: 10px; font-weight: 800; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
-        
         label { display: block; font-weight: 700; margin-bottom: 5px; font-size: 0.9rem; color: #475569; }
         select, input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; }
-        
         .btn { border: none; border-radius: 10px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: var(--accent); }
         .btn-success { background: var(--success); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-cancel { background: #f1f5f9; color: #475569; }
-
+        
         /* البطاقات العائمة */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center; z-index:3000; padding: 20px; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* قوائم عرض العناصر */
+        
         .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; border-radius: 10px; margin-bottom: 8px; border-right: 5px solid var(--accent); border: 1px solid #eee; }
         .action-icons { display: flex; gap: 15px; }
         .action-icons i { cursor: pointer; font-size: 1.2rem; }
         
-        /* الجداول والتقارير */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.85rem; }
         th { background: #f8fafc; font-weight: 900; }
 
-        /* --- الأشرطة السفلية --- */
+        /* الأشرطة السفلية */
         .bottom-nav { position: fixed; bottom: 35px; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1200; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: 0.3s; }
         .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 1.3rem; margin-bottom: 3px; }
-        
         .extra-bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 35px; background: var(--primary); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; z-index: 1300; border-top: 1px solid var(--accent); }
 
         .section { display: none; }
         .section.active { display: block; }
-
         @media print { .no-print { display: none !important; } .card { border: none !important; box-shadow: none !important; } }
     </style>
 </head>
@@ -71,7 +60,7 @@
             <label>التاريخ</label>
             <input type="date" id="absentDate">
             <div style="display: flex; gap:10px;">
-                <select id="mainGradeSelect" onchange="updateSections('mainGradeSelect','mainSectionSelect')"></select>
+                <select id="mainGradeSelect" onchange="updateSections('mainGradeSelect','mainSectionSelect'); updateStudents();"></select>
                 <select id="mainSectionSelect" onchange="updateStudents()"></select>
             </div>
             <label>اختيار الطالب</label>
@@ -119,7 +108,7 @@
         <div class="card">
             <div class="card-title"><i class="fas fa-user-edit"></i> تعديل بيانات الطلاب</div>
             <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <select id="manageGradeSelect" onchange="updateSections('manageGradeSelect','manageSectionSelect')"></select>
+                <select id="manageGradeSelect" onchange="updateSections('manageGradeSelect','manageSectionSelect'); renderManagerList();"></select>
                 <select id="manageSectionSelect" onchange="renderManagerList()"></select>
             </div>
             <div id="managerListArea"></div>
@@ -166,20 +155,10 @@
     <div class="nav-item" onclick="switchTab('report-section', this)"><i class="fas fa-print"></i><span>التقارير</span></div>
     <div class="nav-item" onclick="switchTab('manage-section', this)"><i class="fas fa-users-cog"></i><span>الإدارة</span></div>
 </nav>
-<div class="extra-bottom-bar no-print">
-    تصميم وتنفيذ الأستاذ فيصل العريبي © 2026
-</div>
+<div class="extra-bottom-bar no-print">تصميم وتنفيذ الأستاذ فيصل العريبي © 2026</div>
 
 <script>
     let students = []; let history = []; let currentBatch = []; let deleteTargetName = "";
-
-    function refreshUI() {
-        initGrades();
-        updateSections('mainGradeSelect','mainSectionSelect');
-        updateSections('repGradeSelect','repSectionSelect');
-        updateSections('manageGradeSelect','manageSectionSelect');
-        updateStudents(); renderManagerList(); updateReportStudentList();
-    }
 
     async function loadData() {
         const v = Date.now();
@@ -190,7 +169,7 @@
             document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
             document.getElementById('headerDate').innerText = new Date().toLocaleDateString('ar-OM', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
             initGrades();
-        } catch(e) { console.error("Error loading files"); }
+        } catch(e) { console.error("Error loading data"); }
     }
 
     function initGrades() {
@@ -208,7 +187,7 @@
         sEl.innerHTML = '<option value="">الشعبة</option>'; if(!g) return;
         const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => String(s.section)))].sort();
         sections.forEach(s => sEl.innerHTML += `<option value="${s}">${s}</option>`);
-        sEl.value = val;
+        if (Array.from(sEl.options).some(o => o.value === val)) sEl.value = val;
     }
 
     function updateStudents() {
@@ -217,6 +196,18 @@
         if(!g || !s) return;
         students.filter(x => String(x.grade) === g && String(x.section) === s).sort((a,b)=>a.name.localeCompare(b.name, 'ar'))
                 .forEach(st => drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`);
+    }
+
+    function renderManagerList() {
+        const g = document.getElementById('manageGradeSelect').value; const s = document.getElementById('manageSectionSelect').value;
+        const area = document.getElementById('managerListArea'); area.innerHTML = ''; if(!g || !s) return;
+        const filtered = students.filter(st => String(st.grade) === g && String(st.section) === s);
+        if(!filtered.length) { area.innerHTML = '<p>لا يوجد طلاب</p>'; return; }
+        filtered.forEach(st => {
+            area.innerHTML += `<div class="item-row"><span>${st.name}</span><div class="action-icons">
+            <i class="fas fa-edit" style="color:var(--edit)" onclick="openEditModal('${st.name}')"></i>
+            <i class="fas fa-trash-alt" style="color:var(--danger)" onclick="showDeleteModal('${st.name}')"></i></div></div>`;
+        });
     }
 
     function addToList() {
@@ -248,16 +239,6 @@
         const entries = currentBatch.map(b => ({ name: b.name, date, class: `${g}-${s}` }));
         const res = await fetch('/api/save-attendance', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(entries) });
         if(res.ok) { history.push(...entries); currentBatch = []; renderBatch(); showSuccess("تم الحفظ بنجاح"); }
-    }
-
-    function renderManagerList() {
-        const g = document.getElementById('manageGradeSelect').value; const s = document.getElementById('manageSectionSelect').value;
-        const area = document.getElementById('managerListArea'); area.innerHTML = ''; if(!g || !s) return;
-        students.filter(st => String(st.grade) === g && String(st.section) === s).forEach(st => {
-            area.innerHTML += `<div class="item-row"><span>${st.name}</span><div class="action-icons">
-            <i class="fas fa-edit" style="color:var(--edit)" onclick="openEditModal('${st.name}')"></i>
-            <i class="fas fa-trash-alt" style="color:var(--danger)" onclick="showDeleteModal('${st.name}')"></i></div></div>`;
-        });
     }
 
     function showDeleteModal(name) {
@@ -292,10 +273,7 @@
         if(!n || !p || !g || !s) return alert("أكمل البيانات");
         students.push({name:n, phone:p, grade:g, section:s});
         const res = await fetch('/api/update-students', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(students) });
-        if(res.ok) { 
-            document.getElementById('newName').value = ""; document.getElementById('newPhone').value = "";
-            refreshUI(); showSuccess("تمت إضافة الطالب بنجاح"); 
-        }
+        if(res.ok) { document.getElementById('newName').value = ""; document.getElementById('newPhone').value = ""; refreshUI(); showSuccess("تمت الإضافة بنجاح"); }
     }
 
     function generateReport() {
@@ -329,6 +307,7 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
         document.getElementById(id).classList.add('active'); el.classList.add('active'); 
     }
+    function refreshUI() { initGrades(); updateSections('mainGradeSelect','mainSectionSelect'); updateSections('manageGradeSelect','manageSectionSelect'); updateStudents(); renderManagerList(); }
     function toggleReportUI() { document.getElementById('studentSelectDiv').style.display = (document.getElementById('reportMode').value==='student'?'block':'none'); }
     function updateReportStudentList() {
         const g = document.getElementById('repGradeSelect').value; const s = document.getElementById('repSectionSelect').value;
