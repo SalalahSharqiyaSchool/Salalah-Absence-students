@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; --wa: #25d366; --danger: #ef4444; --edit: #3b82f6; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 160px; color: var(--primary); }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 120px; color: var(--primary); }
         
         /* الهيدر المطور */
         .official-header { 
@@ -48,35 +48,54 @@
         
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center; z-index:3000; padding: 20px; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; border-radius: 10px; margin-bottom: 8px; border-right: 5px solid var(--accent); border: 1px solid #eee; }
         .action-icons { display: flex; gap: 15px; }
         .action-icons i { cursor: pointer; font-size: 1.2rem; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; }
         th, td { padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.85rem; }
         th { background: #f8fafc; font-weight: 900; }
 
-        .bottom-nav { position: fixed; bottom: 50px; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1200; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .bottom-nav { position: fixed; bottom: 45px; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1200; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: 0.3s; }
         .nav-item.active { color: var(--primary); }
 
-        /* الشريط السفلي العريض والواضح */
-        .extra-bottom-bar { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            height: 50px; background: var(--primary); color: var(--accent); 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 0.9rem; font-weight: 800; z-index: 1300; 
-            border-top: 2px solid var(--accent); 
+        .extra-bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 45px; background: var(--primary); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; z-index: 1300; border-top: 2px solid var(--accent); }
+
+        /* هيدر الطباعة المخفي في الشاشة */
+        #printHeader { display: none; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+
+        @media print {
+            body { background: white; padding: 0; margin: 0; }
+            .no-print, .bottom-nav, .extra-bottom-bar, .official-header { display: none !important; }
+            #printHeader { display: block; }
+            .card { border: none !important; box-shadow: none !important; }
+            table { width: 100%; border: 1px solid #000; }
+            th, td { border: 1px solid #000 !important; }
+            th { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; }
         }
 
         .section { display: none; }
         .section.active { display: block; }
-        @media print { .no-print { display: none !important; } .card { border: none !important; box-shadow: none !important; } }
     </style>
 </head>
 <body>
+
+<div id="printHeader">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+        <div style="text-align: right; font-size: 14px; font-weight: bold;">
+            <p>سلطنة عمان</p>
+            <p>وزارة التربية والتعليم</p>
+            <p>مدرسة صلالة الشرقية (5-9)</p>
+        </div>
+        <div>
+            <img src="data/logo.jpeg" style="width: 80px;" onerror="this.style.display='none'">
+        </div>
+    </div>
+    <h2 id="printReportTitle" style="margin-top: 10px;">تقرير غياب الطلاب</h2>
+    <div id="printStudentInfo" style="text-align: right; font-weight: bold; margin: 10px 20px;"></div>
+</div>
 
 <header class="official-header no-print">
     <div class="school-info"><h1>مدرسة صلالة الشرقية (5-9)</h1></div>
@@ -121,7 +140,7 @@
                 <button class="btn btn-primary" onclick="generateReport()">عرض التقرير</button>
             </div>
             <div id="reportResult"></div>
-            <button class="btn btn-outline no-print" id="printBtn" onclick="window.print()" style="display:none; margin-top:15px; width:100%;">طباعة / PDF</button>
+            <button class="btn btn-primary no-print" id="printBtn" onclick="window.print()" style="display:none; margin-top:15px; background:#475569;">طباعة / PDF</button>
         </div>
     </section>
 
@@ -151,13 +170,8 @@
     <div class="modal-content" style="border-top: 5px solid var(--edit); text-align: right;">
         <h3>تعديل البيانات</h3>
         <p>الطالب: <b id="displayStudentName"></b></p>
-        <input type="hidden" id="editOldName">
-        <label>الشعبة الجديدة</label><input type="text" id="editSectionInput">
-        <label>رقم الهاتف الجديد</label><input type="tel" id="editPhoneInput">
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-success" style="flex:2" onclick="submitStudentEdit()">تحديث</button>
-            <button class="btn btn-cancel" style="flex:1" onclick="closeModal()">إلغاء</button>
-        </div>
+        <input type="hidden" id="editOldName"><label>الشعبة الجديدة</label><input type="text" id="editSectionInput"><label>رقم الهاتف</label><input type="tel" id="editPhoneInput">
+        <div style="display:flex; gap:10px; margin-top:20px;"><button class="btn btn-success" style="flex:2" onclick="submitStudentEdit()">تحديث</button><button class="btn btn-cancel" style="flex:1" onclick="closeModal()">إلغاء</button></div>
     </div>
 </div>
 
@@ -166,19 +180,12 @@
         <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:var(--danger); margin-bottom:15px;"></i>
         <h3>تأكيد الحذف</h3>
         <p>هل تريد حذف الطالب <br><b id="deleteStudentName" style="color:var(--danger)"></b> نهائياً؟</p>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-danger" style="flex:1" id="confirmDeleteBtn">نعم، احذف</button>
-            <button class="btn btn-cancel" style="flex:1" onclick="closeModal()">إلغاء</button>
-        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;"><button class="btn btn-danger" style="flex:1" id="confirmDeleteBtn">نعم، احذف</button><button class="btn btn-cancel" style="flex:1" onclick="closeModal()">إلغاء</button></div>
     </div>
 </div>
 
 <div id="successModal" class="modal-overlay">
-    <div class="modal-content">
-        <i class="fas fa-check-circle" style="font-size:3.5rem; color:var(--success); margin-bottom:15px;"></i>
-        <h3 id="successMsg">تمت العملية بنجاح</h3>
-        <button class="btn btn-primary" onclick="closeModal()">موافق</button>
-    </div>
+    <div class="modal-content"><i class="fas fa-check-circle" style="font-size:3.5rem; color:var(--success); margin-bottom:15px;"></i><h3 id="successMsg">تمت العملية بنجاح</h3><button class="btn btn-primary" onclick="closeModal()">موافق</button></div>
 </div>
 
 <nav class="bottom-nav no-print">
@@ -191,16 +198,9 @@
 
 <script>
     if (sessionStorage.getItem('isLoggedIn') !== 'true') { window.location.replace("index.html"); }
-    
-    let idleTimer; const timeoutMinutes = 20;
-    function resetTimer() { clearTimeout(idleTimer); idleTimer = setTimeout(logout, timeoutMinutes * 60 * 1000); }
-    window.onmousemove = resetTimer; window.onmousedown = resetTimer; window.ontouchstart = resetTimer; window.onclick = resetTimer; window.onkeypress = resetTimer;
-    function logout() { sessionStorage.clear(); window.location.replace("index.html"); }
-
     let students = []; let history = []; let currentBatch = []; let deleteTargetName = "";
 
     async function loadData() {
-        resetTimer();
         const tName = sessionStorage.getItem('teacherName') || "معلم";
         document.getElementById('teacherNameTxt').innerText = `أ. ${tName}`;
         const v = Date.now();
@@ -278,56 +278,54 @@
     function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
     function toggleReportUI() { document.getElementById('studentSelectDiv').style.display = (document.getElementById('reportMode').value==='student'?'block':'none'); }
 
-    // --- وظائف الإدارة والتقارير المفقودة ---
+    function generateReport() {
+        const mode = document.getElementById('reportMode').value;
+        const start = document.getElementById('repDateStart').value;
+        const end = document.getElementById('repDateEnd').value;
+        const grade = document.getElementById('repGradeSelect').value;
+        const section = document.getElementById('repSectionSelect').value;
+        let filtered = history.filter(h => h.date >= start && h.date <= end);
+        let html = ""; let info = "";
+
+        if(mode === 'student') {
+            const sName = document.getElementById('repStudentSelect').value;
+            filtered = filtered.filter(h => h.name === sName);
+            let days = filtered.map(x => `${new Date(x.date).toLocaleDateString('ar-OM',{weekday:'long'})} (${x.date})`);
+            info = `الطالب: ${sName} | الصف: ${grade}/${section}`;
+            html = `<table><tr><th>الاسم</th><th>أيام الغياب</th><th>المجموع</th></tr><tr><td>${sName}</td><td style="text-align:right">${days.join('<br>')}</td><td>${filtered.length}</td></tr></table>`;
+            document.getElementById('printReportTitle').innerText = "تقرير غياب طالب";
+        } else {
+            const classK = `${grade}-${section}`;
+            filtered = filtered.filter(h => h.class === classK);
+            let summary = {}; filtered.forEach(x => { if(!summary[x.name]) summary[x.name]=[]; summary[x.name].push(`${new Date(x.date).toLocaleDateString('ar-OM',{weekday:'long'})} (${x.date})`); });
+            info = `كشف غياب الصف: ${grade}/${section}`;
+            html = `<table><tr><th>الاسم</th><th>تفاصيل الغياب</th><th>العدد</th></tr>`;
+            for(let n in summary) html += `<tr><td>${n}</td><td style="text-align:right">${summary[n].join('<br>')}</td><td>${summary[n].length}</td></tr>`;
+            html += `</table>`;
+            document.getElementById('printReportTitle').innerText = "كشف غياب الصف المجمع";
+        }
+        document.getElementById('printStudentInfo').innerText = info;
+        document.getElementById('reportResult').innerHTML = html;
+        document.getElementById('printBtn').style.display = 'block';
+    }
+
     function renderManagerList() {
         const g = document.getElementById('manageGradeSelect').value; const s = document.getElementById('manageSectionSelect').value;
         const area = document.getElementById('managerListArea'); area.innerHTML = ''; if(!g || !s) return;
         students.filter(st => String(st.grade) === g && String(st.section) === s).forEach(st => {
-            area.innerHTML += `<div class="item-row"><span>${st.name}</span><div class="action-icons">
-            <i class="fas fa-edit" style="color:var(--edit)" onclick="openEditModal('${st.name}','${st.section}','${st.phone}')"></i>
-            <i class="fas fa-trash-alt" style="color:var(--danger)" onclick="showDeleteModal('${st.name}')"></i></div></div>`;
+            area.innerHTML += `<div class="item-row"><span>${st.name}</span><div class="action-icons"><i class="fas fa-edit" style="color:var(--edit)" onclick="openEditModal('${st.name}','${st.section}','${st.phone}')"></i><i class="fas fa-trash-alt" style="color:var(--danger)" onclick="showDeleteModal('${st.name}')"></i></div></div>`;
         });
     }
 
-    function openEditModal(name, sec, phone) {
-        document.getElementById('displayStudentName').innerText = name;
-        document.getElementById('editOldName').value = name;
-        document.getElementById('editSectionInput').value = sec;
-        document.getElementById('editPhoneInput').value = phone;
-        document.getElementById('editModal').style.display = 'flex';
-    }
-
-    function showDeleteModal(name) {
-        deleteTargetName = name;
-        document.getElementById('deleteStudentName').innerText = name;
-        document.getElementById('deleteModal').style.display = 'flex';
-    }
-
-    document.getElementById('confirmDeleteBtn').onclick = function() {
-        fetch('/api/delete-student', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name: deleteTargetName}) })
-        .then(res => { if(res.ok) { students = students.filter(s => s.name !== deleteTargetName); renderManagerList(); closeModal(); showSuccess("تم حذف الطالب"); } });
-    };
-
+    function openEditModal(n, s, p) { document.getElementById('displayStudentName').innerText = n; document.getElementById('editOldName').value = n; document.getElementById('editSectionInput').value = s; document.getElementById('editPhoneInput').value = p; document.getElementById('editModal').style.display = 'flex'; }
+    function showDeleteModal(n) { deleteTargetName = n; document.getElementById('deleteStudentName').innerText = n; document.getElementById('deleteModal').style.display = 'flex'; }
+    document.getElementById('confirmDeleteBtn').onclick = function() { fetch('/api/delete-student', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name: deleteTargetName}) }).then(res => { if(res.ok) { students = students.filter(s => s.name !== deleteTargetName); renderManagerList(); closeModal(); showSuccess("تم حذف الطالب"); } }); };
+    function logout() { sessionStorage.clear(); window.location.replace("index.html"); }
     function updateReportStudentList() {
         const g = document.getElementById('repGradeSelect').value; const s = document.getElementById('repSectionSelect').value;
         const drop = document.getElementById('repStudentSelect'); drop.innerHTML = '';
         students.filter(x => String(x.grade) === g && String(x.section) === s).forEach(st => drop.innerHTML += `<option value="${st.name}">${st.name}</option>`);
     }
-
-    function generateReport() {
-        const mode = document.getElementById('reportMode').value;
-        const start = document.getElementById('repDateStart').value;
-        const end = document.getElementById('repDateEnd').value;
-        let filtered = history.filter(h => h.date >= start && h.date <= end);
-        if(mode === 'student') filtered = filtered.filter(h => h.name === document.getElementById('repStudentSelect').value);
-        else filtered = filtered.filter(h => h.class === `${document.getElementById('repGradeSelect').value}-${document.getElementById('repSectionSelect').value}`);
-        
-        let html = `<table><tr><th>التاريخ</th><th>الاسم</th><th>الصف</th></tr>`;
-        filtered.forEach(r => html += `<tr><td>${r.date}</td><td>${r.name}</td><td>${r.class}</td></tr>`);
-        document.getElementById('reportResult').innerHTML = html + `</table>`;
-        document.getElementById('printBtn').style.display = 'block';
-    }
-
     window.onload = loadData;
 </script>
 </body>
