@@ -10,11 +10,11 @@
         :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; --wa: #25d366; --danger: #ef4444; --edit: #3b82f6; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 160px; color: var(--primary); }
         
-        /* الهيدر المطور لسطر واحد مع التاريخ واليوم */
+        /* الهيدر المطور والمتجاوب */
         .official-header { 
             background: var(--primary); 
             color: white; 
-            padding: 10px 15px; 
+            padding: 12px 15px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -26,37 +26,36 @@
 
         .school-info h1 { 
             margin: 0; 
-            font-size: clamp(0.85rem, 4.5vw, 1.2rem); 
+            font-size: clamp(0.85rem, 4.2vw, 1.15rem); 
             color: var(--accent); 
             white-space: nowrap; 
             font-weight: 800;
-            letter-spacing: -0.5px;
         }
 
         #headerDate { 
             text-align: left;
-            line-height: 1.2;
-            min-width: 80px;
+            line-height: 1.3;
         }
 
         .header-day {
             display: block;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--accent);
+            text-transform: capitalize;
         }
 
         .header-full-date {
             display: block;
-            font-size: 0.6rem;
-            opacity: 0.8;
+            font-size: 0.65rem;
+            opacity: 0.85;
             white-space: nowrap;
         }
 
         @media (max-width: 400px) {
             .official-header { padding: 10px 8px; }
             .header-day { font-size: 0.7rem; }
-            .header-full-date { font-size: 0.55rem; }
+            .header-full-date { font-size: 0.6rem; }
         }
 
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
@@ -212,16 +211,14 @@
             const [sR, hR] = await Promise.all([fetch(`student_fone.json?v=${v}`), fetch(`attendance_history.json?v=${v}`)]);
             students = await sR.json(); history = await hR.json();
             
-            // تحديث اليوم والتاريخ في الهيدر بشكل منسق
+            // تحديث التاريخ في الهيدر (يوم وتحته تاريخ)
             const now = new Date();
-            const optionsDay = { weekday: 'long' };
-            const optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
-            const dayName = now.toLocaleDateString('ar-OM', optionsDay);
-            const dateStr = now.toLocaleDateString('ar-OM', optionsDate);
+            const dayName = now.toLocaleDateString('ar-OM', { weekday: 'long' });
+            const fullDate = now.toLocaleDateString('ar-OM', { day: 'numeric', month: 'long', year: 'numeric' });
             
             document.getElementById('headerDate').innerHTML = `
                 <span class="header-day">${dayName}</span>
-                <span class="header-full-date">${dateStr}</span>
+                <span class="header-full-date">${fullDate}</span>
             `;
 
             const today = now.toISOString().split('T')[0];
@@ -235,8 +232,8 @@
         const grades = [...new Set(students.map(s => String(s.grade).trim()).filter(g => g))].sort();
         ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
             const el = document.getElementById(id); const val = el.value;
-            el.innerHTML = '<option value="">اختر الصف</option>';
-            grades.forEach(g => el.innerHTML += `<option value="${g}">الصف ${g}</option>`);
+            el.innerHTML = '<option value="">الصف</option>';
+            grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
             el.value = val;
         });
     }
@@ -244,8 +241,8 @@
     function updateSections(gId, sId) {
         const g = document.getElementById(gId).value; const sEl = document.getElementById(sId); const val = sEl.value;
         sEl.innerHTML = '<option value="">الشعبة</option>'; if(!g) return;
-        const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => String(s.section)))].sort();
-        sections.forEach(s => sEl.innerHTML += `<option value="${s}">شعبة ${s}</option>`);
+        const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => String(s.section)))].sort((a,b)=>a-b);
+        sections.forEach(s => sEl.innerHTML += `<option value="${s}">${s}</option>`);
         if (Array.from(sEl.options).some(o => o.value === val)) sEl.value = val;
     }
 
