@@ -194,16 +194,23 @@
     }
 
     // تهيئة القوائم المنسدلة للصفوف
-    function initGrades() {
-        const grades = [...new Set(students.map(s => String(s.grade)))].sort((a,b)=>a-b);
-        ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
-            const el = document.getElementById(id);
-            const val = el.value;
-            el.innerHTML = '<option value="">الصف</option>';
-            grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
-            el.value = val;
+   function initGrades() {
+    // نقوم بفلترة القيم لضمان عدم وجود نصوص فارغة أو قيم غير معرفة
+    const grades = [...new Set(students
+        .map(s => String(s.grade).trim()) // تحويل لنص وإزالة المسافات
+        .filter(g => g !== "" && g !== "undefined" && g !== "null") // استبعاد الفراغات
+    )].sort((a, b) => a - b);
+
+    ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
+        const el = document.getElementById(id);
+        const val = el.value;
+        el.innerHTML = '<option value="">الصف</option>';
+        grades.forEach(g => {
+            el.innerHTML += `<option value="${g}">${g}</option>`;
         });
-    }
+        el.value = val;
+    });
+}
 
     // تحديث الشعب بناءً على الصف
     function updateSections(gId, sId) {
