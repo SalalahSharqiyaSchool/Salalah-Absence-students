@@ -126,13 +126,29 @@
         </div>
 
         <div class="card no-print">
-            <div class="card-title"><i class="fas fa-tools" style="color:var(--edit)"></i> تعديل البيانات (الشعبة والهاتف)</div>
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <select id="manageGradeSelect" onchange="updateSections('manageGradeSelect','manageSectionSelect')"></select>
-                <select id="manageSectionSelect" onchange="renderManagerList()"></select>
-            </div>
-            <div id="managerListArea"></div>
+    <div class="card-title"><i class="fas fa-user-plus" style="color:var(--success)"></i> إضافة طالب جديد للقاعدة</div>
+    
+    <label>الاسم الرباعي</label>
+    <input type="text" id="newName" placeholder="أدخل الاسم الكامل">
+    
+    <label>رقم هاتف ولي الأمر</label>
+    <input type="tel" id="newPhone" placeholder="968XXXXXXXX">
+    
+    <div style="display:flex; gap:10px;">
+        <div style="flex:1">
+            <label>الصف</label>
+            <input type="text" id="newGrade" placeholder="مثال: السادس">
         </div>
+        <div style="flex:1">
+            <label>الشعبة</label>
+            <input type="text" id="newSection" placeholder="مثال: 1">
+        </div>
+    </div>
+    
+    <button class="btn btn-success" onclick="addNewStudent()">
+        <i class="fas fa-plus-circle"></i> حفظ الطالب الجديد
+    </button>
+</div>
     </section>
 </div>
 
@@ -194,21 +210,21 @@
     }
 
     // تهيئة القوائم المنسدلة للصفوف
-   function initGrades() {
-    // نقوم بفلترة القيم لضمان عدم وجود نصوص فارغة أو قيم غير معرفة
+  function initGrades() {
+    // تجميع الصفوف، تنظيف المسافات، وحذف أي قيم فارغة
     const grades = [...new Set(students
-        .map(s => String(s.grade).trim()) // تحويل لنص وإزالة المسافات
-        .filter(g => g !== "" && g !== "undefined" && g !== "null") // استبعاد الفراغات
-    )].sort((a, b) => a - b);
+        .map(s => String(s.grade).trim())
+        .filter(g => g !== "" && g !== "undefined" && g !== "null")
+    )].sort(); // ترتيب أبجدي للصفوف (الخامس، السادس، إلخ)
 
     ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
         const el = document.getElementById(id);
-        const val = el.value;
-        el.innerHTML = '<option value="">الصف</option>';
+        const savedVal = el.value;
+        el.innerHTML = '<option value="">-- اختر الصف --</option>';
         grades.forEach(g => {
             el.innerHTML += `<option value="${g}">${g}</option>`;
         });
-        el.value = val;
+        el.value = savedVal;
     });
 }
 
