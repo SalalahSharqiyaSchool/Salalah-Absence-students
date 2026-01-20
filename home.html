@@ -259,17 +259,66 @@
         document.getElementById('editModal').style.display = 'flex';
     }
 
+   // دالة التعديل المحدثة لإصلاح مشكلة الاختفاء
     async function submitStudentEdit() {
         const oldName = document.getElementById('editOldName').value;
         const newStudent = {
-            name: document.getElementById('editNameInput').value,
-            phone: document.getElementById('editPhoneInput').value,
-            grade: document.getElementById('editGradeInput').value,
-            section: document.getElementById('editSectionInput').value
+            name: document.getElementById('editNameInput').value.trim(),
+            phone: document.getElementById('editPhoneInput').value.trim(),
+            grade: parseInt(document.getElementById('editGradeInput').value), // التأكد من أنه رقم
+            section: document.getElementById('editSectionInput').value.trim() // التأكد من أنه نص/رقم متوافق
         };
+
+        if(!newStudent.name || !newStudent.grade) return alert("الرجاء إكمال البيانات الأساسية");
+
+        // تحديث المصفوفة محلياً
         students = students.map(s => s.name === oldName ? newStudent : s);
-        const res = await fetch('/api/update-students', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(students) });
-        if(res.ok) { closeModal(); renderManagerList(); showSuccess("تم تحديث بيانات الطالب"); }
+
+        try {
+            const res = await fetch('/api/update-students', { 
+                method: 'POST', 
+                headers: {'Content-Type':'application/json'}, 
+                body: JSON.stringify(students) 
+            });
+
+            if(res.ok) {
+                closeModal();
+                // أهم خطوة: إعادة تهيئة القوائم لتظهر البيانات الجديدة
+                initGrades(); 
+                renderManagerList();
+                
+                // تحديث قائمة الرصد والتقارير إذا كانت مفتوحة
+                updateStudents();
+                updateReportStudentList();
+                
+                showSuccess("تم تحديث بيانات الطالب بنجاح");
+            } else {
+                alert("فشل تحديث البيانات على السيرفر");
+            }
+        } catch(e) {
+            alert("خطأ في الاتصال بالسيرفر");
+        }
+    }
+
+    // تعديل بسيط في دالة الفلترة لضمان ظهور الطلاب دائماً (تحويل لـ String للمقارنة)
+    function updateStudents() {
+        const g = document.getElementById('mainGradeSelect').value;
+        const s = document.getElementById('mainSectionSelect').value;
+        const drop = document.getElementById('studentDropdown');
+        drop.innerHTML = '<option value="">-- اختر الطالب --</option>';
+        
+        if(!g || !s) return;
+
+        const filtered = students.filter(x => String(x.grade) === String(g) && String(x.section) === String(s));
+        
+        if(filtered.length === 0) {
+            drop.innerHTML = '<option value="">لا يوجد طلاب في هذه الشعبة</option>';
+            return;
+        }
+
+        filtered.sort((a,b)=>a.name.localeCompare(b.name, 'ar')).forEach(st => {
+            drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`;
+        });
     }
 
     // --- التقارير والطباعة ---
