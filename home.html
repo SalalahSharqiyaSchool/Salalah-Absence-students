@@ -9,8 +9,39 @@
     <style>
         :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; --wa: #25d366; --danger: #ef4444; --edit: #3b82f6; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 160px; color: var(--primary); }
-        .official-header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
-        .school-info h1 { margin: 0; font-size: 1.1rem; color: var(--accent); }
+       /* تعديل الهيدر ليناسب الهاتف ويظهر في سطر واحد */
+.official-header { 
+    background: var(--primary); 
+    color: white; 
+    padding: 10px 15px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 3px solid var(--accent); 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+}
+
+.school-info h1 { 
+    margin: 0; 
+    font-size: clamp(0.8rem, 4vw, 1.1rem); /* حجم خط مرن يصغر مع الشاشة */
+    color: var(--accent); 
+    white-space: nowrap; /* يمنع النزول لسطر جديد نهائياً */
+    font-weight: 800;
+}
+
+#headerDate { 
+    font-size: 0.75rem; 
+    white-space: nowrap; 
+    margin-right: 10px;
+}
+
+/* إخفاء التاريخ في الشاشات الصغيرة جداً لترك مساحة لاسم المدرسة */
+@media (max-width: 380px) {
+    #headerDate { display: none; }
+    .school-info h1 { font-size: 0.9rem; width: 100%; text-align: center; }
+}
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
         .card { background: var(--card-bg); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .card-title { display: flex; align-items: center; gap: 10px; font-weight: 800; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
