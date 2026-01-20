@@ -9,39 +9,42 @@
     <style>
         :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; --wa: #25d366; --danger: #ef4444; --edit: #3b82f6; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 160px; color: var(--primary); }
-       /* تعديل الهيدر ليناسب الهاتف ويظهر في سطر واحد */
-.official-header { 
-    background: var(--primary); 
-    color: white; 
-    padding: 10px 15px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    border-bottom: 3px solid var(--accent); 
-    position: sticky; 
-    top: 0; 
-    z-index: 1000; 
-}
+        
+        /* الهيدر المطور لسطر واحد */
+        .official-header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 10px 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 3px solid var(--accent); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+        }
 
-.school-info h1 { 
-    margin: 0; 
-    font-size: clamp(0.8rem, 4vw, 1.1rem); /* حجم خط مرن يصغر مع الشاشة */
-    color: var(--accent); 
-    white-space: nowrap; /* يمنع النزول لسطر جديد نهائياً */
-    font-weight: 800;
-}
+        .school-info h1 { 
+            margin: 0; 
+            font-size: clamp(0.85rem, 4.5vw, 1.2rem); 
+            color: var(--accent); 
+            white-space: nowrap; 
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
 
-#headerDate { 
-    font-size: 0.75rem; 
-    white-space: nowrap; 
-    margin-right: 10px;
-}
+        #headerDate { 
+            font-size: 0.7rem; 
+            white-space: nowrap; 
+            margin-right: 8px;
+            opacity: 0.9;
+        }
 
-/* إخفاء التاريخ في الشاشات الصغيرة جداً لترك مساحة لاسم المدرسة */
-@media (max-width: 380px) {
-    #headerDate { display: none; }
-    .school-info h1 { font-size: 0.9rem; width: 100%; text-align: center; }
-}
+        @media (max-width: 400px) {
+            #headerDate { font-size: 0.65rem; }
+            .official-header { padding: 10px 8px; }
+        }
+
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
         .card { background: var(--card-bg); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .card-title { display: flex; align-items: center; gap: 10px; font-weight: 800; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
@@ -53,7 +56,6 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-cancel { background: #f1f5f9; color: #475569; }
         
-        /* البطاقات العائمة */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center; z-index:3000; padding: 20px; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -66,7 +68,6 @@
         th, td { padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.85rem; }
         th { background: #f8fafc; font-weight: 900; }
 
-        /* الأشرطة السفلية */
         .bottom-nav { position: fixed; bottom: 35px; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1200; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: 0.3s; }
         .nav-item.active { color: var(--primary); }
@@ -198,7 +199,7 @@
             students = await sR.json(); history = await hR.json();
             const today = new Date().toISOString().split('T')[0];
             document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
-            document.getElementById('headerDate').innerText = new Date().toLocaleDateString('ar-OM', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+            document.getElementById('headerDate').innerText = new Date().toLocaleDateString('ar-OM', {day:'numeric', month:'short'});
             initGrades();
         } catch(e) { console.error("Error loading data"); }
     }
@@ -207,7 +208,7 @@
         const grades = [...new Set(students.map(s => String(s.grade).trim()).filter(g => g))].sort();
         ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
             const el = document.getElementById(id); const val = el.value;
-            el.innerHTML = '<option value="">-- الصف --</option>';
+            el.innerHTML = '<option value="">الصف</option>';
             grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
             el.value = val;
         });
@@ -215,7 +216,7 @@
 
     function updateSections(gId, sId) {
         const g = document.getElementById(gId).value; const sEl = document.getElementById(sId); const val = sEl.value;
-        sEl.innerHTML = '<option value="">الشعبة</option>'; if(!g) return;
+        sEl.innerHTML = '<option value="">ش</option>'; if(!g) return;
         const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => String(s.section)))].sort();
         sections.forEach(s => sEl.innerHTML += `<option value="${s}">${s}</option>`);
         if (Array.from(sEl.options).some(o => o.value === val)) sEl.value = val;
