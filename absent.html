@@ -769,23 +769,38 @@ updateLiveDateTime();
         document.getElementById('studentSelectDiv').style.display = (document.getElementById('reportMode').value==='student'?'block':'none'); 
     }
 
-    function updateReportStudentList() {
+   function updateReportStudentList() {
         const g = document.getElementById('repGradeSelect').value; 
         const s = document.getElementById('repSectionSelect').value;
         const sel = document.getElementById('repStudentSelect'); 
+        
+        // تفريغ القائمة الحالية
         sel.innerHTML = '<option value="">-- اختر الطالب --</option>';
+        
         if(!g || !s) return;
+
+        // تصفية الطلاب بناءً على الصف والشعبة المختارين
         students.filter(x => String(x.grade) === g && String(x.section) === s)
-                .sort((a,b)=>a.name.localeCompare(b.name, 'ar'))
-                .forEach(st => sel.innerHTML += `<option value="${st.name}">${st.name}</option>`);
+                .sort((a, b) => a.name.localeCompare(b.name, 'ar'))
+                .forEach(st => {
+                    sel.innerHTML += `<option value="${st.name}">${st.name}</option>`;
+                });
     }
 
     function initiatePrint() {
-        document.getElementById('printDateStamp').innerText = new Date().toLocaleDateString('ar-OM');
+        // تحديث تاريخ الطباعة في التقرير قبل البدء
+        const printDate = new Date().toLocaleDateString('ar-OM', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        document.getElementById('printDateStamp').innerText = printDate;
         window.print();
     }
 
+    // تشغيل تحميل البيانات الأساسية عند تحميل الصفحة
     window.onload = loadData;
+
 </script>
 </body>
 </html>
