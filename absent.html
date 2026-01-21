@@ -10,40 +10,10 @@
         :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --success: #10b981; --wa: #25d366; --danger: #ef4444; --edit: #3b82f6; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 160px; color: var(--primary); }
         
-        /* الهيدر المطور لسطر واحد */
-        .official-header { 
-            background: var(--primary); 
-            color: white; 
-            padding: 10px 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 3px solid var(--accent); 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-        }
-
-        .school-info h1 { 
-            margin: 0; 
-            font-size: clamp(0.85rem, 4.5vw, 1.2rem); 
-            color: var(--accent); 
-            white-space: nowrap; 
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        #headerDate { 
-            font-size: 0.7rem; 
-            white-space: nowrap; 
-            margin-right: 8px;
-            opacity: 0.9;
-        }
-
-        @media (max-width: 400px) {
-            #headerDate { font-size: 0.65rem; }
-            .official-header { padding: 10px 8px; }
-        }
+        /* الهيدر المطور */
+        .official-header { background: var(--primary); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
+        .school-info h1 { margin: 0; font-size: clamp(0.85rem, 4.5vw, 1.2rem); color: var(--accent); white-space: nowrap; font-weight: 800; }
+        #headerDate { font-size: 0.7rem; white-space: nowrap; margin-right: 8px; opacity: 0.9; }
 
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
         .card { background: var(--card-bg); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
@@ -58,7 +28,6 @@
         
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center; z-index:3000; padding: 20px; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; border-radius: 10px; margin-bottom: 8px; border-right: 5px solid var(--accent); border: 1px solid #eee; }
         .action-icons { display: flex; gap: 15px; }
@@ -77,34 +46,37 @@
         .section.active { display: block; }
 
         /* ========================================= */
-        /* التحديث التقني 1 و 2 و 3: تنسيق الطباعة الرسمي */
+        /* التحديث التقني المطلوب (الطباعة الرسمية) */
         /* ========================================= */
         #printHeader, .footer-stamp { display: none; }
 
         @media print {
+            /* الإضافة 3: إخفاء عناصر التحكم */
             .no-print, .bottom-nav, .extra-bottom-bar, .official-header, .btn, input, select, label { display: none !important; }
             #printHeader, .footer-stamp { display: block !important; }
+            
+            /* الإضافة 2: ثبات الألوان */
             body { background: white !important; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
             .card { border: none !important; box-shadow: none !important; padding: 0 !important; }
             
-            table { width: 100%; border: 2px solid #000 !important; border-collapse: collapse; }
-            th { background-color: #f2f2f2 !important; border: 1px solid #000 !important; color: #000 !important; }
-            td { border: 1px solid #000 !important; color: #000 !important; }
+            table { width: 100%; border: 2px solid #000 !important; border-collapse: collapse; margin-top: 10px; }
+            th { background-color: #f2f2f2 !important; border: 1px solid #000 !important; color: #000 !important; font-weight: bold; }
+            td { border: 1px solid #000 !important; color: #000 !important; padding: 8px; }
             
-            /* التحديث رقم 1: الحفاظ على الأسطر داخل الخلية */
-            .date-cell, td { white-space: pre-line !important; line-height: 1.5; }
+            /* الإضافة 1: تنسيق قائمة التواريخ */
+            .date-cell { white-space: pre-line !important; line-height: 1.6; text-align: right !important; padding-right: 15px !important; }
         }
 
         .ministry-info { text-align: right; line-height: 1.4; font-weight: bold; font-size: 0.9rem; }
-        .report-main-title { text-align: center; text-decoration: underline; font-size: 1.5rem; font-weight: 900; margin: 20px 0; }
-        .official-details-box { border: 2px solid #000; padding: 15px; background: #f9f9f9; margin-bottom: 20px; line-height: 1.8; }
+        .report-main-title { text-align: center; text-decoration: underline; font-size: 1.5rem; font-weight: 900; margin: 15px 0; }
+        .official-details-box { border: 2px solid #000; padding: 12px; background: #f9f9f9; margin-bottom: 15px; line-height: 1.7; font-size: 1rem; }
     </style>
 </head>
 <body>
 
 <div id="printHeader">
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px;">
         <div class="ministry-info">
             <p>سلطنة عمان</p>
             <p>وزارة التربية والتعليم</p>
@@ -112,7 +84,7 @@
             <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
         </div>
         <div class="logo-area">
-            <img src="data/logo.jpeg" style="width: 90px;" onerror="this.src='https://via.placeholder.com/90?text=Logo'">
+            <img src="data/logo.jpeg" style="width: 85px;" onerror="this.src='https://via.placeholder.com/85?text=Logo'">
         </div>
     </div>
     <h1 id="dynamicTitlePrint" class="report-main-title">تقرير غياب رسمي</h1>
@@ -164,10 +136,7 @@
             <div id="reportResult"></div>
 
             <div class="footer-stamp">
-                <div style="border: 1px dashed #000; padding: 10px; margin-top: 20px; font-weight: bold; font-size: 0.85rem;">
-                    ⚠️ تنبيه: هذه النسخة مستخرجة إلكترونياً وتعتبر مسودة غير رسمية ما لم تعتمد بختم المدرسة وتوقيع المدير.
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 30px; font-weight: bold;">
+                <div style="display: flex; justify-content: space-between; margin-top: 40px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px;">
                     <p>يعتمد / مدير المدرسة: .........................</p>
                     <p>تاريخ الاستخراج: <span id="printDateStamp"></span></p>
                 </div>
@@ -215,6 +184,12 @@
 <script>
     let students = []; let history = []; let currentBatch = []; let deleteTargetName = "";
 
+    // وظيفة للحصول على اسم اليوم من التاريخ
+    function getDayName(dateString) {
+        const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        return days[new Date(dateString).getDay()];
+    }
+
     async function loadData() {
         const v = Date.now();
         try {
@@ -227,7 +202,6 @@
         } catch(e) { console.error("Error loading data"); }
     }
 
-    // تم إضافة هذه الدالة للطباعة الاحترافية
     function initiatePrint() {
         document.getElementById('printDateStamp').innerText = new Date().toLocaleDateString('ar-OM');
         window.print();
@@ -259,6 +233,54 @@
                 .forEach(st => drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`);
     }
 
+    function generateReport() {
+        const mode = document.getElementById('reportMode').value;
+        const start = document.getElementById('repDateStart').value;
+        const end = document.getElementById('repDateEnd').value;
+        const resDiv = document.getElementById('reportResult');
+        let html = ""; let infoPrint = "";
+
+        if(mode === 'student') {
+            const name = document.getElementById('repStudentSelect').value;
+            const g = document.getElementById('repGradeSelect').value;
+            const s = document.getElementById('repSectionSelect').value;
+            const data = history.filter(h => h.name === name && h.date >= start && h.date <= end);
+            
+            document.getElementById('dynamicTitlePrint').innerText = "تقرير غياب طالب رسمي";
+            infoPrint = `<b>اسم الطالب:</b> ${name} <br> <b>الصف:</b> ${g} / <b>الشعبة:</b> ${s} <br> <b>الفترة:</b> من ${start} إلى ${end}`;
+            
+            html = `<h3>تقرير: ${name}</h3>
+                   <table>
+                    <tr><th>م</th><th>اليوم</th><th>التاريخ</th></tr>
+                    ${data.map((r,i)=>`<tr><td>${i+1}</td><td>${getDayName(r.date)}</td><td>${r.date}</td></tr>`).join('')}
+                   </table>`;
+        } else {
+            const g = document.getElementById('repGradeSelect').value;
+            const s = document.getElementById('repSectionSelect').value;
+            const cData = history.filter(h => h.class === `${g}-${s}` && h.date >= start && h.date <= end);
+            const log = {};
+            
+            document.getElementById('dynamicTitlePrint').innerText = "كشف غياب الصف المجمع";
+            infoPrint = `<b>كشف غياب الصف:</b> ${g} / <b>الشعبة:</b> ${s} <br> <b>الفترة:</b> من ${start} إلى ${end}`;
+
+            students.filter(st => String(st.grade) === g && String(st.section) === s).forEach(st => {
+                const dates = cData.filter(d => d.name === st.name).map(d => `${getDayName(d.date)} (${d.date})`);
+                if(dates.length > 0) log[st.name] = dates;
+            });
+
+            html = `<h3>كشف (${g}/${s})</h3>
+                   <table>
+                    <tr><th>الاسم</th><th style="width:70%">أيام الغياب (اليوم والتاريخ)</th><th>الإجمالي</th></tr>
+                    ${Object.keys(log).sort().map(n => `<tr><td>${n}</td><td class="date-cell">${log[n].join('\n')}</td><td>${log[n].length}</td></tr>`).join('')}
+                   </table>`;
+        }
+        
+        resDiv.innerHTML = html; 
+        document.getElementById('printStudentInfo').innerHTML = infoPrint;
+        document.getElementById('printBtn').style.display = 'block';
+    }
+
+    // بقية الدوال البرمجية (حفظ، حذف، تعديل) كما هي تماماً
     function renderManagerList() {
         const g = document.getElementById('manageGradeSelect').value; const s = document.getElementById('manageSectionSelect').value;
         const area = document.getElementById('managerListArea'); area.innerHTML = ''; if(!g || !s) return;
@@ -287,7 +309,7 @@
     }
 
     function sendWA(phone, name, date) {
-        const day = new Date(date).toLocaleDateString('ar-OM', {weekday: 'long'});
+        const day = getDayName(date);
         const text = `مدرسة صلالة الشرقية%0Aغياب الطالب: *${name}*%0Aيوم: *${day}* الموافق: *${date}*`;
         window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
     }
@@ -335,45 +357,6 @@
         students.push({name:n, phone:p, grade:g, section:s});
         const res = await fetch('/api/update-students', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(students) });
         if(res.ok) { document.getElementById('newName').value = ""; document.getElementById('newPhone').value = ""; refreshUI(); showSuccess("تمت الإضافة بنجاح"); }
-    }
-
-    function generateReport() {
-        const mode = document.getElementById('reportMode').value;
-        const start = document.getElementById('repDateStart').value;
-        const end = document.getElementById('repDateEnd').value;
-        const resDiv = document.getElementById('reportResult');
-        let html = "";
-        let infoPrint = "";
-
-        if(mode === 'student') {
-            const name = document.getElementById('repStudentSelect').value;
-            const g = document.getElementById('repGradeSelect').value;
-            const s = document.getElementById('repSectionSelect').value;
-            const data = history.filter(h => h.name === name && h.date >= start && h.date <= end);
-            
-            document.getElementById('dynamicTitlePrint').innerText = "تقرير غياب طالب رسمي";
-            infoPrint = `<b>اسم الطالب:</b> ${name} <br> <b>الصف:</b> ${g} / <b>الشعبة:</b> ${s} <br> <b>الفترة:</b> من ${start} إلى ${end}`;
-            
-            html = `<h3>تقرير: ${name}</h3><table><tr><th>م</th><th>التاريخ</th></tr>${data.map((r,i)=>`<tr><td>${i+1}</td><td class="date-cell">${r.date}</td></tr>`).join('')}</table>`;
-        } else {
-            const g = document.getElementById('repGradeSelect').value;
-            const s = document.getElementById('repSectionSelect').value;
-            const cData = history.filter(h => h.class === `${g}-${s}` && h.date >= start && h.date <= end);
-            const log = {};
-            
-            document.getElementById('dynamicTitlePrint').innerText = "كشف غياب الصف المجمع";
-            infoPrint = `<b>كشف غياب الصف:</b> ${g} / <b>الشعبة:</b> ${s} <br> <b>الفترة:</b> من ${start} إلى ${end}`;
-
-            students.filter(st => String(st.grade) === g && String(st.section) === s).forEach(st => {
-                const dates = cData.filter(d => d.name === st.name).map(d => d.date);
-                if(dates.length > 0) log[st.name] = dates;
-            });
-            html = `<h3>كشف (${g}/${s})</h3><table><tr><th>الاسم</th><th>أيام الغياب</th><th>الإجمالي</th></tr>${Object.keys(log).sort().map(n => `<tr><td>${n}</td><td class="date-cell">${log[n].join('\n')}</td><td>${log[n].length}</td></tr>`).join('')}</table>`;
-        }
-        
-        resDiv.innerHTML = html; 
-        document.getElementById('printStudentInfo').innerHTML = infoPrint;
-        document.getElementById('printBtn').style.display = 'block';
     }
 
     function showSuccess(msg) { document.getElementById('successMsg').innerText = msg; document.getElementById('successModal').style.display = 'flex'; }
