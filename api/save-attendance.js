@@ -20,21 +20,31 @@ export default async function handler(req, res) {
             console.log("File not found, creating new one.");
         }
 
-        // 2. إضافة السجلات الجديدة (المصفوفة المرسلة من التطبيق)
-        const updatedContent = [...currentContent, ...req.body];
+        // 2. منطق التحديث الذكي
+        let updatedContent;
+
+        // إذا أرسلنا كائن يحتوي على isFullUpdate، نقوم باستبدال الملف بالكامل
+        if (req.body.isFullUpdate === true) {
+            updatedContent = req.body.data; 
+        } else {
+            // إذا كان طلباً عادياً (رصد غياب يومي)، نقوم بالإضافة على الموجود كما كان سابقاً
+            const newEntries = Array.isArray(req.body) ? req.body : [];
+            updatedContent = [...currentContent, ...newEntries];
+        }
 
         // 3. تحديث الملف على GitHub
         await octokit.repos.createOrUpdateFileContents({
             owner,
             repo,
             path,
-            message: 'تحديث سجل الغياب اليومي - نظام الأستاذ فيصل',
+            message: req.body.isFullUpdate ? 'تطهير سجل الغياب (حذف طالب)' : 'تحديث سجل الغياب اليومي',
             content: Buffer.from(JSON.stringify(updatedContent, null, 2)).toString('base64'),
-            sha: sha // ضروري جداً للتحديث
+            sha: sha
         });
 
         return res.status(200).json({ success: true });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ error: error.message });
     }
 }
