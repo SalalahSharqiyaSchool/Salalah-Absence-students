@@ -280,9 +280,12 @@
     <div class="school-info"><h1>مدرسة صلالة الشرقية (5-9)</h1></div>
     <div class="user-controls">
         <div class="user-info">
-            <span class="teacher-name" id="displayTeacherName">المعلم</span>
-            <span id="headerDate"></span>
-        </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-user-circle" style="color: var(--accent);"></i>
+        <span class="teacher-name" id="displayTeacherName">المعلم</span>
+    </div>
+    <div id="liveClock" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 600; margin-top: 2px;"></div>
+</div>
         <button class="logout-btn" onclick="logout()" title="تسجيل الخروج">
             <i class="fas fa-sign-out-alt"></i>
         </button>
@@ -417,6 +420,29 @@
         window.location.href = 'index.html';
     }
 
+function updateLiveDateTime() {
+    const now = new Date();
+    
+    // جلب اسم اليوم
+    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const dayName = days[now.getDay()];
+    
+    // تنسيق التاريخ (يوم/شهر/سنة)
+    const dateStr = now.toLocaleDateString('ar-OM', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    // وضعهم في المكان المخصص بجانب الاسم
+    document.getElementById('liveClock').innerHTML = `${dayName} | ${dateStr}`;
+}
+
+// تشغيل الدالة فور تحميل الصفحة
+updateLiveDateTime();
+
+
+    
     function getDayName(dateString) {
         const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
         return days[new Date(dateString).getDay()];
