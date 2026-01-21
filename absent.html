@@ -635,44 +635,41 @@ updateLiveDateTime();
         });
     }
 
-    function showDeleteModal(name) {
+  function showDeleteModal(name) {
     deleteTargetName = name; 
     document.getElementById('deleteStudentName').innerText = name;
     document.getElementById('deleteModal').style.display = 'flex';
 
     document.getElementById('confirmDeleteBtn').onclick = async () => {
-        // 1. حذف الطالب من قائمة الطلاب المحلية
+        // حذف من القوائم المحلية فوراً
         students = students.filter(s => s.name !== deleteTargetName);
-
-        // 2. حذف جميع سجلات غياب هذا الطالب من ملف التاريخ المحلي
-        // هذا السطر هو الذي يمنع ظهور الغيابات القديمة عند إضافة الطالب مرة أخرى
         history = history.filter(h => h.name !== deleteTargetName);
 
         try {
-            // 3. إرسال القائمة المحدثة للطلاب إلى السيرفر
-            const resStudents = await fetch('/api/update-students', { 
+            // تحديث ملف الطلاب
+            const res1 = await fetch('/api/update-students', { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify(students) 
             });
 
-            // 4. إرسال قائمة الغياب المحدثة (بدون الطالب المحذوف) للسيرفر
-            // ملاحظة: نستخدم هنا الرابط الذي يحفظ السجل كاملاً
-            const resHistory = await fetch('/api/save-attendance', { 
+            // تحديث ملف التاريخ (إرسال أمر استبدال كامل isFullUpdate)
+            const res2 = await fetch('/api/save-attendance', { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(history) 
+                body: JSON.stringify({
+                    isFullUpdate: true,
+                    data: history
+                }) 
             });
 
-            if (resStudents.ok && resHistory.ok) { 
+            if (res1.ok && res2.ok) { 
                 closeModal(); 
                 refreshUI(); 
-                showSuccess("تم حذف الطالب وسجل غيابه نهائياً"); 
-            } else {
-                alert("تم حذف الطالب ولكن حدث خطأ في تحديث سجل الغياب");
+                showSuccess("تم حذف الطالب وسجل غيابه بنجاح"); 
             }
         } catch (e) { 
-            alert("حدث خطأ في الاتصال بالسيرفر"); 
+            alert("حدث خطأ في الاتصال"); 
         }
     };
 }
