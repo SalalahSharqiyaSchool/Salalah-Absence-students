@@ -635,41 +635,44 @@ updateLiveDateTime();
         });
     }
 
-  function showDeleteModal(name) {
+ function showDeleteModal(name) {
     deleteTargetName = name; 
     document.getElementById('deleteStudentName').innerText = name;
     document.getElementById('deleteModal').style.display = 'flex';
 
     document.getElementById('confirmDeleteBtn').onclick = async () => {
-        // حذف من القوائم المحلية فوراً
+        // 1. التعديل المحلي: حذف الطالب وغياباته من ذاكرة المتصفح الحالية
         students = students.filter(s => s.name !== deleteTargetName);
         history = history.filter(h => h.name !== deleteTargetName);
 
         try {
-            // تحديث ملف الطلاب
-            const res1 = await fetch('/api/update-students', { 
+            // 2. تحديث ملف الطلاب في GitHub (عبر API update-students)
+            const resStudents = await fetch('/api/update-students', { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify(students) 
             });
 
-            // تحديث ملف التاريخ (إرسال أمر استبدال كامل isFullUpdate)
-            const res2 = await fetch('/api/save-attendance', { 
+            // 3. تحديث سجل الغياب بالكامل في GitHub (عبر API save-attendance-full)
+            // هذا السطر هو الذي يضمن عدم ظهور الغيابات القديمة مرة أخرى
+            const resHistory = await fetch('/api/save-attendance-full', { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({
-                    isFullUpdate: true,
-                    data: history
-                }) 
+                body: JSON.stringify(history) 
             });
 
-            if (res1.ok && res2.ok) { 
+            // التحقق من نجاح العمليتين
+            if (resStudents.ok && resHistory.ok) { 
                 closeModal(); 
-                refreshUI(); 
-                showSuccess("تم حذف الطالب وسجل غيابه بنجاح"); 
+                refreshUI(); // تحديث القوائم في الصفحة
+                showSuccess("تم حذف الطالب ومسح جميع سجلات غيابه بنجاح"); 
+            } else {
+                alert("حدثت مشكلة أثناء التحديث في GitHub");
             }
+
         } catch (e) { 
-            alert("حدث خطأ في الاتصال"); 
+            console.error("Error during deletion:", e);
+            alert("فشل الاتصال بالسيرفر، يرجى المحاولة لاحقاً"); 
         }
     };
 }
