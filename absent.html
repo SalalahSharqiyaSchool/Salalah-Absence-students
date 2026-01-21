@@ -702,24 +702,44 @@ updateLiveDateTime();
     }
 
     async function addNewStudent() {
-        const n = document.getElementById('newName').value, p = document.getElementById('newPhone').value;
-        const g = document.getElementById('newGrade').value, s = document.getElementById('newSection').value;
-        if(!n || !p || !g || !s) return alert("يرجى إكمال جميع الحقول");
-        students.push({name:n, phone:p, grade:g, section:s});
-        try {
-            const res = await fetch('/api/update-students', { 
-                method:'POST', 
-                headers:{'Content-Type':'application/json'}, 
-                body:JSON.stringify(students) 
-            });
-            if(res.ok) { 
-                document.getElementById('newName').value = ""; 
-                document.getElementById('newPhone').value = ""; 
-                refreshUI(); 
-                showSuccess("تمت إضافة الطالب بنجاح"); 
-            }
-        } catch(e) { alert("حدث خطأ"); }
+    // 1. جلب القيم من الحقول
+    const n = document.getElementById('newName').value.trim();
+    const p = document.getElementById('newPhone').value.trim();
+    const g = document.getElementById('newGrade').value.trim();
+    const s = document.getElementById('newSection').value.trim();
+
+    // 2. التحقق من إدخال البيانات
+    if(!n || !p || !g || !s) {
+        return alert("يرجى إكمال جميع الحقول (الاسم، الهاتف، الصف، الشعبة)");
     }
+
+    // 3. إضافة الطالب للقائمة المحلية
+    students.push({name: n, phone: p, grade: g, section: s});
+
+    try {
+        // 4. إرسال القائمة المحدثة إلى GitHub
+        const res = await fetch('/api/update-students', { 
+            method:'POST', 
+            headers:{'Content-Type':'application/json'}, 
+            body:JSON.stringify(students) 
+        });
+
+        if(res.ok) { 
+            // 5. تفريغ الحقول بعد النجاح لتجهيزها لإضافة طالب آخر
+            document.getElementById('newName').value = ""; 
+            document.getElementById('newPhone').value = ""; 
+            // document.getElementById('newGrade').value = ""; // اختياري إذا كنت تضيف طلاب من نفس الصف
+            // document.getElementById('newSection').value = ""; 
+
+            refreshUI(); // تحديث القوائم المنسدلة في المنصة فوراً
+            showSuccess("تمت إضافة الطالب " + n + " بنجاح"); 
+        } else {
+            alert("حدث خطأ أثناء الحفظ في GitHub");
+        }
+    } catch(e) { 
+        alert("فشل الاتصال بالسيرفر"); 
+    }
+}
 
     function showSuccess(msg) { 
         document.getElementById('successMsg').innerText = msg; 
