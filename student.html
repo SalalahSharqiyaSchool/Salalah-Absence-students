@@ -460,70 +460,64 @@
             if (manageBtn) manageBtn.style.display = 'none';
         }
     }
-    async function loadData() {
-        const tName = sessionStorage.getItem('teacherName'); [cite: 97]
-        if(tName && document.getElementById('displayTeacherName')) {
-             document.getElementById('displayTeacherName').innerText = tName; [cite: 98]
-        }
-
-        const v = Date.now(); [cite: 99]
-        try {
-            const [sR, hR] = await Promise.all([
-                fetch(`student_fone.json?v=${v}`), 
-                fetch(`attendance_history.json?v=${v}`)
-            ]); [cite: 100]
-            students = await sR.json(); 
-            history = await hR.json();
-            
-            const today = new Date().toISOString().split('T')[0]; [cite: 101]
-            document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
-            
-            updateLiveDateTime(); [cite: 102]
-            applyPermissions(); // دالة جديدة لتطبيق الصلاحيات
-            initGrades(); [cite: 103]
-        } catch(e) { 
-            console.error("Error loading data", e); [cite: 104]
-            showCustomAlert("فشل في تحميل البيانات الأساسية", "error");
-        }
+   async function loadData() {
+    const tName = sessionStorage.getItem('teacherName');
+    if(tName && document.getElementById('displayTeacherName')) {
+         document.getElementById('displayTeacherName').innerText = tName;
     }
 
-    function applyPermissions() {
+    const v = Date.now();
+    try {
+        const [sR, hR] = await Promise.all([
+            fetch(`student_fone.json?v=${v}`), 
+            fetch(`attendance_history.json?v=${v}`)
+        ]);
+        
+        students = await sR.json();
+        history = await hR.json();
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
+        
+        updateLiveDateTime();
+        
+        // تنفيذ الصلاحيات أولاً ثم بناء القوائم
+        applyPermissions();
+        initGrades(); 
+        
+    } catch(e) { 
+        console.error("Error loading data", e);
+        showCustomAlert("فشل في تحميل البيانات الأساسية", "error");
+    }
+}
+
+   function applyPermissions() {
     const role = sessionStorage.getItem('userRole');
-    // جلب زر الإدارة من القائمة السفلية
-    const navItems = document.querySelectorAll('.nav-item');
-    let manageBtn = null;
-    
-    navItems.forEach(item => {
-        if (item.querySelector('.fa-users-cog')) {
-            manageBtn = item;
-        }
-    });
+    const navManageBtn = document.getElementById('navManageBtn');
 
     if (role === 'teacher') {
-        // إخفاء زر الإدارة تماماً إذا كان المستخدم معلماً
-        if (manageBtn) manageBtn.style.display = 'none';
-        console.log("تم تطبيق صلاحيات المعلم: إخفاء قسم الإدارة");
+        // إخفاء زر الإدارة تماماً من القائمة السفلية للمعلم
+        if (navManageBtn) navManageBtn.style.display = 'none';
+        console.log("صلاحيات معلم: تم إخفاء قسم الإدارة");
     }
 }
 
   function initGrades() {
     const role = sessionStorage.getItem('userRole');
+    // جلب الصفوف المسموحة من الذاكرة
     const myGrades = JSON.parse(sessionStorage.getItem('myGrades') || "[]");
     
-    // جلب الصفوف من بيانات الطلاب
+    // جلب كل الصفوف المتاحة في ملف الطلاب
     let grades = [...new Set(students.map(s => String(s.grade).trim()).filter(g => g))].sort();
 
+    // إذا كان المستخدم معلماً، نقوم بتصفية الصفوف لتظهر المسموحة له فقط
     if (role === 'teacher' && myGrades.length > 0) {
-        // تصفية ذكية: إذا كان الصف (الخامس) يحتوي على رقم (5) أو العكس
         grades = grades.filter(g => {
-            return myGrades.some(myG => {
-                let check1 = String(g).includes(String(myG)); // هل "الخامس" يحتوي "5"؟
-                let check2 = String(myG).includes(String(g)); // هل "5" موجود في "الخامس"؟
-                return check1 || check2;
-            });
+            return myGrades.some(myG => String(g).includes(String(myG)) || String(myG).includes(String(g)));
         });
     }
 
+    // تعبئة جميع القوائم المنسدلة في الصفحة
     ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
         const el = document.getElementById(id); 
         if(!el) return;
