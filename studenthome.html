@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | منصة مدرسة صلالة الشرقية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #d4af37;
+            --white: #ffffff;
+            --gold-glow: rgba(212, 175, 55, 0.5);
+        }
+        
+        body, html {
+            height: 100%; margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--primary);
+            /* تم تعديل overflow لضمان ظهور التذييل في الشاشات الصغيرة */
+            overflow-x: hidden; 
+            display: flex; flex-direction: column;
+        }
+
+        .official-header {
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            border-bottom: 3px solid var(--accent);
+            padding: 12px 20px; display: flex;
+            justify-content: space-between; align-items: center;
+            color: white; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .header-titles .country { font-size: 1.2rem; font-weight: 900; color: var(--accent); display: block; line-height: 1.2; }
+        .header-titles .info { font-size: 0.8rem; font-weight: 600; opacity: 0.9; display: block; }
+
+        .logo-circle {
+            width: 65px; height: 65px; background-color: white;
+            border-radius: 50%; border: 2px solid var(--accent);
+            padding: 2px; object-fit: cover;
+            box-shadow: 0 0 15px var(--gold-glow); transition: 0.3s ease;
+        }
+
+        .main-container {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            position: relative; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            padding: 20px 0;
+        }
+
+        .floating-card {
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.2); padding: 30px 25px;
+            border-radius: 30px; text-align: center; width: 85%; max-width: 380px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: floatEffect 4s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes floatEffect { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .floating-card h1 { color: white; font-size: 1.6rem; font-weight: 800; margin-bottom: 5px; }
+        .floating-card p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 25px; }
+
+        .input-group { margin-bottom: 15px; text-align: right; }
+        select, input {
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(255, 255, 255, 0.05); color: white; font-family: 'Cairo';
+            font-size: 1rem; outline: none; transition: 0.3s; box-sizing: border-box;
+        }
+        select option { background: var(--primary); color: white; }
+        select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--gold-glow); }
+
+        .enter-button {
+            background: linear-gradient(45deg, var(--accent), #f3d06b);
+            color: var(--primary); border: none; padding: 15px; width: 100%;
+            border-radius: 50px; font-weight: 900; font-size: 1.1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            gap: 10px; transition: 0.3s; margin-top: 10px;
+        }
+        .enter-button:hover { transform: scale(1.03); box-shadow: 0 8px 20px var(--gold-glow); }
+
+        .error-msg { color: #ff4d4d; font-size: 0.85rem; margin-top: 10px; display: none; font-weight: 700; }
+
+        /* تعديل الشريط السفلي ليكون بارزاً وواضحاً */
+        .footer { 
+            padding: 12px; 
+            text-align: center; 
+            background: #000; 
+            color: #fff; 
+            font-size: 0.85rem; 
+            border-top: 2px solid var(--accent);
+            z-index: 100;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .designer { color: var(--accent); font-weight: 800; text-shadow: 0 0 5px rgba(212, 175, 55, 0.3); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @media (max-width: 600px) { 
+            .floating-card { padding: 25px 20px; margin-bottom: 20px; } 
+            .floating-card h1 { font-size: 1.4rem; }
+            .header-titles .country { font-size: 1.1rem; }
+            .footer { font-size: 0.75rem; padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="official-header">
+        <div class="header-titles">
+            <span class="country">سلطنة عمان</span>
+            <span class="info">وزارة التربية والتعليم</span>
+            <span class="info">مدرسة صلالة الشرقية (5-9)</span>
+        </div>
+        <img src="data/logo.jpeg" class="logo-circle" alt="شعار المدرسة" onerror="this.src='https://via.placeholder.com/100'">
+    </header>
+
+    <main class="main-container">
+        <div class="floating-card" id="loginCard">
+            <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;">
+                <i class="fas fa-user-lock"></i>
+            </div>
+            <h1>تسجيل الدخول</h1>
+            <p>يرجى اختيار الاسم وإدخال الرمز</p>
+            
+            <div class="input-group">
+                <select id="teacherSelect">
+                    <option value="">-- اختر المعلم --</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="passInput" placeholder="كلمة المرور">
+            </div>
+
+            <button onclick="checkLogin()" class="enter-button">
+                دخول النظام
+                <i class="fas fa-sign-in-alt"></i>
+            </button>
+
+            <div id="errorArea" class="error-msg">كلمة المرور غير صحيحة!</div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        جميع الحقوق محفوظة &copy; 2026 | تصميم الأستاذ: <span class="designer">فيصل العريبي</span>
+    </footer>
+
+    <script>
+        let teachers = [];
+
+        async function fetchTeachers() {
+            try {
+                const response = await fetch('teachers.json?v=' + Date.now());
+                teachers = await response.json();
+                const select = document.getElementById('teacherSelect');
+                teachers.forEach(t => {
+                    let opt = document.createElement('option');
+                    opt.value = t.name;
+                    opt.innerText = t.name;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                console.error("خطأ في تحميل ملف المعلمين");
+            }
+        }
+
+    function checkLogin() {
+    const name = document.getElementById('teacherSelect').value;
+    const pass = document.getElementById('passInput').value;
+    const error = document.getElementById('errorArea');
+
+    if (!name) { 
+        alert("لطفاً، اختر اسم المستخدم أولاً"); 
+        return; 
+    }
+
+    const user = teachers.find(t => t.name === name);
+    
+    if (user && user.pass === pass) {
+        // 1. حفظ حالة تسجيل الدخول واسم المستخدم
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('teacherName', name);
+        
+        // 2. تحديد الصلاحية: إذا كان الاسم يحتوي على "مدير" فهو admin، غير ذلك معلم
+        // أو يمكنك الاعتماد على حقل role في ملف JSON إذا كنت قد أضفته
+        const userRole = (user.role === 'admin' || name.includes("مدير")) ? 'admin' : 'teacher';
+        sessionStorage.setItem('userRole', userRole);
+
+        // 3. حفظ الصفوف المسموحة (مثلاً: ["الخامس", "السادس"])
+        // يتم جلبها من ملف teachers.json، وإذا لم توجد يحفظ قائمة فارغة
+        const myGrades = user.grades ? JSON.stringify(user.grades) : JSON.stringify([]);
+        sessionStorage.setItem('myGrades', myGrades);
+
+        // الانتقال لصفحة الرصد
+        window.location.href = 'absent.html'; 
+    } else {
+        // إظهار رسالة الخطأ وتأثير الاهتزاز
+        error.style.display = 'block';
+        const card = document.getElementById('loginCard');
+        card.style.animation = 'none';
+        setTimeout(() => { card.style.animation = 'shake 0.4s'; }, 10);
+    }
+}
+
+        window.onload = fetchTeachers;
+    </script>
+</body>
+</html>
