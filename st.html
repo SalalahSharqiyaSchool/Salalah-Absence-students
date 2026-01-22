@@ -408,7 +408,26 @@
     <div class="nav-item" onclick="switchTab('manage-section', this)"><i class="fas fa-users-cog"></i><span>الإدارة</span></div>
 </nav>
 <div class="extra-bottom-bar no-print">تصميم وتنفيذ الأستاذ فيصل العريبي © 2026</div>
+<div id="customAlertModal" class="modal-overlay">
+    <div class="modal-content">
+        <i id="alertIcon" class="fas fa-info-circle" style="font-size:3rem; margin-bottom:15px; color:var(--primary);"></i>
+        <h3 id="alertTitle" style="margin-bottom:10px;">تنبيه</h3>
+        <p id="alertMessage" style="color:#666; font-size:1rem;"></p>
+        <button class="btn btn-primary" onclick="closeCustomAlert()" style="margin-top:20px;">حسناً</button>
+    </div>
+</div>
 
+<div id="confirmActionModal" class="modal-overlay">
+    <div class="modal-content">
+        <i class="fas fa-trash-alt" style="font-size:3rem; color:var(--danger); margin-bottom:15px;"></i>
+        <h3>تأكيد الحذف</h3>
+        <p id="confirmMsgContent" style="margin-bottom:20px;">هل أنت متأكد من حذف هذا السجل؟</p>
+        <div style="display:flex; gap:10px;">
+            <button id="btnConfirmYes" class="btn btn-danger" style="flex:1">نعم، احذف</button>
+            <button class="btn btn-cancel" style="flex:1" onclick="closeConfirmModal()">تراجع</button>
+        </div>
+    </div>
+</div>
 <script>
     let students = []; 
     let history = []; 
@@ -862,33 +881,79 @@ updateLiveDateTime();
     window.onload = loadData;
 
 async function deleteAttendanceRecord(name, date) {
-    if (!confirm(`هل أنت متأكد من حذف تسجيل غياب الطالب (${name}) بتاريخ ${date}؟`)) return;
+        // بدلاً من confirm العادية، نستخدم النافذة الجديدة
+        showConfirmDialog(`هل أنت متأكد من حذف غياب الطالب (${name}) بتاريخ ${date}؟`, async function() {
+            
+            // تنفيذ الحذف الفعلي بعد ضغط المستخدم على "نعم"
+            history = history.filter(h => !(h.name === name && h.date === date));
 
-    // 1. تحديث المصفوفة محلياً في الذاكرة
-    history = history.filter(h => !(h.name === name && h.date === date));
+            try {
+                const res = await fetch('/api/save-attendance-full', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(history) 
+                });
 
-    try {
-        // 2. إرسال السجل الكامل بعد الحذف إلى السيرفر (GitHub)
-        const res = await fetch('/api/save-attendance-full', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(history) 
+                if (res.ok) {
+                    generateReport(); // تحديث الجدول
+                    // استخدام رسالة النجاح الموجودة لديك أصلاً
+                    showSuccess("تم حذف السجل بنجاح");
+                } else {
+                    showCustomAlert("حدثت مشكلة أثناء الحذف من السيرفر", "error");
+                }
+            } catch (e) {
+                console.error(e);
+                showCustomAlert("فشل الاتصال بالخادم", "error");
+            }
         });
-
-        if (res.ok) {
-            // 3. إعادة توليد التقرير فوراً لتحديث الجدول أمام المستخدم
-            generateReport(); 
-            showSuccess("تم حذف تسجيل الغياب بنجاح");
-        } else {
-            alert("حدثت مشكلة أثناء الحذف من السيرفر");
-        }
-    } catch (e) {
-        console.error("Error deleting record:", e);
-        alert("فشل الاتصال بالخادم");
     }
-}
 
-  
+// --- دوال النوافذ العائمة الجديدة ---
+
+    // دالة لإظهار رسالة تنبيه أو خطأ
+    function showCustomAlert(msg, type = 'info') {
+        const modal = document.getElementById('customAlertModal');
+        const title = document.getElementById('alertTitle');
+        const icon = document.getElementById('alertIcon');
+        
+        document.getElementById('alertMessage').innerText = msg;
+        
+        // تغيير اللون والأيقونة حسب النوع
+        if (type === 'error') {
+            title.innerText = "خطأ";
+            icon.className = "fas fa-times-circle";
+            icon.style.color = "var(--danger)";
+        } else {
+            title.innerText = "تنبيه";
+            icon.className = "fas fa-info-circle";
+            icon.style.color = "var(--primary)";
+        }
+        
+        modal.style.display = 'flex';
+    }
+
+    function closeCustomAlert() {
+        document.getElementById('customAlertModal').style.display = 'none';
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmActionModal').style.display = 'none';
+    }
+
+    // دالة مساعدة لتأكيد الحذف
+    let confirmCallback = null; // متغير لتخزين العملية المراد تنفيذها
+
+    function showConfirmDialog(msg, callback) {
+        document.getElementById('confirmMsgContent').innerText = msg;
+        document.getElementById('confirmActionModal').style.display = 'flex';
+        
+        // عند الضغط على "نعم"، نفذ الدالة المحفوظة
+        document.getElementById('btnConfirmYes').onclick = function() {
+            callback();
+            closeConfirmModal();
+        };
+    }
+    
 </script>
 </body>
 </html>
