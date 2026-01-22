@@ -450,7 +450,16 @@
         const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']; [cite: 95]
         return days[new Date(dateString).getDay()]; [cite: 96]
     }
+// --- إضافة: دالة التحقق من الصلاحيات وتحديد الصفوف المسموحة ---
+    function applyPermissions() {
+        const role = sessionStorage.getItem('userRole');
+        const manageBtn = document.querySelector('.nav-item i.fa-users-cog')?.parentElement;
 
+        if (role === 'teacher') {
+            // إخفاء زر الإدارة من القائمة السفلية للمعلم
+            if (manageBtn) manageBtn.style.display = 'none';
+        }
+    }
     async function loadData() {
         const tName = sessionStorage.getItem('teacherName'); [cite: 97]
         if(tName && document.getElementById('displayTeacherName')) {
@@ -479,33 +488,43 @@
     }
 
     function applyPermissions() {
-        const role = sessionStorage.getItem('userRole');
-        if (role === 'teacher') {
-            const navBtn = document.getElementById('navManageBtn');
-            if(navBtn) navBtn.style.display = 'none';
+    const role = sessionStorage.getItem('userRole');
+    // جلب زر الإدارة من القائمة السفلية
+    const navItems = document.querySelectorAll('.nav-item');
+    let manageBtn = null;
+    
+    navItems.forEach(item => {
+        if (item.querySelector('.fa-users-cog')) {
+            manageBtn = item;
         }
+    });
+
+    if (role === 'teacher') {
+        // إخفاء زر الإدارة تماماً إذا كان المستخدم معلماً
+        if (manageBtn) manageBtn.style.display = 'none';
+        console.log("تم تطبيق صلاحيات المعلم: إخفاء قسم الإدارة");
+    }
+}
+
+   function initGrades() {
+    const role = sessionStorage.getItem('userRole');
+    // جلب الصفوف المخصصة للمعلم من الـ Session
+    const myGrades = JSON.parse(sessionStorage.getItem('myGrades') || "[]");
+    
+    let grades = [...new Set(students.map(s => String(s.grade).trim()).filter(g => g))].sort();
+
+    // إذا كان معلماً، نقوم بتصفية القائمة لتشمل صفوفه فقط
+    if (role === 'teacher' && myGrades.length > 0) {
+        grades = grades.filter(g => myGrades.includes(g));
     }
 
-    function initGrades() {
-        const role = sessionStorage.getItem('userRole');
-        const myGrades = JSON.parse(sessionStorage.getItem('myGrades') || "[]");
-        
-        let grades = [...new Set(students.map(s => String(s.grade).trim()).filter(g => g))].sort(); [cite: 105]
-
-        // فلترة الصفوف إذا كان المستخدم معلماً
-        if (role === 'teacher') {
-            grades = grades.filter(g => myGrades.includes(g));
-        }
-
-        ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
-            const el = document.getElementById(id); 
-            if(!el) return;
-            const currentVal = el.value;
-            el.innerHTML = '<option value="">الصف</option>'; [cite: 106]
-            grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
-            el.value = currentVal;
-        });
-    }
+    ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
+        const el = document.getElementById(id); 
+        if(!el) return;
+        el.innerHTML = '<option value="">الصف</option>';
+        grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
+    });
+}
 
     function updateSections(gId, sId) {
         const g = document.getElementById(gId).value; [cite: 107]
@@ -700,17 +719,19 @@
     }
 
     function switchTab(id, el) { 
-        const role = sessionStorage.getItem('userRole');
-        if(id === 'manage-section' && role === 'teacher') {
-            showCustomAlert("عذراً، هذا القسم متاح للمدير فقط", "error");
-            return;
-        }
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); [cite: 190]
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
-        document.getElementById(id).classList.add('active'); 
-        el.classList.add('active'); 
+    const role = sessionStorage.getItem('userRole');
+    
+    // منع المعلم من الانتقال لقسم الإدارة
+    if (id === 'manage-section' && role === 'teacher') {
+        showCustomAlert("عذراً، لا تملك صلاحية الدخول لقسم الإدارة", "error");
+        return;
     }
 
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
+    document.getElementById(id).classList.add('active'); 
+    el.classList.add('active'); 
+}
     function refreshUI() { 
         initGrades(); [cite: 191]
         updateSections('mainGradeSelect','mainSectionSelect'); 
