@@ -561,17 +561,27 @@
         d.selectedIndex = 0;
     }
 
-    function renderBatch() {
-        const date = document.getElementById('absentDate').value; [cite: 115]
+   function renderBatch() {
+        const date = document.getElementById('absentDate').value;
         const listArea = document.getElementById('selectedList');
-        listArea.innerHTML = currentBatch.map((s, i) => `
+        
+        if (currentBatch.length === 0) {
+            listArea.innerHTML = '<p style="text-align:center; color:#94a3b8; font-size:0.9rem;">لم يتم اختيار طلاب بعد</p>';
+            return;
+        }
+
+        let html = `<p style="font-weight:700; font-size:0.85rem; margin-bottom:10px; color:var(--primary);">الطلاب المختارون: (${currentBatch.length})</p>`;
+        
+        html += currentBatch.map((s, i) => `
             <div class="item-row">
                 <span>${s.name}</span>
                 <div class="action-icons">
                     <i class="fab fa-whatsapp" style="color:var(--wa)" onclick="sendWA('${s.phone}','${s.name}','${date}')"></i>
-                    <i class="fas fa-minus-circle" style="color:var(--danger)" onclick="currentBatch.splice(${i},1);renderBatch();"></i> [cite: 116]
+                    <i class="fas fa-minus-circle" style="color:var(--danger)" onclick="currentBatch.splice(${i},1);renderBatch();"></i>
                 </div>
-            </div>`).join(''); [cite: 117]
+            </div>`).join('');
+            
+        listArea.innerHTML = html;
     }
 
     function sendWA(phone, name, date) {
@@ -580,25 +590,34 @@
         window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
     }
 
-    async function saveData() {
-        if(!currentBatch.length) return; [cite: 120]
-        const date = document.getElementById('absentDate').value;
-        const g = document.getElementById('mainGradeSelect').value; [cite: 121]
-        const s = document.getElementById('mainSectionSelect').value;
-        const entries = currentBatch.map(b => ({ name: b.name, date, class: `${g}-${s}` })); [cite: 122]
-        try {
-            const res = await fetch('/api/save-attendance', { 
-                method:'POST', 
-                headers:{'Content-Type':'application/json'}, 
-                body:JSON.stringify(entries) 
-            }); [cite: 123]
-            if(res.ok) { 
-                history.push(...entries); [cite: 124]
-                currentBatch = []; 
-                renderBatch(); 
-                showSuccess("تم الحفظ بنجاح"); 
+   async function saveData() {
+        if(!currentBatch.length) {
+            showCustomAlert("يرجى اختيار طالب واحد على الأقل قبل الحفظ", "error");
+            return;
+        }
+
+        showConfirmDialog("هل أنت متأكد من حفظ وإرسال سجل الغياب المحدد؟", async function() {
+            const date = document.getElementById('absentDate').value;
+            const g = document.getElementById('mainGradeSelect').value;
+            const s = document.getElementById('mainSectionSelect').value;
+            const entries = currentBatch.map(b => ({ name: b.name, date, class: `${g}-${s}` }));
+            
+            try {
+                const res = await fetch('/api/save-attendance', { 
+                    method:'POST', 
+                    headers:{'Content-Type':'application/json'}, 
+                    body:JSON.stringify(entries) 
+                });
+                if(res.ok) { 
+                    history.push(...entries);
+                    currentBatch = []; 
+                    renderBatch(); 
+                    showSuccess("تم تسجيل الغياب وإرسال البيانات بنجاح"); 
+                }
+            } catch(e) { 
+                showCustomAlert("فشل الاتصال بالخادم، يرجى التحقق من الإنترنت", "error");
             }
-        } catch(e) { showCustomAlert("فشل الاتصال بالخادم", "error"); [cite: 125] }
+        });
     }
 
     function generateReport() {
@@ -710,8 +729,19 @@
     }
 
     function showSuccess(msg) { 
-        document.getElementById('successMsg').innerText = msg; [cite: 188]
-        document.getElementById('successModal').style.display = 'flex'; 
+        const successMsgEl = document.getElementById('successMsg');
+        if (successMsgEl) successMsgEl.innerText = msg;
+        
+        const modal = document.getElementById('successModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            // إضافة تأثير اهتزاز خفيف للأيقونة داخل النافذة
+            const icon = modal.querySelector('i');
+            if (icon) {
+                icon.style.transform = 'scale(1.2)';
+                setTimeout(() => icon.style.transform = 'scale(1)', 200);
+            }
+        }
     }
 
     function closeModal() { 
