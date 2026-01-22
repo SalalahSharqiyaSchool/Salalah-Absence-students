@@ -506,16 +506,22 @@
     }
 }
 
-   function initGrades() {
+  function initGrades() {
     const role = sessionStorage.getItem('userRole');
-    // جلب الصفوف المخصصة للمعلم من الـ Session
     const myGrades = JSON.parse(sessionStorage.getItem('myGrades') || "[]");
     
+    // جلب الصفوف من بيانات الطلاب
     let grades = [...new Set(students.map(s => String(s.grade).trim()).filter(g => g))].sort();
 
-    // إذا كان معلماً، نقوم بتصفية القائمة لتشمل صفوفه فقط
     if (role === 'teacher' && myGrades.length > 0) {
-        grades = grades.filter(g => myGrades.includes(g));
+        // تصفية ذكية: إذا كان الصف (الخامس) يحتوي على رقم (5) أو العكس
+        grades = grades.filter(g => {
+            return myGrades.some(myG => {
+                let check1 = String(g).includes(String(myG)); // هل "الخامس" يحتوي "5"؟
+                let check2 = String(myG).includes(String(g)); // هل "5" موجود في "الخامس"؟
+                return check1 || check2;
+            });
+        });
     }
 
     ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
