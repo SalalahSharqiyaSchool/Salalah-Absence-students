@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تقرير الغياب الرسمي - مدرسة صلالة الشرقية</title>
+    <title>منظومة فيصل العريبي للتحليل الإشرافي</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -10,85 +10,99 @@
         :root { --primary: #0f172a; --accent: #d4af37; --danger: #ef4444; --warning: #f59e0b; --bg: #f1f5f9; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: var(--primary); }
 
-        /* تنسيق الشاشة */
+        /* ترويسة الموقع */
         .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
+        .app-header h1 { margin: 0; font-size: 1.2rem; color: var(--accent); font-weight: 900; }
+
         .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+
+        /* الفلاتر */
         .filters-card { background: white; padding: 15px; border-radius: 12px; display: flex; gap: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 2px solid var(--accent); }
         select { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo'; font-weight: 700; }
-        .btn-print { background: #059669; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .btn-print { background: var(--primary); color: var(--accent); border: none; padding: 10px 25px; border-radius: 8px; font-weight: 800; cursor: pointer; font-family: 'Cairo'; }
 
+        /* شبكة النتائج */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 200px; }
-        .card-header { padding: 12px 15px; font-weight: 900; color: white; }
+        @media (max-width: 768px) { .stat-grid { grid-template-columns: 1fr; } .filters-card { flex-direction: column; } }
+
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 150px; }
+        .card-header { padding: 12px 15px; font-weight: 900; color: white; font-size: 0.95rem; }
         .card.red .card-header { background: var(--danger); }
         .card.orange .card-header { background: var(--warning); }
 
-        .student-card { background: #fff; border: 1px solid #edf2f7; border-radius: 10px; margin: 10px; padding: 12px; border-right: 4px solid #ddd; }
-        .st-name-row { display: block; font-weight: 900; font-size: 1.05rem; margin-bottom: 5px; }
+        /* تصميم البطاقة الذي أعجبك */
+        .student-card { 
+            background: #fff; border: 1px solid #edf2f7; border-radius: 10px; 
+            margin: 10px; padding: 12px; border-right: 4px solid transparent;
+        }
+        .card.red .student-card { border-right-color: var(--danger); }
+        .card.orange .student-card { border-right-color: var(--warning); }
+
+        .st-name-row { display: block; font-weight: 900; font-size: 1.05rem; color: var(--primary); margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
         .st-info-row { display: flex; justify-content: space-between; align-items: center; }
-        .wa-btn { color: #25d366; font-size: 1.5rem; text-decoration: none; }
+        .st-meta { display: flex; align-items: center; gap: 10px; color: #64748b; font-size: 0.8rem; font-weight: 700; }
+        .meta-tag { background: #f1f5f9; padding: 2px 8px; border-radius: 4px; }
+        
+        .wa-btn { width: 34px; height: 34px; background: #25d366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1rem; }
 
-        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); color: white; text-align: center; padding: 12px; border-top: 3px solid var(--accent); }
+        .waiting-msg { text-align: center; padding: 40px 20px; color: #94a3b8; font-weight: 700; }
 
-        /* التنسيق الرسمي للطباعة فقط */
-        #printHeader, #printSignatures { display: none; }
+        /* الشريط السفلي سطر واحد */
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); color: white; text-align: center; padding: 12px; border-top: 3px solid var(--accent); font-size: 0.85rem; z-index: 2000; }
+
+        /* تنسيق الطباعة الرسمي */
+        #printOfficialHeader, #printOfficialSignatures { display: none; }
 
         @media print {
-            @page { size: A4; margin: 1cm; }
-            body { background: white; padding: 0; }
             .no-print { display: none !important; }
-            
-            #printHeader { display: block; width: 100%; border-bottom: 2px solid black; margin-bottom: 20px; padding-bottom: 10px; }
-            .header-table { width: 100%; text-align: center; font-weight: bold; font-size: 14px; }
-            
-            .stat-grid { display: block; }
-            .card { border: none; box-shadow: none; margin-bottom: 30px; }
-            .card-header { color: black !important; background: #eee !important; border: 1px solid #000; text-align: center; }
-            
-            .student-card { border: 1px solid #000 !important; border-right-width: 10px !important; page-break-inside: avoid; margin: 5px 0; }
-            
-            #printSignatures { display: flex; justify-content: space-around; margin-top: 50px; font-weight: bold; border-top: 1px dashed #ccc; padding-top: 20px; }
-            .sig-box { text-align: center; width: 200px; }
+            body { background: white; padding: 0; }
+            #printOfficialHeader { display: block; width: 100%; border-bottom: 2px solid black; margin-bottom: 20px; padding: 10px; }
+            .header-table { width: 100%; text-align: center; font-weight: bold; font-size: 12px; }
+            .card { border: 1px solid #000 !important; box-shadow: none !important; margin-bottom: 20px; }
+            .card-header { color: #000 !important; background: #f0f0f0 !important; border-bottom: 1px solid #000; }
+            .student-card { border: 1px solid #ccc !important; break-inside: avoid; }
+            #printOfficialSignatures { display: flex; justify-content: space-around; margin-top: 40px; font-weight: bold; }
+            .footer-bar { position: static; color: black; background: white; border: none; }
         }
     </style>
 </head>
 <body>
 
-<div id="printHeader">
-    <table class="header-table">
+<div id="printOfficialHeader">
+    <table class="header-table" dir="rtl">
         <tr>
-            <td width="30%">سلطنة عمان<br>وزارة التربية والتعليم<br>المديرية العامة للتربية والتعليم بمحافظة ظفار<br>مدرسة صلالة الشرقية (5-9)</td>
-            <td width="40%"><i class="fas fa-graduation-cap" style="font-size: 3rem; margin-bottom: 10px;"></i><br>تقرير متابعة غياب الطلاب</td>
-            <td width="30%">التاريخ: <span id="currentDate"></span><br>الصف: <span id="printGrade">---</span><br>الشعبة: <span id="printSection">---</span></td>
+            <td width="30%" align="right">سلطنة عمان<br>وزارة التربية والتعليم<br>مدرسة صلالة الشرقية (5-9)</td>
+            <td width="40%" align="center"><h2 style="margin:0">تقرير متابعة الغياب</h2></td>
+            <td width="30%" align="left">التاريخ: <span id="pDate"></span><br>الصف: <span id="pGrade"></span> / <span id="pSection"></span></td>
         </tr>
     </table>
 </div>
 
 <header class="app-header no-print">
-    <h1><i class="fas fa-shield-alt"></i> منظومة الإشراف والمتابعة الذكية</h1>
+    <h1><i class="fas fa-user-shield"></i> منظومة الإشراف - مدرسة صلالة الشرقية</h1>
 </header>
 
 <div class="container">
     <div class="filters-card no-print">
         <select id="gradeFilter" onchange="updateSections()"><option value="">-- اختر الصف --</option></select>
         <select id="sectionFilter" onchange="analyzeData()"><option value="">-- اختر الشعبة --</option></select>
-        <button class="btn-print" onclick="preparePrint()"><i class="fas fa-print"></i> طباعة التقرير الرسمي</button>
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
     </div>
 
     <div class="stat-grid">
-        <div class="card red" id="redCard">
-            <div class="card-header">أولاً: حالات الانقطاع عن الدراسة (3 أيام متتالية فأكثر)</div>
-            <div id="consecutiveList"><div style="text-align:center; padding:40px; color:#999;">يرجى اختيار البيانات أولاً</div></div>
+        <div class="card red">
+            <div class="card-header">طلاب منقطعون (3 أيام+ متتالية)</div>
+            <div id="consecutiveList"><div class="waiting-msg">يرجى اختيار الصف والشعبة</div></div>
         </div>
-        <div class="card orange" id="orangeCard">
-            <div class="card-header">ثانياً: حالات الغياب المتكرر (3 أيام فأكثر خلال الأسبوع)</div>
-            <div id="weeklyLimitList"><div style="text-align:center; padding:40px; color:#999;">يرجى اختيار البيانات أولاً</div></div>
+        <div class="card orange">
+            <div class="card-header">غياب متكرر (3 أيام+ أسبوعياً)</div>
+            <div id="weeklyLimitList"><div class="waiting-msg">يرجى اختيار الصف والشعبة</div></div>
         </div>
     </div>
 
-    <div id="printSignatures">
-        <div class="sig-box">توقيع المشرف الإداري<br><br>...........................</div>
-        <div class="sig-box">اعتماد مدير المدرسة<br><br>...........................</div>
+    <div id="printOfficialSignatures">
+        <div style="text-align:center">توقيع المشرف الإداري<br><br>...........................</div>
+        <div style="text-align:center">اعتماد مدير المدرسة<br><br>...........................</div>
     </div>
 </div>
 
@@ -103,17 +117,17 @@
         const v = Date.now();
         const [sR, hR] = await Promise.all([fetch(`student_fone.json?v=${v}`), fetch(`attendance_history.json?v=${v}`)]);
         students = await sR.json(); history = await hR.json();
+        document.getElementById('pDate').innerText = new Date().toLocaleDateString('ar-OM');
 
         const cleanGrades = [...new Set(students.map(s => s.grade))].filter(g => g).sort((a,b)=>Number(a)-Number(b));
         cleanGrades.forEach(g => document.getElementById('gradeFilter').innerHTML += `<option value="${g}">${g}</option>`);
-        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ar-OM');
     }
 
     function updateSections() {
         const g = document.getElementById('gradeFilter').value;
         const sFilter = document.getElementById('sectionFilter');
         sFilter.innerHTML = '<option value="">-- اختر الشعبة --</option>';
-        document.getElementById('consecutiveList').innerHTML = document.getElementById('weeklyLimitList').innerHTML = '<div style="text-align:center; padding:40px; color:#999;">يرجى اختيار الشعبة</div>';
+        document.getElementById('consecutiveList').innerHTML = document.getElementById('weeklyLimitList').innerHTML = '<div class="waiting-msg">يرجى اختيار الشعبة</div>';
         if(g) {
             const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => s.section))].filter(s=>s).sort();
             sections.forEach(s => sFilter.innerHTML += `<option value="${s}">${s}</option>`);
@@ -125,8 +139,8 @@
         const s = document.getElementById('sectionFilter').value;
         if(!g || !s) return;
 
-        document.getElementById('printGrade').innerText = g;
-        document.getElementById('printSection').innerText = s;
+        document.getElementById('pGrade').innerText = g;
+        document.getElementById('pSection').innerText = s;
 
         let filtered = students.filter(st => String(st.grade) === g && String(st.section) === s);
         let consHTML = ""; let weekHTML = "";
@@ -137,33 +151,28 @@
             const maxWeek = getMaxWeekCount(dates);
 
             if(maxCons >= 3) {
-                consHTML += createCard(st, `انقطاع لمدة ${maxCons} أيام متتالية`);
+                consHTML += createCardHTML(st, `${maxCons} أيام متتالية`, `إشعار انقطاع للطالب: ${st.name}`);
             } else if(maxWeek >= 3) {
-                weekHTML += createCard(st, `تجاوز الحد الأسبوعي (${maxWeek} أيام)`);
+                weekHTML += createCardHTML(st, `غائب ${maxWeek} أيام/أسبوع`, `إشعار غياب للطالب: ${st.name}`);
             }
         });
 
-        document.getElementById('consecutiveList').innerHTML = consHTML || '<div style="text-align:center; padding:20px;">لا توجد حالات</div>';
-        document.getElementById('weeklyLimitList').innerHTML = weekHTML || '<div style="text-align:center; padding:20px;">لا توجد حالات</div>';
+        document.getElementById('consecutiveList').innerHTML = consHTML || '<div class="waiting-msg">لا توجد حالات</div>';
+        document.getElementById('weeklyLimitList').innerHTML = weekHTML || '<div class="waiting-msg">لا توجد حالات</div>';
     }
 
-    function createCard(st, status) {
+    function createCardHTML(st, badge, msg) {
         return `
         <div class="student-card">
             <span class="st-name-row">${st.name}</span>
             <div class="st-info-row">
-                <span>الحالة: <b>${status}</b></span>
-                <a href="https://wa.me/${st.phone}" target="_blank" class="wa-btn no-print"><i class="fab fa-whatsapp"></i></a>
+                <div class="st-meta">
+                    <span class="meta-tag">صف: ${st.grade}/${st.section}</span>
+                    <span style="color:var(--primary)">${badge}</span>
+                </div>
+                <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn no-print"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>`;
-    }
-
-    function preparePrint() {
-        if(!document.getElementById('sectionFilter').value) {
-            alert("يرجى اختيار الصف والشعبة أولاً ليتم تجهيز التقرير");
-            return;
-        }
-        window.print();
     }
 
     function getMaxConsecutive(dates) {
