@@ -7,131 +7,122 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --white: #ffffff; --danger: #e11d48; --warning: #f59e0b; --success: #22c55e; }
+        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f1f5f9; --white: #ffffff; --danger: #ef4444; --warning: #f59e0b; }
         
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; color: var(--primary); }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: var(--primary); }
+
+        /* الهيدر العلوي */
+        .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .app-header h1 { margin: 0; font-size: 1.2rem; color: var(--accent); font-weight: 900; }
+
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+
+        /* كرت الرادار */
+        .radar-card { background: var(--white); border-radius: 15px; padding: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); margin-bottom: 20px; border-right: 6px solid var(--danger); display: none; }
+        .radar-title { font-weight: 800; font-size: 0.9rem; margin-bottom: 10px; color: var(--danger); display: flex; align-items: center; gap: 8px; }
+        .radar-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .alert-badge { 
+            background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; padding: 6px 12px; 
+            border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .alert-badge:hover { background: var(--danger); color: white; }
+
+        /* كرت الفلترة */
+        .filter-card { background: var(--white); border-radius: 15px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .filter-title { font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-size: 1rem; }
+        select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo'; font-weight: 700; margin-bottom: 10px; font-size: 0.95rem; }
+        
+        .btn-print { background: var(--primary); color: var(--accent); width: 100%; padding: 12px; border: none; border-radius: 10px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.95rem; }
+
+        /* كروت الطلاب */
+        .student-card { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); position: relative; border-right: 8px solid var(--primary); }
+        .student-card.critical { border-right-color: var(--danger); }
+        .student-card.warning { border-right-color: var(--warning); }
+
+        .st-name { font-weight: 900; font-size: 1.05rem; display: block; margin-bottom: 4px; }
+        .st-status { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; display: inline-block; padding: 3px 8px; border-radius: 4px; }
+        .bg-red { background: #fee2e2; color: var(--danger); }
+        .bg-orange { background: #fef3c7; color: #b45309; }
+
+        .st-dates { font-size: 0.75rem; color: #64748b; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; }
+
+        .wa-float { position: absolute; left: 15px; top: 20px; background: #25d366; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4); text-decoration: none; }
+
+        /* الشريط السفلي (حقوق الملكية) */
+        .footer-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--primary); color: white;
+            text-align: center; padding: 10px;
+            border-top: 3px solid var(--accent);
+            font-size: 0.75rem; z-index: 2000;
+            display: flex; justify-content: center; align-items: center; gap: 5px;
+        }
 
         /* الهيدر الرسمي للطباعة */
-        .print-header { display: none; padding: 20px; border-bottom: 2px solid var(--primary); margin-bottom: 20px; }
-        .print-header table { width: 100%; border: none; }
-
-        /* الهيدر العلوي للموقع */
-        .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
-        .app-header h1 { margin: 0; font-size: 1.1rem; color: var(--accent); font-weight: 900; }
-
-        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
-
-        /* كرت التنبيهات (الرادار) بتنسيق أنيق */
-        .radar-card { background: var(--white); border-radius: 15px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
-        .radar-title { font-weight: 900; font-size: 0.9rem; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .radar-list { display: flex; flex-wrap: wrap; gap: 10px; }
-        .alert-pill { 
-            padding: 8px 15px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; min-width: 60px; transition: 0.3s;
-        }
-        .pill-red { background: #fff1f2; color: var(--danger); border: 1px solid #fecdd3; }
-        .pill-orange { background: #fffbeb; color: #b45309; border: 1px solid #fef3c7; }
-        .alert-pill:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-
-        /* فلاتر البحث */
-        .filter-card { background: var(--white); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #e2e8f0; }
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end; }
-        select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #e2e8f0; font-family: 'Cairo'; font-weight: 700; color: var(--primary); }
-        .btn-print { background: var(--primary); color: var(--accent); border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-family: 'Cairo'; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-
-        /* جدول النتائج */
-        .results-box { background: var(--white); border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        table { width: 100%; border-collapse: collapse; text-align: center; }
-        th { background: var(--primary); color: var(--accent); padding: 15px; font-size: 0.85rem; }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; vertical-align: middle; }
+        .official-header { display: none; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 2px solid #000; }
         
-        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
-        .bg-red { background: #fff1f2; color: var(--danger); }
-        .bg-orange { background: #fffbeb; color: #b45309; }
-
-        .wa-link { color: var(--success); font-size: 1.3rem; text-decoration: none; transition: 0.2s; }
-        .wa-link:hover { transform: scale(1.2); }
-
-        .signature-area { display: none; margin-top: 50px; justify-content: space-between; padding: 0 50px; }
-
-        @media (max-width: 768px) { .filter-grid { grid-template-columns: 1fr; } }
-
         @media print {
             .no-print { display: none !important; }
-            .print-header, .signature-area { display: flex !important; }
+            .official-header { display: block !important; }
             body { background: white; padding: 0; }
-            .container { max-width: 100%; margin: 0; padding: 0; }
-            .results-box { border: none; box-shadow: none; }
-            th { background: #eee !important; color: #000 !important; border: 1px solid #000; }
-            td { border: 1px solid #000; }
+            .student-card { border: 1px solid #000 !important; box-shadow: none !important; break-inside: avoid; }
+            .wa-float { display: none; }
+            .footer-bar { position: static; color: black; background: white; border: none; font-weight: bold; margin-top: 30px; }
         }
     </style>
 </head>
 <body>
 
-<div class="print-header">
-    <table dir="rtl">
+<div class="official-header">
+    <table width="100%" dir="rtl">
         <tr>
-            <td style="text-align: right; border: none; width: 30%;">سلطنة عمان<br>وزارة التربية والتعليم<br>مدرسة صلالة الشرقية (5-9)</td>
-            <td style="text-align: center; border: none; width: 40%;">
-                <i class="fas fa-graduation-cap" style="font-size: 2.5rem; color: #000;"></i><br>
-                <strong>تقرير متابعة الغياب المنقطع والمتكرر</strong><br>
-                تاريخ التقرير: <span id="pDate"></span>
+            <td width="30%" style="text-align: right; font-size: 0.8rem; font-weight: bold;">
+                سلطنة عمان<br>وزارة التربية والتعليم<br>مدرسة صلالة الشرقية (5-9)
             </td>
-            <td style="text-align: left; border: none; width: 30%;">قسم شؤون الطلاب<br>مكتب مشرف الصف<br>العام الدراسي 2025/2026</td>
+            <td width="40%" style="text-align: center;">
+                <i class="fas fa-graduation-cap" style="font-size: 2.5rem;"></i><br>
+                <h3 style="margin: 5px 0;">تقرير الغياب والإنقطاع</h3>
+            </td>
+            <td width="30%" style="text-align: left; font-size: 0.8rem; font-weight: bold;">
+                تاريخ: <span id="pDate"></span><br>العام الدراسي 2025/2026
+            </td>
         </tr>
     </table>
 </div>
 
 <header class="app-header no-print">
-    <h1><i class="fas fa-user-shield"></i> منظومة الإشراف الإداري الرقمية</h1>
+    <h1><i class="fas fa-shield-alt"></i> منظومة الإشراف الإداري</h1>
 </header>
 
 <div class="container">
     
-    <div class="radar-card no-print" id="radarSection" style="display: none;">
-        <div class="radar-title"><i class="fas fa-bell" style="color:var(--danger)"></i> تنبيهات تستدعي التدخل الفوري:</div>
-        <div class="radar-list" id="radarList"></div>
+    <div id="radarSection" class="radar-card no-print">
+        <div class="radar-title"><i class="fas fa-bell"></i> صفوف تحتاج للمتابعة:</div>
+        <div id="radarList" class="radar-grid"></div>
     </div>
 
     <div class="filter-card no-print">
-        <div class="filter-grid">
-            <div>
-                <label style="font-size:0.75rem; font-weight:800;">الصف:</label>
-                <select id="gSel" onchange="updateS()"></select>
-            </div>
-            <div>
-                <label style="font-size:0.75rem; font-weight:800;">الشعبة:</label>
-                <select id="sSel" onchange="analyze()"><option value="">-- اختر الشعبة --</option></select>
-            </div>
-            <button class="btn-print" onclick="window.print()">
-                <i class="fas fa-print"></i> طباعة التقرير
-            </button>
+        <div class="filter-title"><i class="fas fa-search"></i> البحث والطباعة</div>
+        <select id="gradeSel" onchange="updateSections()"></select>
+        <select id="secSel" onchange="runAnalysis()"><option value="">-- اختر الشعبة --</option></select>
+        <button class="btn-print" onclick="window.print()">
+            <i class="fas fa-print"></i> طباعة التقرير الرسمي
+        </button>
+    </div>
+
+    <div id="resultsArea">
+        <div style="text-align: center; color: #94a3b8; padding: 40px;">
+            <i class="fas fa-clipboard-check" style="font-size: 3rem; margin-bottom: 10px;"></i>
+            <p>اختر الصف والشعبة لعرض الحالات</p>
         </div>
     </div>
+</div>
 
-    <div class="results-box">
-        <table>
-            <thead>
-                <tr>
-                    <th width="30%">اسم الطالب</th>
-                    <th width="15%">الصف / الشعبة</th>
-                    <th width="20%">نوع التنبيه</th>
-                    <th width="25%">أيام الغياب</th>
-                    <th width="10%" class="no-print">واتساب</th>
-                </tr>
-            </thead>
-            <tbody id="resTable">
-                <tr><td colspan="5" style="padding:40px; color:#94a3b8;">يرجى اختيار الصف والشعبة من القائمة أو الرادار</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="signature-area">
-        <div style="text-align: center;">مشرف الصف<br><br>...........................</div>
-        <div style="text-align: center;">مساعد مدير المدرسة<br><br>...........................</div>
-        <div style="text-align: center;">مدير المدرسة<br><br>...........................</div>
-    </div>
+<div class="footer-bar no-print">
+    <i class="fas fa-code"></i> تصميم وتنفيذ الأستاذ: <span style="color:var(--accent); font-weight:700; margin-right:4px;">فيصل العريبي</span> | جميع الحقوق محفوظة ©
+</div>
+<div class="footer-bar" style="display:none;">
+    تصميم وتنفيذ: أ. فيصل العريبي
 </div>
 
 <script>
@@ -148,22 +139,34 @@
         
         document.getElementById('pDate').innerText = new Date().toLocaleDateString('ar-OM');
         
-        const grades = [...new Set(students.map(s => String(s.grade)))].sort();
-        document.getElementById('gSel').innerHTML = '<option value="">-- الصف --</option>' + 
-            grades.map(g => `<option value="${g}">${g}</option>`).join('');
+        // --- تصحيح القائمة (حذف الفراغات والترتيب) ---
+        const rawGrades = [...new Set(students.map(s => s.grade))];
+        
+        // 1. فلترة: حذف القيم الفارغة أو null أو المسافات
+        const cleanGrades = rawGrades.filter(g => g && String(g).trim() !== "");
+        
+        // 2. ترتيب: تحويلها لأرقام لضمان الترتيب الصحيح 5, 6, 7
+        cleanGrades.sort((a, b) => Number(a) - Number(b));
+
+        document.getElementById('gradeSel').innerHTML = '<option value="">-- اختر الصف --</option>' + 
+            cleanGrades.map(g => `<option value="${g}">${g}</option>`).join('');
+        // ---------------------------------------------
 
         buildRadar();
     }
 
-    function updateS() {
-        const g = document.getElementById('gSel').value;
-        const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => String(s.section)))].sort();
-        document.getElementById('sSel').innerHTML = '<option value="">-- الشعبة --</option>' + 
-            sections.map(s => `<option value="${s}">${s}</option>`).join('');
-        analyze();
+    function updateSections() {
+        const g = document.getElementById('gradeSel').value;
+        // تنظيف وترتيب الشعب أيضاً
+        const rawSections = [...new Set(students.filter(s => String(s.grade) === g).map(s => s.section))];
+        const cleanSections = rawSections.filter(s => s && String(s).trim() !== "").sort();
+
+        document.getElementById('secSel').innerHTML = '<option value="">-- اختر الشعبة --</option>' + 
+            cleanSections.map(s => `<option value="${s}">${s}</option>`).join('');
+        
+        runAnalysis();
     }
 
-    // بناء الرادار (يظهر فقط الصفوف المتضررة)
     function buildRadar() {
         const list = document.getElementById('radarList');
         const section = document.getElementById('radarSection');
@@ -171,70 +174,79 @@
         
         const classes = [...new Set(students.map(s => `${s.grade}|${s.section}`))];
 
+        // ترتيب الرادار أيضاً
+        classes.sort((a,b) => {
+            const [g1, s1] = a.split('|');
+            const [g2, s2] = b.split('|');
+            return Number(g1) - Number(g2) || s1.localeCompare(s2);
+        });
+
         classes.forEach(cls => {
             const [g, s] = cls.split('|');
+            if(!g || g === "undefined" || !s) return; // تجاهل البيانات التالفة
+
             const classSt = students.filter(st => String(st.grade)===g && String(st.section)===s);
-            let hasDanger = false; let hasWarn = false;
+            let hasIssue = false;
 
             classSt.forEach(st => {
                 const abs = history.filter(h => h.name === st.name).map(h => h.date).sort();
-                if(getConsec(abs) >= 3) hasDanger = true;
-                else if(getMaxW(abs) >= 3) hasWarn = true;
+                if(getConsec(abs) >= 3 || getMaxWeek(abs) >= 3) hasIssue = true;
             });
 
-            if(hasDanger || hasWarn) {
-                const pill = document.createElement('div');
-                pill.className = `alert-pill ${hasDanger ? 'pill-red' : 'pill-orange'}`;
-                pill.innerHTML = `<span>${g}/${s}</span><span style="font-size:0.6rem;">${hasDanger ? 'منقطع' : 'متكرر'}</span>`;
-                pill.onclick = () => {
-                    document.getElementById('gSel').value = g;
-                    updateS();
-                    document.getElementById('sSel').value = s;
-                    analyze();
+            if(hasIssue) {
+                const btn = document.createElement('div');
+                btn.className = 'alert-badge';
+                btn.innerText = `صف ${g}/${s}`;
+                btn.onclick = () => {
+                    document.getElementById('gradeSel').value = g;
+                    updateSections();
+                    document.getElementById('secSel').value = s;
+                    runAnalysis();
                 };
-                list.appendChild(pill);
+                list.appendChild(btn);
             }
         });
 
         if(list.innerHTML !== "") section.style.display = 'block';
     }
 
-    function analyze() {
-        const g = document.getElementById('gSel').value;
-        const s = document.getElementById('sSel').value;
-        const tbody = document.getElementById('resTable');
+    function runAnalysis() {
+        const g = document.getElementById('gradeSel').value;
+        const s = document.getElementById('secSel').value;
+        const area = document.getElementById('resultsArea');
         if(!g || !s) return;
 
         let html = "";
         const filtered = students.filter(x => String(x.grade) === g && String(x.section) === s);
 
         filtered.forEach(st => {
-            const stAbs = history.filter(h => h.name === st.name).map(h => h.date).sort();
-            const con = getConsec(stAbs);
-            const week = getMaxW(stAbs);
+            const abs = history.filter(h => h.name === st.name).map(h => h.date).sort();
+            const consec = getConsec(abs);
+            const weekMax = getMaxWeek(abs);
 
-            if(con >= 3 || week >= 3) {
-                const type = con >= 3 ? "انقطاع متواصل" : "تكرار غياب";
-                const badge = con >= 3 ? "bg-red" : "bg-orange";
+            if(consec >= 3 || weekMax >= 3) {
+                const isCritical = consec >= 3;
+                const statusText = isCritical ? `منقطع عن الدراسة (${consec} أيام متتالية)` : `غياب متكرر (${weekMax} أيام في أسبوع)`;
+                const badgeClass = isCritical ? 'bg-red' : 'bg-orange';
+                const cardClass = isCritical ? 'critical' : 'warning';
                 
-                let waMsg = `مدرسة صلالة الشرقية\nبخصوص الطالب: *${st.name}*\nنحيطكم علماً بأن الطالب غائب لمدة (${con >= 3 ? con : week}) أيام. يرجى مراجعة المدرسة.`;
+                let waMsg = `مدرسة صلالة الشرقية\nعناية ولي أمر الطالب: *${st.name}*\n`;
+                if(isCritical) waMsg += `نحيطكم علماً بأن الطالب منقطع منذ ${consec} أيام. يرجى مراجعة المدرسة فوراً.`;
+                else waMsg += `نلاحظ تكرار غياب الطالب بمعدل ${weekMax} أيام أسبوعياً. نرجو المتابعة.`;
 
                 html += `
-                <tr>
-                    <td style="text-align:right; font-weight:800;">${st.name}</td>
-                    <td>${st.grade} / ${st.section}</td>
-                    <td><span class="status-badge ${badge}">${type}</span></td>
-                    <td style="font-size:0.75rem;">${stAbs.join(' | ')}</td>
-                    <td class="no-print">
-                        <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(waMsg)}" target="_blank" class="wa-link">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                    </td>
-                </tr>`;
+                <div class="student-card ${cardClass}">
+                    <span class="st-name">${st.name}</span>
+                    <span class="st-status ${badgeClass}">${statusText}</span>
+                    <div class="st-dates">تواريخ الغياب: ${abs.join(' | ')}</div>
+                    <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(waMsg)}" target="_blank" class="wa-float no-print">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>`;
             }
         });
 
-        tbody.innerHTML = html || '<tr><td colspan="5" style="padding:40px;">لا توجد حالات غياب تستدعي المتابعة في هذه الشعبة</td></tr>';
+        area.innerHTML = html || '<div style="text-align:center; padding:20px;">ممتاز! لا توجد حالات غياب تستدعي التنبيه في هذا الصف.</div>';
     }
 
     function getConsec(dates) {
@@ -248,7 +260,7 @@
         return Math.max(max,c);
     }
 
-    function getMaxW(dates) {
+    function getMaxWeek(dates) {
         const counts = {};
         dates.forEach(x => {
             const d = new Date(x);
