@@ -7,86 +7,90 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc; }
+        :root { --primary: #0f172a; --accent: #d4af37; --danger: #ef4444; --warning: #f59e0b; --bg: #f1f5f9; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: var(--primary); }
 
         .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
-        .app-header h1 { margin: 0; font-size: 1.3rem; color: var(--accent); font-weight: 900; }
+        .app-header h1 { margin: 0; font-size: 1.2rem; color: var(--accent); font-weight: 900; }
 
-        .container { max-width: 1100px; margin: 25px auto; padding: 0 15px; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
 
-        /* الرادار الملون */
-        .radar-box { background: white; border-radius: 12px; padding: 15px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: none; }
-        .radar-head { font-weight: 900; font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        /* رادار التنبيهات */
+        .radar-box { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .radar-head { font-weight: 900; font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: var(--danger); }
         .radar-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-        
-        .tag-red { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; padding: 5px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        .tag-orange { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 5px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .tag-red { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+        .tag-orange { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
 
-        .filters-card { background: white; padding: 20px; border-radius: 15px; display: flex; gap: 15px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        select { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid #e2e8f0; font-family: 'Cairo'; font-weight: 700; }
-        
-        .btn-print { background: var(--primary); color: var(--accent); border: none; padding: 12px 25px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; gap: 8px; align-items: center; }
+        /* الفلاتر */
+        .filters-card { background: white; padding: 15px; border-radius: 12px; display: flex; gap: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 2px solid var(--accent); }
+        select { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo'; font-weight: 700; background: #f8fafc; cursor: pointer; }
+        select:focus { outline: none; border-color: var(--primary); }
+        .btn-print { background: var(--primary); color: var(--accent); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; font-family: 'Cairo'; }
 
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        /* النتائج */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 768px) { .stat-grid { grid-template-columns: 1fr; } .filters-card { flex-direction: column; } }
 
-        .card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #f1f5f9; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .card-header { padding: 15px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 200px; }
+        .card-header { padding: 12px 15px; font-weight: 900; color: white; font-size: 0.95rem; }
         .card.red .card-header { background: var(--danger); }
         .card.orange .card-header { background: var(--warning); }
-        .card-body { padding: 15px; min-height: 150px; }
 
-        /* تعديل ظهور الاسم والصف */
-        .student-item { background: #f8fafc; padding: 12px 18px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .st-main-info { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .st-name { font-weight: 800; font-size: 1rem; color: var(--primary); }
-        .st-class-tag { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
+        /* البطاقة التعليمية */
+        .student-card { background: #fff; border: 1px solid #edf2f7; border-radius: 10px; margin: 10px; padding: 12px; border-right: 4px solid transparent; }
+        .card.red .student-card { border-right-color: var(--danger); }
+        .card.orange .student-card { border-right-color: var(--warning); }
 
-        .wa-btn { width: 38px; height: 38px; background: #25d366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 3px 8px rgba(37, 211, 102, 0.3); font-size: 1.2rem; }
+        .st-name-row { display: block; font-weight: 900; font-size: 1.05rem; color: var(--primary); margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
+        .st-info-row { display: flex; justify-content: space-between; align-items: center; }
+        .st-meta { display: flex; align-items: center; gap: 10px; color: #64748b; font-size: 0.8rem; font-weight: 700; }
+        .meta-tag { background: #f1f5f9; padding: 2px 8px; border-radius: 4px; }
+        
+        .wa-btn { width: 34px; height: 34px; background: #25d366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1rem; }
 
-        /* الشريط السفلي - سطر واحد باسمك فقط */
-        .footer-bar { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: var(--primary); color: white; 
-            text-align: center; padding: 12px; 
-            border-top: 3px solid var(--accent); 
-            font-size: 0.9rem; z-index: 2000;
-        }
+        .waiting-msg { text-align: center; padding: 50px 20px; color: #94a3b8; font-weight: 700; }
+        .waiting-msg i { display: block; font-size: 2.5rem; margin-bottom: 10px; opacity: 0.3; }
 
-        @media print {
-            .no-print { display: none !important; }
-            .card { border: 1px solid black !important; break-inside: avoid; }
-            .footer-bar { position: static; color: black; background: white; border: none; padding-top: 20px; font-weight: bold; }
-        }
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); color: white; text-align: center; padding: 12px; border-top: 3px solid var(--accent); font-size: 0.85rem; z-index: 2000; }
+
+        @media print { .no-print { display: none !important; } .footer-bar { position: static; color: black; } }
     </style>
 </head>
 <body>
 
 <header class="app-header no-print">
-    <h1><i class="fas fa-user-shield"></i> منظومة الإشراف - مدرسة صلالة الشرقية</h1>
+    <h1><i class="fas fa-search-plus"></i> نظام تحليل بيانات الطلاب - مدرسة صلالة الشرقية</h1>
 </header>
 
 <div class="container">
-    <div id="radarSection" class="radar-box no-print">
-        <div class="radar-head"><i class="fas fa-satellite-dish"></i> الحالات المكتشفة بالصفوف:</div>
+    <div id="radarSection" class="radar-box no-print" style="display:none">
+        <div class="radar-head"><i class="fas fa-exclamation-triangle"></i> صفوف تتطلب تدخلاً عاجلاً:</div>
         <div id="radarTags" class="radar-tags"></div>
     </div>
 
     <div class="filters-card no-print">
-        <select id="gradeFilter" onchange="updateSections()"><option value="">-- اختر الصف --</option></select>
-        <select id="sectionFilter" onchange="analyzeData()"><option value="">-- كل الشعب --</option></select>
-        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
+        <select id="gradeFilter" onchange="updateSections()">
+            <option value="">-- اختر الصف الدراسي --</option>
+        </select>
+        <select id="sectionFilter" onchange="analyzeData()">
+            <option value="">-- اختر الشعبة --</option>
+        </select>
+        <button class="btn-print" onclick="window.print()">طباعة</button>
     </div>
 
     <div class="stat-grid">
         <div class="card red">
-            <div class="card-header"><i class="fas fa-user-slash"></i> منقطعون (3 أيام+ متتالية)</div>
-            <div class="card-body" id="consecutiveList"></div>
+            <div class="card-header"><i class="fas fa-user-slash"></i> حالات الانقطاع (3 أيام متتالية)</div>
+            <div id="consecutiveList">
+                <div class="waiting-msg"><i class="fas fa-mouse-pointer"></i>يرجى اختيار الصف والشعبة أولاً</div>
+            </div>
         </div>
         <div class="card orange">
-            <div class="card-header"><i class="fas fa-user-clock"></i> غياب متكرر (3 أيام+ أسبوعياً)</div>
-            <div class="card-body" id="weeklyLimitList"></div>
+            <div class="card-header"><i class="fas fa-calendar-times"></i> غياب متكرر (3 أيام/أسبوع)</div>
+            <div id="weeklyLimitList">
+                <div class="waiting-msg"><i class="fas fa-mouse-pointer"></i>يرجى اختيار الصف والشعبة أولاً</div>
+            </div>
         </div>
     </div>
 </div>
@@ -99,31 +103,41 @@
     let students = []; let history = [];
 
     async function loadData() {
-        const v = Date.now();
-        const [sR, hR] = await Promise.all([
-            fetch(`student_fone.json?v=${v}`),
-            fetch(`attendance_history.json?v=${v}`)
-        ]);
-        students = await sR.json();
-        history = await hR.json();
+        try {
+            const v = Date.now();
+            const [sR, hR] = await Promise.all([
+                fetch(`student_fone.json?v=${v}`),
+                fetch(`attendance_history.json?v=${v}`)
+            ]);
+            students = await sR.json();
+            history = await hR.json();
 
-        const cleanGrades = [...new Set(students.map(s => s.grade))].filter(g => g).sort((a,b)=>Number(a)-Number(b));
-        const gFilter = document.getElementById('gradeFilter');
-        cleanGrades.forEach(g => gFilter.innerHTML += `<option value="${g}">${g}</option>`);
+            const cleanGrades = [...new Set(students.map(s => s.grade))].filter(g => g).sort((a,b)=>Number(a)-Number(b));
+            const gFilter = document.getElementById('gradeFilter');
+            cleanGrades.forEach(g => gFilter.innerHTML += `<option value="${g}">${g}</option>`);
 
-        buildRadar();
-        analyzeData();
+            buildRadar();
+        } catch (e) { console.error("Error loading files"); }
     }
 
     function updateSections() {
         const g = document.getElementById('gradeFilter').value;
         const sFilter = document.getElementById('sectionFilter');
-        sFilter.innerHTML = '<option value="">-- كل الشعب --</option>';
+        sFilter.innerHTML = '<option value="">-- اختر الشعبة --</option>';
+        
+        // مسح النتائج عند تغيير الصف
+        clearResults();
+
         if(g) {
             const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => s.section))].filter(s=>s).sort();
             sections.forEach(s => sFilter.innerHTML += `<option value="${s}">${s}</option>`);
         }
-        analyzeData();
+    }
+
+    function clearResults() {
+        const msg = '<div class="waiting-msg"><i class="fas fa-mouse-pointer"></i>يرجى اختيار الصف والشعبة أولاً</div>';
+        document.getElementById('consecutiveList').innerHTML = msg;
+        document.getElementById('weeklyLimitList').innerHTML = msg;
     }
 
     function buildRadar() {
@@ -153,16 +167,20 @@
                 radarTags.appendChild(tag);
             }
         });
-        document.getElementById('radarSection').style.display = radarTags.innerHTML ? 'block' : 'none';
+        if(radarTags.innerHTML) document.getElementById('radarSection').style.display = 'block';
     }
 
     function analyzeData() {
         const g = document.getElementById('gradeFilter').value;
         const s = document.getElementById('sectionFilter').value;
-        let filtered = students;
-        if(g) filtered = filtered.filter(st => String(st.grade) === g);
-        if(s) filtered = filtered.filter(st => String(st.section) === s);
 
+        // شرط أساسي: إذا لم يتم اختيار الصف أو الشعبة، لا تعرض شيئاً
+        if(!g || !s) {
+            clearResults();
+            return;
+        }
+
+        let filtered = students.filter(st => String(st.grade) === g && String(st.section) === s);
         let consHTML = ""; let weekHTML = "";
 
         filtered.forEach(st => {
@@ -171,24 +189,29 @@
             const maxWeek = getMaxWeekCount(dates);
 
             if(maxCons >= 3) {
-                consHTML += createItem(st, `${maxCons} أيام متتالية`, `انقطاع متواصل للطالب ${st.name}`);
+                consHTML += createCardHTML(st, `${maxCons} أيام متتالية`, `انقطاع`);
             } else if(maxWeek >= 3) {
-                weekHTML += createItem(st, `${maxWeek} أيام/أسبوع`, `تجاوز الحد الأسبوعي للطالب ${st.name}`);
+                weekHTML += createCardHTML(st, `غائب ${maxWeek} أيام/أسبوع`, `تجاوز الحد`);
             }
         });
-        document.getElementById('consecutiveList').innerHTML = consHTML || '<p style="text-align:center;color:#94a3b8">لا توجد حالات</p>';
-        document.getElementById('weeklyLimitList').innerHTML = weekHTML || '<p style="text-align:center;color:#94a3b8">لا توجد حالات</p>';
+
+        document.getElementById('consecutiveList').innerHTML = consHTML || '<div class="waiting-msg">لا توجد حالات انقطاع في هذه الشعبة</div>';
+        document.getElementById('weeklyLimitList').innerHTML = weekHTML || '<div class="waiting-msg">الالتزام ممتاز في هذه الشعبة</div>';
     }
 
-    function createItem(st, badge, msg) {
-        return `<div class="student-item">
-            <div class="st-main-info">
-                <span class="st-name">${st.name}</span>
-                <span class="st-class-tag">${st.grade}/${st.section}</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px">
-                <span style="font-size:0.75rem; font-weight:800; color:#64748b">${badge}</span>
-                <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn"><i class="fab fa-whatsapp"></i></a>
+    function createCardHTML(st, statusText, type) {
+        const msg = type === 'انقطاع' ? `إشعار انقطاع للطالب: ${st.name}` : `إشعار تجاوز غياب للطالب: ${st.name}`;
+        return `
+        <div class="student-card">
+            <span class="st-name-row">${st.name}</span>
+            <div class="st-info-row">
+                <div class="st-meta">
+                    <span class="meta-tag">صف: ${st.grade}/${st.section}</span>
+                    <span style="color:var(--primary)">${statusText}</span>
+                </div>
+                <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn no-print">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
             </div>
         </div>`;
     }
