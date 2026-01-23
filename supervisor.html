@@ -2,74 +2,158 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة إشراف الغياب - مدرسة صلالة الشرقية</title>
+    <title>لوحة الإشراف الذكية - مدرسة صلالة الشرقية</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --danger: #ef4444; --warning: #f59e0b; --bg: #f1f5f9; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; }
+        :root { --primary: #0f172a; --accent: #d4af37; --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc; --white: #ffffff; }
         
-        .header { background: var(--primary); color: white; padding: 20px; text-align: center; border-bottom: 4px solid var(--accent); }
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
-        
-        .filters { background: white; padding: 20px; border-radius: 15px; display: flex; gap: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        select { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo'; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 60px; color: var(--primary); }
 
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .stat-grid { grid-template-columns: 1fr; } }
+        /* الهيدر العلوي الفخم */
+        .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .app-header h1 { margin: 0; font-size: 1.3rem; color: var(--accent); font-weight: 900; }
+        .app-header p { margin: 5px 0 0; font-size: 0.85rem; opacity: 0.8; }
 
-        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
-        .card.red { border-top-color: var(--danger); }
-        .card.orange { border-top-color: var(--warning); }
-        
-        .card-title { font-weight: 900; font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        
-        .alert-item { background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: white; }
-        .bg-red { background: var(--danger); }
-        .bg-orange { background: var(--warning); }
+        .container { max-width: 1100px; margin: 25px auto; padding: 0 15px; }
 
-        .no-data { text-align: center; color: #94a3b8; padding: 30px; }
+        /* رادار التنبيهات العلوي */
+        .radar-box { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 25px; border-right: 6px solid var(--danger); box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: none; }
+        .radar-head { font-weight: 900; font-size: 0.95rem; margin-bottom: 10px; color: var(--danger); display: flex; align-items: center; gap: 8px; }
+        .radar-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .radar-tag { 
+            background: #fef2f2; color: var(--danger); border: 1px solid #fee2e2; padding: 5px 12px; 
+            border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+        .radar-tag:hover { background: var(--danger); color: white; transform: translateY(-2px); }
+
+        /* الفلاتر */
+        .filters-card { background: var(--white); padding: 20px; border-radius: 15px; display: flex; gap: 15px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; align-items: center; }
+        select { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid #e2e8f0; font-family: 'Cairo'; font-weight: 700; color: var(--primary); }
+        .btn-print { background: var(--primary); color: var(--accent); border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: 800; font-family: 'Cairo'; display: flex; gap: 8px; align-items: center; }
+
+        /* شبكة العرض (عمودين) */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        @media (max-width: 768px) { .stat-grid { grid-template-columns: 1fr; } .filters-card { flex-direction: column; } }
+
+        .card { background: var(--white); border-radius: 15px; padding: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #f1f5f9; height: fit-content; }
+        .card-header { padding: 15px 20px; font-weight: 900; font-size: 1rem; color: white; display: flex; align-items: center; gap: 10px; }
+        .card-body { padding: 20px; min-height: 200px; }
+        
+        /* ألوان الكروت */
+        .card.red .card-header { background: var(--danger); }
+        .card.orange .card-header { background: var(--warning); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+        /* عنصر الطالب */
+        .student-item { 
+            background: #f8fafc; padding: 12px 15px; border-radius: 12px; margin-bottom: 12px; 
+            border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; 
+            position: relative; transition: 0.2s;
+        }
+        .student-item:hover { transform: translateX(-5px); border-color: #cbd5e1; }
+        
+        .st-info strong { display: block; font-size: 0.95rem; color: var(--primary); margin-bottom: 2px; }
+        .st-info small { color: #64748b; font-size: 0.75rem; font-weight: 600; }
+        
+        .badge { padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; }
+        .badge-red { background: #fee2e2; color: var(--danger); }
+        .badge-orange { background: #fef3c7; color: #b45309; }
+
+        /* زر الواتساب */
+        .wa-btn { 
+            width: 35px; height: 35px; background: #25d366; color: white; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; text-decoration: none; 
+            font-size: 1.1rem; box-shadow: 0 3px 8px rgba(37, 211, 102, 0.3); margin-right: 10px;
+        }
+
+        .no-data { text-align: center; color: #94a3b8; padding: 40px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+        /* الشريط السفلي (حقوق الملكية) */
+        .footer-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 40px;
+            background: var(--primary); color: white; text-align: center;
+            border-top: 3px solid var(--accent); font-size: 0.8rem; z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        /* الطباعة الرسمية */
+        .official-header { display: none; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 20px; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .official-header { display: block !important; }
+            body { background: white; padding: 0; }
+            .container { margin: 0; max-width: 100%; }
+            .card { box-shadow: none; border: 1px solid #000; break-inside: avoid; margin-bottom: 20px; }
+            .card-header { background: #eee !important; color: #000 !important; border-bottom: 1px solid #000; }
+            .student-item { border: 1px solid #ddd; break-inside: avoid; }
+            .footer-bar { position: static; background: white; color: black; border: none; margin-top: 30px; font-weight: bold; }
+        }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1><i class="fas fa-user-shield"></i> لوحة تحليل بيانات الغياب</h1>
-    <p>خاص بمشرفي الصفوف بمدرسة صلالة الشرقية</p>
+<div class="official-header">
+    <table width="100%" dir="rtl">
+        <tr>
+            <td width="30%" style="text-align: right; font-weight: bold;">سلطنة عمان<br>وزارة التربية والتعليم<br>مدرسة صلالة الشرقية (5-9)</td>
+            <td width="40%" style="text-align: center;">
+                <i class="fas fa-graduation-cap" style="font-size: 3rem;"></i><br>
+                <h3 style="margin: 10px 0;">تقرير تحليل الغياب والانقطاع</h3>
+            </td>
+            <td width="30%" style="text-align: left; font-weight: bold;">تاريخ التقرير: <span id="pDate"></span><br>العام الدراسي 2025/2026</td>
+        </tr>
+    </table>
 </div>
 
+<header class="app-header no-print">
+    <h1><i class="fas fa-chart-pie"></i> لوحة الإشراف والمتابعة</h1>
+    <p>نظام تحليل الغياب المتواصل والمتكرر</p>
+</header>
+
 <div class="container">
-    <div class="filters">
-        <select id="gradeFilter" onchange="analyzeData()">
-            <option value="">كل الصفوف</option>
+    
+    <div id="radarSection" class="radar-box no-print">
+        <div class="radar-head"><i class="fas fa-bell"></i> تنبيهات نشطة (صفوف تتطلب تدخلاً):</div>
+        <div id="radarTags" class="radar-tags"></div>
+    </div>
+
+    <div class="filters-card no-print">
+        <div style="font-weight: 800; display:flex; align-items:center; gap:5px;"><i class="fas fa-filter"></i> تصفية:</div>
+        <select id="gradeFilter" onchange="updateSections()">
+            <option value="">-- كل الصفوف --</option>
         </select>
         <select id="sectionFilter" onchange="analyzeData()">
-            <option value="">كل الشعب</option>
+            <option value="">-- كل الشعب --</option>
         </select>
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
     </div>
 
     <div class="stat-grid">
         <div class="card red">
-            <div class="card-title" style="color:var(--danger)">
-                <i class="fas fa-exclamation-triangle"></i> طلاب منقطعون (متتالي)
+            <div class="card-header">
+                <i class="fas fa-user-slash"></i> طلاب منقطعون (متواصل)
             </div>
-            <div id="consecutiveList"></div>
+            <div class="card-body" id="consecutiveList"></div>
         </div>
 
         <div class="card orange">
-            <div class="card-title" style="color:var(--warning)">
-                <i class="fas fa-clock"></i> تجاوز الحد الأسبوعي (+3 أيام)
+            <div class="card-header">
+                <i class="fas fa-exclamation-circle"></i> تجاوز الحد الأسبوعي (+3 أيام)
             </div>
-            <div id="weeklyLimitList"></div>
+            <div class="card-body" id="weeklyLimitList"></div>
         </div>
     </div>
 </div>
 
+<div class="footer-bar no-print">
+    <i class="fas fa-code" style="margin-left:5px; color:var(--accent)"></i> تصميم وتنفيذ الأستاذ: <span style="font-weight:900; color:var(--accent); margin-right:5px;">فيصل العريبي</span> &nbsp; | &nbsp; جميع الحقوق محفوظة ©
+</div>
+<div class="footer-bar" style="display:none;">تصميم وتنفيذ: أ. فيصل العريبي</div>
+
 <script>
-    let students = [];
-    let history = [];
+    let students = []; let history = [];
 
     async function loadData() {
         try {
@@ -81,94 +165,147 @@
             students = await sR.json();
             history = await hR.json();
 
-            // تعبئة الفلاتر
-            const grades = [...new Set(students.map(s => String(s.grade)))].sort();
-            const gradeFilter = document.getElementById('gradeFilter');
-            grades.forEach(g => gradeFilter.innerHTML += `<option value="${g}">${g}</option>`);
+            document.getElementById('pDate').innerText = new Date().toLocaleDateString('ar-OM');
 
+            // تنظيف وترتيب الصفوف
+            const rawGrades = [...new Set(students.map(s => s.grade))];
+            const cleanGrades = rawGrades.filter(g => g && String(g).trim() !== "").sort((a,b)=>Number(a)-Number(b));
+            
+            const gFilter = document.getElementById('gradeFilter');
+            cleanGrades.forEach(g => gFilter.innerHTML += `<option value="${g}">${g}</option>`);
+
+            buildRadar(); // تشغيل الرادار فوراً
             analyzeData();
         } catch (e) { console.error("Error loading data"); }
     }
 
-    function analyzeData() {
-        const selectedGrade = document.getElementById('gradeFilter').value;
-        const selectedSection = document.getElementById('sectionFilter').value;
+    function updateSections() {
+        const g = document.getElementById('gradeFilter').value;
+        const sFilter = document.getElementById('sectionFilter');
+        sFilter.innerHTML = '<option value="">-- كل الشعب --</option>';
+        
+        if(g) {
+            const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => s.section))].sort();
+            sections.forEach(s => sFilter.innerHTML += `<option value="${s}">${s}</option>`);
+        }
+        analyzeData();
+    }
 
-        // فلترة الطلاب حسب الصف والشعبة المختارين
-        let filteredStudents = students;
-        if(selectedGrade) filteredStudents = filteredStudents.filter(s => String(s.grade) === selectedGrade);
-        if(selectedSection) filteredStudents = filteredStudents.filter(s => String(s.section) === selectedSection);
+    // وظيفة الرادار: فحص كل الصفوف وإظهار تنبيهات
+    function buildRadar() {
+        const radarSec = document.getElementById('radarSection');
+        const radarTags = document.getElementById('radarTags');
+        radarTags.innerHTML = "";
+        
+        const classes = [...new Set(students.map(s => `${s.grade}|${s.section}`))];
+        classes.sort((a,b) => {
+            const [g1,s1] = a.split('|'); const [g2,s2] = b.split('|');
+            return Number(g1)-Number(g2) || s1.localeCompare(s2);
+        });
 
-        let consecutiveHTML = "";
-        let weeklyHTML = "";
+        classes.forEach(cls => {
+            const [g, s] = cls.split('|');
+            if(!g || !s) return;
+            
+            const classSt = students.filter(st => String(st.grade)===g && String(st.section)===s);
+            let alert = false;
 
-        filteredStudents.forEach(student => {
-            const studentAbsences = history.filter(h => h.name === student.name)
-                                           .map(h => new Date(h.date))
-                                           .sort((a, b) => a - b);
+            classSt.forEach(st => {
+                const dates = history.filter(h => h.name === st.name).map(h => new Date(h.date)).sort((a,b)=>a-b);
+                if(getMaxConsecutive(dates) >= 3 || hasWeeklyLimit(dates)) alert = true;
+            });
 
-            // 1. تحليل الغياب المتتالي (أكثر من 5 أيام متتالية)
-            const maxConsecutive = getMaxConsecutive(studentAbsences);
-            if(maxConsecutive >= 5) {
-                consecutiveHTML += `
-                <div class="alert-item">
-                    <div>
-                        <strong>${student.name}</strong><br>
-                        <small>الصف: ${student.grade}/${student.section}</small>
-                    </div>
-                    <span class="badge bg-red">${maxConsecutive} أيام متصلة</span>
-                </div>`;
-            }
-
-            // 2. تحليل الحد الأسبوعي (أكثر من 3 أيام في أسبوع واحد)
-            const weeklyCounts = getWeeklyCounts(studentAbsences);
-            const highAbsentWeek = Object.values(weeklyCounts).find(count => count >= 3);
-            if(highAbsentWeek) {
-                weeklyHTML += `
-                <div class="alert-item">
-                    <div>
-                        <strong>${student.name}</strong><br>
-                        <small>الصف: ${student.grade}/${student.section}</small>
-                    </div>
-                    <span class="badge bg-orange">${highAbsentWeek} أيام هذا الأسبوع</span>
-                </div>`;
+            if(alert) {
+                const tag = document.createElement('div');
+                tag.className = 'radar-tag';
+                tag.innerText = `صف ${g}/${s}`;
+                tag.onclick = () => {
+                    document.getElementById('gradeFilter').value = g;
+                    updateSections();
+                    document.getElementById('sectionFilter').value = s;
+                    analyzeData();
+                };
+                radarTags.appendChild(tag);
             }
         });
 
-        document.getElementById('consecutiveList').innerHTML = consecutiveHTML || '<p class="no-data">لا توجد حالات انقطاع</p>';
-        document.getElementById('weeklyLimitList').innerHTML = weeklyHTML || '<p class="no-data">الكل ملتزم بالحد الأسبوعي</p>';
+        if(radarTags.innerHTML !== "") radarSec.style.display = 'block';
     }
 
-    // دالة حساب أقصى عدد أيام متتالية
+    function analyzeData() {
+        const selGrade = document.getElementById('gradeFilter').value;
+        const selSec = document.getElementById('sectionFilter').value;
+
+        let filtered = students;
+        if(selGrade) filtered = filtered.filter(s => String(s.grade) === selGrade);
+        if(selSec) filtered = filtered.filter(s => String(s.section) === selSec);
+
+        let consHTML = "";
+        let weekHTML = "";
+
+        filtered.forEach(st => {
+            const dates = history.filter(h => h.name === st.name).map(h => new Date(h.date)).sort((a,b)=>a-b);
+            
+            // 1. المتصل (3 أيام أو أكثر)
+            const maxCons = getMaxConsecutive(dates);
+            if(maxCons >= 3) {
+                let msg = `مدرسة صلالة الشرقية\nولي الأمر الكريم، نود إشعاركم بانقطاع الطالب *${st.name}* عن الدراسة لمدة ${maxCons} أيام متتالية.`;
+                consHTML += createCard(st, `${maxCons} أيام متواصلة`, 'badge-red', msg);
+            }
+
+            // 2. الأسبوعي (3 أيام أو أكثر في أسبوع)
+            const weekData = getWeeklyCounts(dates);
+            const highWeek = Object.values(weekData).find(c => c >= 3);
+            if(highWeek) {
+                let msg = `مدرسة صلالة الشرقية\nولي الأمر الكريم، نلاحظ تكرار غياب الطالب *${st.name}* بمعدل ${highWeek} أيام في الأسبوع.`;
+                weekHTML += createCard(st, `${highWeek} أيام بالأسبوع`, 'badge-orange', msg);
+            }
+        });
+
+        document.getElementById('consecutiveList').innerHTML = consHTML || '<div class="no-data"><i class="fas fa-check-circle" style="font-size:2rem; color:#cbd5e1"></i><br>لا يوجد منقطعون</div>';
+        document.getElementById('weeklyLimitList').innerHTML = weekHTML || '<div class="no-data"><i class="fas fa-thumbs-up" style="font-size:2rem; color:#cbd5e1"></i><br>الالتزام جيد</div>';
+    }
+
+    function createCard(st, text, badgeClass, waMsg) {
+        return `
+        <div class="student-item">
+            <div class="st-info">
+                <strong>${st.name}</strong>
+                <small>${st.grade} / ${st.section}</small>
+            </div>
+            <div style="display:flex; align-items:center;">
+                <span class="badge ${badgeClass}">${text}</span>
+                <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(waMsg)}" target="_blank" class="wa-btn no-print">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+            </div>
+        </div>`;
+    }
+
     function getMaxConsecutive(dates) {
         if (dates.length === 0) return 0;
-        let max = 1;
-        let current = 1;
+        let max = 1, curr = 1;
         for (let i = 1; i < dates.length; i++) {
-            const diff = (dates[i] - dates[i-1]) / (1000 * 60 * 60 * 24);
-            if (diff === 1) { // يوم متتالي
-                current++;
-            } else {
-                max = Math.max(max, current);
-                current = 1;
-            }
+            if ((dates[i] - dates[i-1]) / 86400000 === 1) curr++;
+            else { max = Math.max(max, curr); curr = 1; }
         }
-        return Math.max(max, current);
+        return Math.max(max, curr);
     }
 
-    // دالة حساب الغياب لكل أسبوع (ISO Week)
     function getWeeklyCounts(dates) {
         const counts = {};
-        dates.forEach(date => {
-            const weekNumber = getWeekNumber(date);
-            const year = date.getFullYear();
-            const key = `${year}-W${weekNumber}`;
+        dates.forEach(d => {
+            const key = `${d.getFullYear()}-W${getWeekNumber(d)}`;
             counts[key] = (counts[key] || 0) + 1;
         });
         return counts;
     }
 
-    // دالة للحصول على رقم الأسبوع من التاريخ
+    function hasWeeklyLimit(dates) {
+        const c = getWeeklyCounts(dates);
+        return Object.values(c).some(count => count >= 3);
+    }
+
     function getWeekNumber(d) {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
         d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
@@ -178,6 +315,5 @@
 
     window.onload = loadData;
 </script>
-
 </body>
 </html>
