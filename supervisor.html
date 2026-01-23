@@ -16,6 +16,13 @@
 
         .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
 
+        /* نظام الرادار (التنبيهات) */
+        .radar-box { background: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
+        .radar-head { font-weight: 900; font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: var(--primary); }
+        .radar-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag-red { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+        .tag-orange { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+
         /* الفلاتر */
         .filters-card { background: white; padding: 15px; border-radius: 12px; display: flex; gap: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 2px solid var(--accent); }
         select { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo'; font-weight: 700; }
@@ -30,11 +37,8 @@
         .card.red .card-header { background: var(--danger); }
         .card.orange .card-header { background: var(--warning); }
 
-        /* تصميم البطاقة الذي أعجبك */
-        .student-card { 
-            background: #fff; border: 1px solid #edf2f7; border-radius: 10px; 
-            margin: 10px; padding: 12px; border-right: 4px solid transparent;
-        }
+        /* تصميم البطاقة */
+        .student-card { background: #fff; border: 1px solid #edf2f7; border-radius: 10px; margin: 10px; padding: 12px; border-right: 4px solid transparent; }
         .card.red .student-card { border-right-color: var(--danger); }
         .card.orange .student-card { border-right-color: var(--warning); }
 
@@ -83,6 +87,11 @@
 </header>
 
 <div class="container">
+    <div id="radarSection" class="radar-box no-print">
+        <div class="radar-head"><i class="fas fa-satellite-dish"></i> صفوف بها تنبيهات (اضغط للاختيار):</div>
+        <div id="radarTags" class="radar-tags"></div>
+    </div>
+
     <div class="filters-card no-print">
         <select id="gradeFilter" onchange="updateSections()"><option value="">-- اختر الصف --</option></select>
         <select id="sectionFilter" onchange="analyzeData()"><option value="">-- اختر الشعبة --</option></select>
@@ -121,6 +130,39 @@
 
         const cleanGrades = [...new Set(students.map(s => s.grade))].filter(g => g).sort((a,b)=>Number(a)-Number(b));
         cleanGrades.forEach(g => document.getElementById('gradeFilter').innerHTML += `<option value="${g}">${g}</option>`);
+
+        buildRadar(); // تشغيل الرادار عند التحميل
+    }
+
+    // بناء نظام الرادار للتنبيهات
+    function buildRadar() {
+        const radarTags = document.getElementById('radarTags');
+        radarTags.innerHTML = "";
+        const classes = [...new Set(students.map(s => `${s.grade}|${s.section}`))].filter(c => !c.includes('undefined'));
+
+        classes.forEach(cls => {
+            const [g, s] = cls.split('|');
+            const classSt = students.filter(st => String(st.grade)===g && String(st.section)===s);
+            let state = 0; 
+            classSt.forEach(st => {
+                const dates = history.filter(h => h.name === st.name).map(h => new Date(h.date)).sort((a,b)=>a-b);
+                if(getMaxConsecutive(dates) >= 3) state = 2; 
+                else if(state < 2 && hasWeeklyLimit(dates)) state = 1;
+            });
+            if(state > 0) {
+                const tag = document.createElement('div');
+                tag.className = state === 2 ? 'tag-red' : 'tag-orange';
+                tag.innerText = `صف ${g}/${s}`;
+                tag.onclick = () => {
+                    document.getElementById('gradeFilter').value = g;
+                    updateSections();
+                    document.getElementById('sectionFilter').value = s;
+                    analyzeData();
+                };
+                radarTags.appendChild(tag);
+            }
+        });
+        document.getElementById('radarSection').style.display = radarTags.innerHTML ? 'block' : 'none';
     }
 
     function updateSections() {
@@ -193,6 +235,8 @@
         });
         return Math.max(...Object.values(counts), 0);
     }
+    
+    function hasWeeklyLimit(dates) { return getMaxWeekCount(dates) >= 3; }
 
     window.onload = loadData;
 </script>
