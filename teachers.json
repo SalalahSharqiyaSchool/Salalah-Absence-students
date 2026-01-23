@@ -1,20 +1,14 @@
 [
   {
-    "name": "المدير العام",
-    "pass": "admin123",
-    "role": "admin",
-    "classes": []
-  },
-  {
-    "name": "أحمد محمد",
+    "name": "الأستاذ فيصل",
     "pass": "1234",
     "role": "teacher",
-    "classes": ["5-1", "5-2", "6-1"]
+    "classes": ["الخامس-1", "الخامس-2", "السادس-1"]
   },
   {
-    "name": "سارة علي",
-    "pass": "5678",
-    "role": "teacher",
-    "classes": ["7-1", "7-2"]
+    "name": "مدير المدرسة",
+    "pass": "admin99",
+    "role": "admin",
+    "classes": [] 
   }
 ]
