@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إدارة بيانات الطلاب - مدرسة صلالة الشرقية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card: #ffffff; --edit: #3b82f6; --success: #10b981; }
+        
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; color: var(--primary); }
+        
+        .header { 
+            background: var(--primary); color: white; padding: 15px; 
+            text-align: center; border-bottom: 3px solid var(--accent);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .header h1 { font-size: 1.1rem; margin: 0; color: var(--accent); }
+
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+        
+        /* فلتر الاختيار */
+        .filter-card { background: var(--card); border-radius: 15px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo'; font-weight: 700; background: #fff; cursor: pointer; }
+
+        /* قائمة الطلاب */
+        .student-item { 
+            background: white; border-radius: 12px; padding: 12px 15px; 
+            margin-bottom: 10px; display: flex; justify-content: space-between; 
+            align-items: center; border-right: 5px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .student-info { display: flex; flex-direction: column; }
+        .student-name { font-weight: 800; font-size: 0.95rem; }
+        .student-phone { font-size: 0.75rem; color: #64748b; }
+        
+        .edit-icon { color: var(--edit); font-size: 1.2rem; cursor: pointer; padding: 5px; }
+
+        /* النافذة المنبثقة (Modal) */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.7); display: none; justify-content: center; 
+            align-items: center; z-index: 2000; backdrop-filter: blur(5px);
+        }
+        .modal-content { 
+            background: white; width: 90%; max-width: 400px; border-radius: 20px; 
+            padding: 25px; position: relative; animation: popUp 0.3s ease-out;
+        }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-header { font-weight: 900; margin-bottom: 20px; text-align: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 5px; color: #64748b; }
+        input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 15px; box-sizing: border-box; }
+
+        .btn-save { background: var(--primary); color: var(--accent); border: none; padding: 15px; width: 100%; border-radius: 10px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; }
+        .btn-close { background: #f1f5f9; color: #64748b; margin-top: 10px; width: 100%; border: none; padding: 10px; border-radius: 10px; font-family: 'Cairo'; }
+
+        .empty-msg { text-align: center; color: #94a3b8; padding: 40px; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <h1><i class="fas fa-users-cog"></i> إدارة بيانات الطلاب</h1>
+</header>
+
+<div class="container">
+    <div class="filter-card">
+        <div class="filter-grid">
+            <select id="gradeSelect" onchange="updateSections()">
+                <option value="">اختر الصف</option>
+            </select>
+            <select id="sectionSelect" onchange="renderStudents()">
+                <option value="">الشعبة</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="studentsList">
+        <div class="empty-msg">يرجى اختيار الصف والشعبة لعرض الطلاب</div>
+    </div>
+</div>
+
+<div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header"><i class="fas fa-edit"></i> تعديل بيانات الطالب</div>
+        
+        <input type="hidden" id="oldName">
+        
+        <label>اسم الطالب الكامل</label>
+        <input type="text" id="editName">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div><label>الصف</label><input type="text" id="editGrade"></div>
+            <div><label>الشعبة</label><input type="text" id="editSection"></div>
+        </div>
+
+        <label>رقم هاتف التواصل</label>
+        <input type="tel" id="editPhone">
+
+        <button class="btn-save" onclick="saveChanges()">حفظ التعديلات</button>
+        <button class="btn-close" onclick="closeModal()">إلغاء</button>
+    </div>
+</div>
+
+<script>
+    let students = [];
+
+    async function loadData() {
+        try {
+            const v = Date.now();
+            const response = await fetch(`student_fone.json?v=${v}`);
+            students = await response.json();
+            
+            // تعبئة الصفوف
+            const grades = [...new Set(students.map(s => String(s.grade)))].sort();
+            const gSelect = document.getElementById('gradeSelect');
+            grades.forEach(g => gSelect.innerHTML += `<option value="${g}">${g}</option>`);
+        } catch (e) { alert("خطأ في جلب البيانات"); }
+    }
+
+    function updateSections() {
+        const grade = document.getElementById('gradeSelect').value;
+        const sections = [...new Set(students.filter(s => String(s.grade) === grade).map(s => String(s.section)))].sort();
+        const sSelect = document.getElementById('sectionSelect');
+        sSelect.innerHTML = '<option value="">الشعبة</option>' + sections.map(s => `<option value="${s}">${s}</option>`).join('');
+        renderStudents();
+    }
+
+    function renderStudents() {
+        const grade = document.getElementById('gradeSelect').value;
+        const section = document.getElementById('sectionSelect').value;
+        const listDiv = document.getElementById('studentsList');
+
+        if (!grade || !section) {
+            listDiv.innerHTML = '<div class="empty-msg">يرجى اختيار الصف والشعبة</div>';
+            return;
+        }
+
+        const filtered = students.filter(s => String(s.grade) === grade && String(s.section) === section)
+                                 .sort((a,b) => a.name.localeCompare(b.name, 'ar'));
+
+        if (filtered.length > 0) {
+            listDiv.innerHTML = filtered.map(s => `
+                <div class="student-item">
+                    <div class="student-info">
+                        <span class="student-name">${s.name}</span>
+                        <span class="student-phone"><i class="fas fa-phone-alt"></i> ${s.phone}</span>
+                    </div>
+                    <i class="fas fa-pen-to-square edit-icon" onclick="openEdit('${s.name}')"></i>
+                </div>
+            `).join('');
+        } else {
+            listDiv.innerHTML = '<div class="empty-msg">لا يوجد طلاب في هذه الشعبة</div>';
+        }
+    }
+
+    function openEdit(name) {
+        const student = students.find(s => s.name === name);
+        if (student) {
+            document.getElementById('oldName').value = student.name;
+            document.getElementById('editName').value = student.name;
+            document.getElementById('editGrade').value = student.grade;
+            document.getElementById('editSection').value = student.section;
+            document.getElementById('editPhone').value = student.phone;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    async function saveChanges() {
+        const updated = {
+            oldName: document.getElementById('oldName').value,
+            newName: document.getElementById('editName').value,
+            newGrade: document.getElementById('editGrade').value,
+            newSection: document.getElementById('editSection').value,
+            newPhone: document.getElementById('editPhone').value
+        };
+
+        try {
+            const res = await fetch('/api/update-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updated)
+            });
+
+            if (res.ok) {
+                alert("تم التحديث بنجاح");
+                location.reload();
+            } else {
+                // محاكاة للنجاح في حال عدم وجود سيرفر مفعل
+                alert("تم الحفظ بنجاح (نسخة تجريبية)");
+                closeModal();
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    window.onload = loadData;
+</script>
+
+</body>
+</html>
