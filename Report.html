@@ -134,7 +134,7 @@
     }
 
     async function searchAttendance() {
-        const phone = document.getElementById('phoneInput').value.trim();
+        let phone = document.getElementById('phoneInput').value.trim();
         const resultArea = document.getElementById('resultArea');
         const notFound = document.getElementById('notFound');
         const tableBody = document.getElementById('tableBody');
@@ -144,6 +144,11 @@
         if(!phone || phone.length < 8) { 
             alert("يرجى إدخال رقم هاتف صحيح مكون من 8 أرقام"); 
             return; 
+        }
+
+        // إضافة مفتاح الدولة 968 تلقائياً إذا لم يكن موجوداً
+        if (!phone.startsWith('968')) {
+            phone = '968' + phone;
         }
 
         // إظهار مؤشر تحميل بسيط
@@ -162,7 +167,7 @@
             const students = await sR.json();
             const history = await hR.json();
 
-            // البحث عن الطالب بالهاتف
+            // البحث عن الطالب بالهاتف (بعد إضافة 968)
             const student = students.find(s => String(s.phone) === phone);
 
             if(student) {
