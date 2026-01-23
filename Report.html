@@ -10,7 +10,7 @@
         :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card: #ffffff; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--primary); }
         
-        .parent-container { max-width: 600px; margin: 0 auto; }
+        .parent-container { max-width: 700px; margin: 0 auto; }
         
         .header { text-align: center; margin-bottom: 30px; }
         .header img { width: 80px; margin-bottom: 10px; }
@@ -25,10 +25,10 @@
 
         .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; }
         .btn-search { background: var(--primary); color: var(--accent); }
-        .btn-print { background: var(--accent); color: var(--primary); margin-top: 15px; display: none; }
+        .btn-print { background: #334155; color: white; margin-top: 15px; display: none; }
 
         .result-area { margin-top: 30px; display: none; }
-        .student-info { background: #fff; padding: 15px; border-radius: 12px; border-right: 5px solid var(--accent); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .student-info { background: #f8fafc; padding: 20px; border-radius: 12px; border-right: 5px solid var(--accent); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         th { background: var(--primary); color: white; padding: 12px; font-size: 0.9rem; }
@@ -38,38 +38,67 @@
         .no-data { text-align: center; padding: 40px; color: #94a3b8; }
         .no-data i { font-size: 3rem; display: block; margin-bottom: 10px; }
 
+        /* تنسيق الطباعة الرسمي */
+        #printHeader { display: none; }
+        
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
+            .parent-container { max-width: 100%; }
             .search-card { box-shadow: none; border: none; padding: 0; }
             .result-area { display: block !important; margin-top: 0; }
+            #printHeader { display: block !important; margin-bottom: 20px; }
+            .student-info { border: 1px solid #000; background: #fff; }
+            table { border: 2px solid #000; box-shadow: none; }
+            th { background: #eee !important; color: #000 !important; border: 1px solid #000; }
+            td { border: 1px solid #000; color: #000; }
         }
     </style>
 </head>
 <body>
 
 <div class="parent-container">
+    <!-- ترويسة الطباعة الرسمية -->
+    <div id="printHeader">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px;">
+            <div style="text-align: right; font-size: 0.8rem; font-weight: bold;">
+                <p>سلطنة عمان</p>
+                <p>وزارة التربية والتعليم</p>
+                <p>مدرسة صلالة الشرقية (5-9)</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-graduation-cap" style="font-size: 2.5rem; color: #000;"></i>
+                <h2 style="margin: 5px 0; font-size: 1.2rem;">تقرير غياب طالب</h2>
+            </div>
+            <div style="text-align: left; font-size: 0.8rem;">
+                <p>تاريخ التقرير:</p>
+                <p id="reportDate"></p>
+            </div>
+        </div>
+    </div>
+
     <div class="header no-print">
-        <i class="fas fa-graduation-cap" style="font-size: 3rem; color: var(--accent);"></i>
-        <h1>منصة استعلام أولياء الأمور</h1>
-        <p>مدرسة صلالة الشرقية (5-9)</p>
+        <i class="fas fa-user-shield" style="font-size: 3.5rem; color: var(--accent);"></i>
+        <h1>بوابة ولي الأمر الرقمية</h1>
+        <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
     </div>
 
     <div class="search-card">
         <div class="no-print">
-            <label><i class="fas fa-phone"></i> أدخل رقم الهاتف المسجل لدينا:</label>
-            <input type="tel" id="phoneInput" placeholder="9xxxxxxx" maxlength="8">
+            <label><i class="fas fa-phone-alt"></i> أدخل رقم الهاتف المسجل في نظام المدرسة:</label>
+            <input type="tel" id="phoneInput" placeholder="أدخل 8 أرقام" maxlength="8">
             <button class="btn btn-search" onclick="searchAttendance()">
-                <i class="fas fa-search"></i> بحث عن الطالب
+                <i class="fas fa-search"></i> استعلام عن الغياب
             </button>
         </div>
 
         <div id="resultArea" class="result-area">
-            <div id="studentData" class="student-info">
-                </div>
+            <div id="studentData" class="student-info"></div>
+            
             <table id="attendanceTable">
                 <thead>
                     <tr>
+                        <th>م</th>
                         <th>اليوم</th>
                         <th>التاريخ</th>
                         <th>الحالة</th>
@@ -78,23 +107,32 @@
                 <tbody id="tableBody"></tbody>
             </table>
             
-            <button class="btn btn-print no-print" id="printBtn" onclick="window.print()">
-                <i class="fas fa-file-pdf"></i> طباعة التقرير / حفظ PDF
+            <div style="margin-top: 20px; font-size: 0.85rem; color: #64748b;" class="no-print">
+                <i class="fas fa-info-circle"></i> يمكنك حفظ هذا التقرير كملف PDF من خلال الضغط على زر الطباعة واختيار "Save as PDF".
+            </div>
+
+            <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
+                <i class="fas fa-print"></i> طباعة التقرير الرسمي / PDF
             </button>
         </div>
 
         <div id="notFound" class="no-data" style="display: none;">
-            <i class="fas fa-user-slash"></i>
-            <p>عذراً، لم يتم العثور على طالب مرتبط بهذا الرقم.</p>
+            <i class="fas fa-search-minus"></i>
+            <p>لم يتم العثور على بيانات مرتبطة بهذا الرقم.<br><small>تأكد من إدخال الرقم الصحيح المسجل لدى إدارة المدرسة.</small></p>
         </div>
     </div>
 
     <footer class="no-print" style="text-align: center; margin-top: 40px; font-size: 0.8rem; color: #94a3b8;">
-        جميع الحقوق محفوظة لمدرسة صلالة الشرقية &copy; 2026
+        نظام إدارة الغياب الرقمي &copy; 2026 | مدرسة صلالة الشرقية
     </footer>
 </div>
 
 <script>
+    function preparePrint() {
+        document.getElementById('reportDate').innerText = new Date().toLocaleDateString('ar-OM');
+        window.print();
+    }
+
     async function searchAttendance() {
         const phone = document.getElementById('phoneInput').value.trim();
         const resultArea = document.getElementById('resultArea');
@@ -103,11 +141,19 @@
         const studentData = document.getElementById('studentData');
         const printBtn = document.getElementById('printBtn');
 
-        if(!phone) { alert("يرجى إدخال رقم الهاتف"); return; }
+        if(!phone || phone.length < 8) { 
+            alert("يرجى إدخال رقم هاتف صحيح مكون من 8 أرقام"); 
+            return; 
+        }
+
+        // إظهار مؤشر تحميل بسيط
+        const searchBtn = document.querySelector('.btn-search');
+        const originalText = searchBtn.innerHTML;
+        searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري البحث...';
+        searchBtn.disabled = true;
 
         try {
             const v = Date.now();
-            // جلب بيانات الطلاب والتاريخ
             const [sR, hR] = await Promise.all([
                 fetch(`student_fone.json?v=${v}`),
                 fetch(`attendance_history.json?v=${v}`)
@@ -125,24 +171,35 @@
                 printBtn.style.display = 'flex';
 
                 studentData.innerHTML = `
-                    <div style="font-weight:900; font-size:1.1rem; color:var(--primary);">${student.name}</div>
-                    <div style="font-size:0.9rem; color:#64748b;">الصف: ${student.grade} - شعبة: ${student.section}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-weight:900; font-size:1.2rem; color:var(--primary);">${student.name}</div>
+                            <div style="font-size:1rem; color:#475569; margin-top:5px;">
+                                <i class="fas fa-school"></i> الصف: ${student.grade} / الشعبة: ${student.section}
+                            </div>
+                        </div>
+                        <div style="text-align:left;">
+                            <span style="background:var(--primary); color:var(--accent); padding:5px 15px; border-radius:20px; font-size:0.8rem; font-weight:bold;">طالب مسجل</span>
+                        </div>
+                    </div>
                 `;
 
                 // فلترة الغيابات الخاصة بهذا الطالب
-                const records = history.filter(h => h.name === student.name);
+                const records = history.filter(h => h.name === student.name).sort((a,b) => new Date(b.date) - new Date(a.date));
                 
                 if(records.length > 0) {
-                    tableBody.innerHTML = records.map(r => {
-                        const day = new Date(r.date).toLocaleDateString('ar-OM', {weekday: 'long'});
+                    tableBody.innerHTML = records.map((r, index) => {
+                        const dateObj = new Date(r.date);
+                        const day = dateObj.toLocaleDateString('ar-OM', {weekday: 'long'});
                         return `<tr>
+                            <td>${index + 1}</td>
                             <td>${day}</td>
                             <td>${r.date}</td>
-                            <td style="color:red; font-weight:bold;">غياب</td>
+                            <td style="color:#e11d48; font-weight:bold;"><i class="fas fa-clock"></i> غياب</td>
                         </tr>`;
                     }).join('');
                 } else {
-                    tableBody.innerHTML = `<tr><td colspan="3" style="padding:20px; color:green; font-weight:bold;">لا توجد أيام غياب مسجلة لهذا الطالب</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="4" style="padding:30px; color:#059669; font-weight:bold;"><i class="fas fa-check-circle"></i> لا توجد أيام غياب مسجلة لهذا الطالب. سجل نظيف!</td></tr>`;
                 }
             } else {
                 resultArea.style.display = 'none';
@@ -150,9 +207,19 @@
             }
         } catch(e) {
             console.error(e);
-            alert("حدث خطأ أثناء جلب البيانات.");
+            alert("حدث خطأ أثناء الاتصال بالنظام. يرجى المحاولة لاحقاً.");
+        } finally {
+            searchBtn.innerHTML = originalText;
+            searchBtn.disabled = false;
         }
     }
+
+    // السماح بالبحث عند الضغط على Enter
+    document.getElementById('phoneInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            searchAttendance();
+        }
+    });
 </script>
 
 </body>
