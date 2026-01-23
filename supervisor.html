@@ -124,7 +124,7 @@
     let students = []; let history = []; let currentBatch = [];
 
     async function init() {
-        if(sessionStorage.getItem('isLoggedIn')!=='true') window.location.replace("index.html");
+      //  if(sessionStorage.getItem('isLoggedIn')!=='true') window.location.replace("index.html");
         document.getElementById('tName').innerText = `أ. ${sessionStorage.getItem('teacherName')}`;
         
         const v = Date.now();
