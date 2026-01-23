@@ -30,7 +30,7 @@
         .parent-container { 
             max-width: 600px; 
             margin: 0 auto; 
-            padding-bottom: 40px;
+            padding-bottom: 20px;
         }
         
         .header { 
@@ -138,50 +138,37 @@
         .no-data { text-align: center; padding: 40px 20px; color: #94a3b8; }
         .no-data i { font-size: 3.5rem; display: block; margin-bottom: 15px; opacity: 0.5; }
 
-        /* بطاقة المصمم المميزة */
+        /* بطاقة المصمم المصغرة */
         .designer-card {
-            margin-top: 40px;
+            margin-top: 25px;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            padding: 20px;
-            border-radius: 20px;
+            padding: 12px 20px;
+            border-radius: 15px;
             color: white;
             text-align: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-        }
-        .designer-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
-            pointer-events: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
         .designer-info { position: relative; z-index: 1; }
+        .designer-text {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
         .designer-name { 
             color: var(--accent); 
-            font-weight: 900; 
-            font-size: 1.1rem; 
-            display: block;
+            font-weight: 800; 
+        }
+        .copyright-text {
+            font-size: 0.7rem;
+            opacity: 0.5;
             margin-top: 5px;
-            letter-spacing: 0.5px;
-        }
-        .designer-title {
-            font-size: 0.8rem;
-            opacity: 0.8;
             display: block;
-            margin-bottom: 5px;
-        }
-        .copyright {
-            font-size: 0.75rem;
-            opacity: 0.6;
-            margin-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 10px;
         }
 
         /* تنسيق الطباعة */
@@ -197,14 +184,6 @@
             table { border: 2px solid #000; box-shadow: none; }
             th { background: #eee !important; color: #000 !important; border: 1px solid #000; }
             td { border: 1px solid #000; color: #000; }
-        }
-
-        /* تحسينات للهواتف الصغيرة جداً */
-        @media (max-width: 360px) {
-            .header h1 { font-size: 1.3rem; }
-            input { font-size: 1.1rem; padding: 14px; }
-            .btn { font-size: 1rem; }
-            th, td { padding: 10px 5px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -277,14 +256,14 @@
         </div>
     </div>
 
-    <!-- بطاقة المصمم المميزة -->
+    <!-- بطاقة المصمم المصغرة -->
     <div class="designer-card no-print">
         <div class="designer-info">
-            <span class="designer-title">تصميم وتنفيذ</span>
-            <span class="designer-name">الأستاذ فيصل العريبي</span>
-            <div class="copyright">
-                نظام إدارة الغياب الرقمي &copy; 2026 | مدرسة صلالة الشرقية
+            <div class="designer-text">
+                <span>تصميم وتنفيذ:</span>
+                <span class="designer-name">الأستاذ فيصل العريبي</span>
             </div>
+            <span class="copyright-text">نظام إدارة الغياب الرقمي &copy; 2026 | مدرسة صلالة الشرقية</span>
         </div>
     </div>
 </div>
@@ -365,7 +344,6 @@
                     tableBody.innerHTML = `<tr><td colspan="4" style="padding:30px; color:#059669; font-weight:bold;"><i class="fas fa-check-circle"></i> لا توجد أيام غياب مسجلة.</td></tr>`;
                 }
                 
-                // التمرير التلقائي للنتائج في الهواتف
                 setTimeout(() => {
                     resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
