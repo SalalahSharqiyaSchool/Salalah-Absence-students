@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root { --primary: #0f172a; --accent: #d4af37; --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 60px; color: var(--primary); }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: var(--primary); }
 
         .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
         .app-header h1 { margin: 0; font-size: 1.3rem; color: var(--accent); font-weight: 900; }
@@ -37,36 +37,34 @@
         .card.orange .card-header { background: var(--warning); }
         .card-body { padding: 15px; min-height: 150px; }
 
-        /* عنصر الطالب سطر واحد */
+        /* تعديل ظهور الاسم والصف */
         .student-item { background: #f8fafc; padding: 12px 18px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .st-main-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
-        .st-name { font-weight: 800; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .st-class-tag { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+        .st-main-info { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .st-name { font-weight: 800; font-size: 1rem; color: var(--primary); }
+        .st-class-tag { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
 
-        .wa-btn { width: 36px; height: 36px; background: #25d366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 3px 8px rgba(37, 211, 102, 0.3); flex-shrink: 0; }
+        .wa-btn { width: 38px; height: 38px; background: #25d366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 3px 8px rgba(37, 211, 102, 0.3); font-size: 1.2rem; }
 
-        /* الشريط السفلي - سطر واحد عريض */
+        /* الشريط السفلي - سطر واحد باسمك فقط */
         .footer-bar { 
             position: fixed; bottom: 0; left: 0; right: 0; 
             background: var(--primary); color: white; 
-            text-align: center; padding: 10px 20px; 
+            text-align: center; padding: 12px; 
             border-top: 3px solid var(--accent); 
-            font-size: 0.85rem; z-index: 2000;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
-            white-space: nowrap;
+            font-size: 0.9rem; z-index: 2000;
         }
 
         @media print {
             .no-print { display: none !important; }
             .card { border: 1px solid black !important; break-inside: avoid; }
-            .footer-bar { position: static; color: black; background: white; border: none; padding-top: 30px; font-weight: bold; }
+            .footer-bar { position: static; color: black; background: white; border: none; padding-top: 20px; font-weight: bold; }
         }
     </style>
 </head>
 <body>
 
 <header class="app-header no-print">
-    <h1><i class="fas fa-chart-line"></i> نظام تحليل الغياب - مدرسة صلالة الشرقية</h1>
+    <h1><i class="fas fa-user-shield"></i> منظومة الإشراف - مدرسة صلالة الشرقية</h1>
 </header>
 
 <div class="container">
@@ -94,9 +92,7 @@
 </div>
 
 <div class="footer-bar no-print">
-    <span>تصميم وتنفيذ الأستاذ: <b>فيصل العريبي</b></span>
-    <span style="opacity: 0.5;">|</span>
-    <span>جميع الحقوق محفوظة - مدرسة صلالة الشرقية © 2026</span>
+    تصميم وتنفيذ الأستاذ: <b>فيصل العريبي</b> &copy; 2026
 </div>
 
 <script>
@@ -151,7 +147,7 @@
                 tag.onclick = () => {
                     document.getElementById('gradeFilter').value = g;
                     updateSections();
-                    document.getElementById('selFilter').value = s;
+                    document.getElementById('sectionFilter').value = s;
                     analyzeData();
                 };
                 radarTags.appendChild(tag);
@@ -190,8 +186,8 @@
                 <span class="st-name">${st.name}</span>
                 <span class="st-class-tag">${st.grade}/${st.section}</span>
             </div>
-            <div style="display:flex; align-items:center; gap:10px">
-                <span style="font-size:0.7rem; font-weight:800; color:#64748b">${badge}</span>
+            <div style="display:flex; align-items:center; gap:12px">
+                <span style="font-size:0.75rem; font-weight:800; color:#64748b">${badge}</span>
                 <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>`;
