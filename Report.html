@@ -32,7 +32,6 @@
             align-items: flex-start;
         }
         
-        /* الإطار الذهبي الجمالي */
         .page-border {
             width: 100%;
             max-width: 650px;
@@ -41,6 +40,14 @@
             border-radius: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
             margin: 10px auto;
+            transition: all 0.4s ease;
+        }
+
+        .page-border.no-border {
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
+            max-width: 700px;
         }
 
         .parent-container { 
@@ -48,26 +55,48 @@
             border-radius: 26px;
             padding: 20px 15px;
             width: 100%;
+            transition: all 0.4s ease;
         }
+        
+        .page-border.no-border .parent-container {
+            border-radius: 0;
+            padding: 10px 5px;
+        }
+
+        /* الترويسة الرسمية النصية */
+        .official-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .official-header p {
+            margin: 2px 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+        .official-header .country { font-size: 1rem; color: var(--accent); }
         
         .header { 
             text-align: center; 
-            margin: 10px 0 25px; 
+            margin: 15px 0 25px; 
         }
-        .header i { 
-            font-size: 3rem; 
+        .header i.main-icon { 
+            font-size: 2.5rem; 
             color: var(--accent);
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
         .header h1 { 
-            font-size: 1.5rem; 
+            font-size: 1.4rem; 
             color: var(--primary); 
             margin: 10px 0 5px; 
             font-weight: 900;
         }
         .header p { 
             color: var(--text-muted); 
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             margin: 0;
         }
 
@@ -155,7 +184,6 @@
         .no-data { text-align: center; padding: 40px 20px; color: #94a3b8; }
         .no-data i { font-size: 3.5rem; display: block; margin-bottom: 15px; opacity: 0.5; }
 
-        /* بطاقة المصمم المحدثة */
         .designer-card {
             margin-top: 25px;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -194,7 +222,7 @@
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
-            .page-border { background: none; padding: 0; box-shadow: none; max-width: 100%; }
+            .page-border { background: none !important; padding: 0 !important; box-shadow: none !important; max-width: 100% !important; }
             .parent-container { background: white; padding: 0; }
             .search-card { box-shadow: none; border: none; padding: 0; }
             .result-area { display: block !important; margin-top: 0; }
@@ -208,7 +236,7 @@
 </head>
 <body>
 
-<div class="page-border">
+<div class="page-border" id="mainBorder">
     <div class="parent-container">
         <!-- ترويسة الطباعة الرسمية -->
         <div id="printHeader">
@@ -216,6 +244,7 @@
                 <div style="text-align: right; font-size: 0.8rem; font-weight: bold;">
                     <p>سلطنة عمان</p>
                     <p>وزارة التربية والتعليم</p>
+                    <p>المديرية العامة للتربية والتعليم بمحافظة ظفار</p>
                     <p>مدرسة صلالة الشرقية (5-9)</p>
                 </div>
                 <div style="text-align: center;">
@@ -229,8 +258,15 @@
             </div>
         </div>
 
+        <!-- الترويسة الرسمية النصية في الأعلى -->
+        <div class="official-header no-print">
+            <p class="country">سلطنة عمان</p>
+            <p>وزارة التربية والتعليم</p>
+            <p>المديرية العامة للتربية والتعليم بمحافظة ظفار</p>
+        </div>
+
         <div class="header no-print">
-            <i class="fas fa-user-shield"></i>
+            <i class="fas fa-user-shield main-icon"></i>
             <h1>بوابة ولي الأمر الرقمية</h1>
             <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
         </div>
@@ -276,7 +312,6 @@
             </div>
         </div>
 
-        <!-- بطاقة المصمم المحدثة -->
         <div class="designer-card no-print">
             <div class="designer-info">
                 <span class="copyright-text">نظام إدارة الغياب الرقمي &copy; 2026 | مدرسة صلالة الشرقية</span>
@@ -299,6 +334,7 @@
         const tableBody = document.getElementById('tableBody');
         const studentData = document.getElementById('studentData');
         const printBtn = document.getElementById('printBtn');
+        const mainBorder = document.getElementById('mainBorder');
 
         if(!phone || phone.length < 8) { 
             alert("يرجى إدخال رقم هاتف صحيح مكون من 8 أرقام"); 
@@ -327,6 +363,7 @@
             const student = students.find(s => String(s.phone) === phone);
 
             if(student) {
+                mainBorder.classList.add('no-border');
                 notFound.style.display = 'none';
                 resultArea.style.display = 'block';
                 printBtn.style.display = 'flex';
@@ -367,6 +404,7 @@
                 }, 100);
 
             } else {
+                mainBorder.classList.remove('no-border');
                 resultArea.style.display = 'none';
                 notFound.style.display = 'block';
             }
