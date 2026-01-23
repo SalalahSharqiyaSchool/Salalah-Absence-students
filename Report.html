@@ -14,6 +14,7 @@
             --card: #ffffff; 
             --text-main: #1e293b;
             --text-muted: #64748b;
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f5e0a3 50%, #b8860b 100%);
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -22,35 +23,51 @@
             font-family: 'Cairo', sans-serif; 
             background: var(--bg); 
             margin: 0; 
-            padding: 15px; 
+            padding: 10px; 
             color: var(--text-main);
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
         
+        /* الإطار الذهبي الجمالي */
+        .page-border {
+            width: 100%;
+            max-width: 650px;
+            padding: 5px;
+            background: var(--gold-gradient);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            margin: 10px auto;
+        }
+
         .parent-container { 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding-bottom: 20px;
+            background: var(--bg);
+            border-radius: 26px;
+            padding: 20px 15px;
+            width: 100%;
         }
         
         .header { 
             text-align: center; 
-            margin: 20px 0 30px; 
+            margin: 10px 0 25px; 
         }
         .header i { 
-            font-size: 3.5rem; 
+            font-size: 3rem; 
             color: var(--accent);
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
         .header h1 { 
-            font-size: 1.6rem; 
+            font-size: 1.5rem; 
             color: var(--primary); 
-            margin: 15px 0 5px; 
+            margin: 10px 0 5px; 
             font-weight: 900;
         }
         .header p { 
             color: var(--text-muted); 
-            font-size: 0.95rem; 
+            font-size: 0.9rem; 
             margin: 0;
         }
 
@@ -58,7 +75,7 @@
             background: var(--card); 
             padding: 25px 20px; 
             border-radius: 24px; 
-            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); 
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05); 
             border: 1px solid rgba(226, 232, 240, 0.8); 
         }
         
@@ -138,37 +155,38 @@
         .no-data { text-align: center; padding: 40px 20px; color: #94a3b8; }
         .no-data i { font-size: 3.5rem; display: block; margin-bottom: 15px; opacity: 0.5; }
 
-        /* بطاقة المصمم المصغرة */
+        /* بطاقة المصمم المحدثة */
         .designer-card {
             margin-top: 25px;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            padding: 12px 20px;
-            border-radius: 15px;
+            padding: 15px 20px;
+            border-radius: 18px;
             color: white;
             text-align: center;
             position: relative;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
         }
         .designer-info { position: relative; z-index: 1; }
-        .designer-text {
+        .copyright-text {
             font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            color: #f8fafc;
         }
-        .designer-name { 
+        .designer-name-row {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            display: block;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 6px;
+            margin-top: 4px;
+        }
+        .designer-name-row b { 
             color: var(--accent); 
             font-weight: 800; 
-        }
-        .copyright-text {
-            font-size: 0.7rem;
-            opacity: 0.5;
-            margin-top: 5px;
-            display: block;
         }
 
         /* تنسيق الطباعة */
@@ -176,7 +194,8 @@
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
-            .parent-container { max-width: 100%; }
+            .page-border { background: none; padding: 0; box-shadow: none; max-width: 100%; }
+            .parent-container { background: white; padding: 0; }
             .search-card { box-shadow: none; border: none; padding: 0; }
             .result-area { display: block !important; margin-top: 0; }
             #printHeader { display: block !important; margin-bottom: 20px; }
@@ -189,81 +208,80 @@
 </head>
 <body>
 
-<div class="parent-container">
-    <!-- ترويسة الطباعة الرسمية -->
-    <div id="printHeader">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px;">
-            <div style="text-align: right; font-size: 0.8rem; font-weight: bold;">
-                <p>سلطنة عمان</p>
-                <p>وزارة التربية والتعليم</p>
-                <p>مدرسة صلالة الشرقية (5-9)</p>
-            </div>
-            <div style="text-align: center;">
-                <i class="fas fa-graduation-cap" style="font-size: 2.5rem; color: #000;"></i>
-                <h2 style="margin: 5px 0; font-size: 1.2rem;">تقرير غياب طالب</h2>
-            </div>
-            <div style="text-align: left; font-size: 0.8rem;">
-                <p>تاريخ التقرير:</p>
-                <p id="reportDate"></p>
+<div class="page-border">
+    <div class="parent-container">
+        <!-- ترويسة الطباعة الرسمية -->
+        <div id="printHeader">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px;">
+                <div style="text-align: right; font-size: 0.8rem; font-weight: bold;">
+                    <p>سلطنة عمان</p>
+                    <p>وزارة التربية والتعليم</p>
+                    <p>مدرسة صلالة الشرقية (5-9)</p>
+                </div>
+                <div style="text-align: center;">
+                    <i class="fas fa-graduation-cap" style="font-size: 2.5rem; color: #000;"></i>
+                    <h2 style="margin: 5px 0; font-size: 1.2rem;">تقرير غياب طالب</h2>
+                </div>
+                <div style="text-align: left; font-size: 0.8rem;">
+                    <p>تاريخ التقرير:</p>
+                    <p id="reportDate"></p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="header no-print">
-        <i class="fas fa-user-shield"></i>
-        <h1>بوابة ولي الأمر الرقمية</h1>
-        <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
-    </div>
-
-    <div class="search-card">
-        <div class="no-print">
-            <label><i class="fas fa-phone-alt" style="color: var(--accent);"></i> رقم الهاتف المسجل:</label>
-            <input type="tel" id="phoneInput" placeholder="أدخل 8 أرقام" maxlength="8" inputmode="numeric">
-            <button class="btn btn-search" onclick="searchAttendance()">
-                <i class="fas fa-search"></i> استعلام عن الغياب
-            </button>
+        <div class="header no-print">
+            <i class="fas fa-user-shield"></i>
+            <h1>بوابة ولي الأمر الرقمية</h1>
+            <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
         </div>
 
-        <div id="resultArea" class="result-area">
-            <div id="studentData" class="student-info"></div>
-            
-            <div class="table-container">
-                <table id="attendanceTable">
-                    <thead>
-                        <tr>
-                            <th>م</th>
-                            <th>اليوم</th>
-                            <th>التاريخ</th>
-                            <th>الحالة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-            
-            <div style="margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); text-align: center;" class="no-print">
-                <i class="fas fa-info-circle"></i> يمكنك حفظ التقرير كملف PDF عبر زر الطباعة.
+        <div class="search-card">
+            <div class="no-print">
+                <label><i class="fas fa-phone-alt" style="color: var(--accent);"></i> رقم الهاتف المسجل:</label>
+                <input type="tel" id="phoneInput" placeholder="أدخل 8 أرقام" maxlength="8" inputmode="numeric">
+                <button class="btn btn-search" onclick="searchAttendance()">
+                    <i class="fas fa-search"></i> استعلام عن الغياب
+                </button>
             </div>
 
-            <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
-                <i class="fas fa-print"></i> طباعة التقرير الرسمي / PDF
-            </button>
+            <div id="resultArea" class="result-area">
+                <div id="studentData" class="student-info"></div>
+                
+                <div class="table-container">
+                    <table id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>م</th>
+                                <th>اليوم</th>
+                                <th>التاريخ</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); text-align: center;" class="no-print">
+                    <i class="fas fa-info-circle"></i> يمكنك حفظ التقرير كملف PDF عبر زر الطباعة.
+                </div>
+
+                <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
+                    <i class="fas fa-print"></i> طباعة التقرير الرسمي / PDF
+                </button>
+            </div>
+
+            <div id="notFound" class="no-data" style="display: none;">
+                <i class="fas fa-search-minus"></i>
+                <p>لم يتم العثور على بيانات.<br><small>تأكد من الرقم المسجل في نظام المدرسة.</small></p>
+            </div>
         </div>
 
-        <div id="notFound" class="no-data" style="display: none;">
-            <i class="fas fa-search-minus"></i>
-            <p>لم يتم العثور على بيانات.<br><small>تأكد من الرقم المسجل في نظام المدرسة.</small></p>
-        </div>
-    </div>
-
-    <!-- بطاقة المصمم المصغرة -->
-    <div class="designer-card no-print">
-        <div class="designer-info">
-            <div class="designer-text">
-                <span>تصميم وتنفيذ:</span>
-                <span class="designer-name">الأستاذ فيصل العريبي</span>
+        <!-- بطاقة المصمم المحدثة -->
+        <div class="designer-card no-print">
+            <div class="designer-info">
+                <span class="copyright-text">نظام إدارة الغياب الرقمي &copy; 2026 | مدرسة صلالة الشرقية</span>
+                <span class="designer-name-row">تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
             </div>
-            <span class="copyright-text">نظام إدارة الغياب الرقمي &copy; 2026 | مدرسة صلالة الشرقية</span>
         </div>
     </div>
 </div>
