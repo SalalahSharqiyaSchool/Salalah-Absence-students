@@ -475,11 +475,9 @@ updateLiveDateTime();
              document.getElementById('displayTeacherName').innerText = tName + (userRole === 'admin' ? ' (مدير)' : '');
         }
 
-        // إخفاء زر الإدارة إذا لم يكن المستخدم مديراً
-        if (userRole !== 'admin') {
-            const manageNavItem = document.querySelector('.nav-item[onclick*="manage-section"]');
-            if (manageNavItem) manageNavItem.style.display = 'none';
-        }
+        // تم السماح للمعلم بالدخول لقسم الإدارة مع تقييد الصلاحيات داخل القسم نفسه
+        const manageNavItem = document.querySelector('.nav-item[onclick*="manage-section"]');
+        if (manageNavItem) manageNavItem.style.display = 'flex';
 
         const v = Date.now();
         try {
@@ -813,7 +811,17 @@ updateLiveDateTime();
         return alert("يرجى إكمال جميع الحقول (الاسم، الهاتف، الصف، الشعبة)");
     }
 
-    // 3. إضافة الطالب للقائمة المحلية
+    // 3. التحقق من الصلاحية (للمعلم فقط)
+    const userRole = sessionStorage.getItem('userRole');
+    const userClasses = JSON.parse(sessionStorage.getItem('userClasses') || '[]');
+    if (userRole !== 'admin') {
+        const targetClass = `${g}-${s}`;
+        if (!userClasses.includes(targetClass)) {
+            return alert("عذراً، ليس لديك صلاحية لإضافة طلاب في هذا الصف/الشعبة. الصفوف المسموحة لك هي: " + userClasses.join(', '));
+        }
+    }
+
+    // 4. إضافة الطالب للقائمة المحلية
     students.push({name: n, phone: p, grade: g, section: s});
 
     try {
