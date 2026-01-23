@@ -2,132 +2,97 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام تحليل الغياب - مدرسة صلالة الشرقية</title>
+    <title>رادار الإشراف - مدرسة صلالة الشرقية</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card: #ffffff; --danger: #ef4444; --success: #10b981; }
-        
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--primary); }
+        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --danger: #ef4444; --warning: #f59e0b; --success: #10b981; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; }
 
-        /* الهيدر الرسمي (يظهر في الطباعة) */
+        /* ترويسة الطباعة الرسمية */
         .official-header { display: none; padding: 20px; border-bottom: 2px solid var(--primary); margin-bottom: 20px; }
-        .official-header .side { width: 30%; font-size: 0.85rem; font-weight: 700; }
-        .official-header .center { width: 40%; text-align: center; }
-        .official-header .center img { width: 60px; }
+        .official-header div { flex: 1; font-size: 0.8rem; font-weight: 700; }
 
-        /* واجهة البرنامج (تختفي في الطباعة) */
-        .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
+        /* هيدر التطبيق */
+        .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
         .app-header h1 { margin: 0; font-size: 1.1rem; color: var(--accent); }
 
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 15px; }
 
-        /* منطقة التحكم */
-        .filter-card { background: var(--card); border-radius: 15px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        .grid-filters { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
-        select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #e2e8f0; font-family: 'Cairo'; font-weight: 700; background: #fdfdfd; }
+        /* خريطة التنبيهات (الرادار) */
+        .radar-box { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .radar-title { font-weight: 900; font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--primary); }
+        .radar-grid { display: flex; flex-wrap: wrap; gap: 10px; }
         
-        .btn { padding: 12px 20px; border: none; border-radius: 10px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .btn-print { background: var(--primary); color: var(--accent); }
+        .radar-badge { 
+            padding: 8px 12px; border-radius: 10px; font-size: 0.8rem; font-weight: 800; cursor: pointer;
+            border: 1px solid transparent; transition: 0.3s; display: flex; flex-direction: column; align-items: center;
+        }
+        .bg-red { background: #fee2e2; color: var(--danger); border-color: #fecaca; }
+        .bg-orange { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+        .radar-badge:hover { transform: scale(1.05); filter: brightness(0.95); }
+        .badge-sub { font-size: 0.6rem; font-weight: 600; }
 
-        /* كروت النتائج */
-        .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .res-card { background: white; border-radius: 15px; padding: 15px; border-top: 5px solid var(--primary); min-height: 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .res-card.red { border-top-color: var(--danger); }
-        .res-card.gold { border-top-color: var(--accent); }
-        .res-card h3 { font-size: 1rem; margin-top: 0; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        /* الفلاتر */
+        .filter-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
+        select { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-family: 'Cairo'; font-weight: 700; }
+        .btn-print { background: var(--primary); color: var(--accent); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; font-weight: 800; }
 
-        .empty-state { text-align: center; color: #94a3b8; padding: 40px 0; font-size: 0.9rem; }
-        
-        /* عناصر الطلاب في النتيجة */
-        .st-item { background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0; position: relative; }
-        .st-name { font-weight: 800; font-size: 0.9rem; margin-bottom: 4px; display: block; }
-        .st-days { font-size: 0.75rem; color: #64748b; line-height: 1.4; }
-        
-        .wa-btn { background: var(--success); color: white; padding: 4px 10px; border-radius: 5px; text-decoration: none; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; font-weight: 700; }
+        /* النتائج */
+        .result-card { background: white; border-radius: 15px; padding: 15px; border-top: 5px solid var(--primary); margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .result-card.critical { border-top-color: var(--danger); }
+        .student-item { padding: 10px; border-bottom: 1px solid #f1f5f9; position: relative; }
+        .student-item:last-child { border: none; }
+        .st-name { font-weight: 800; color: var(--primary); display: block; }
+        .st-meta { font-size: 0.75rem; color: #64748b; }
 
-        /* تذييل التوقيعات (يظهر في الطباعة) */
-        .signatures { display: none; margin-top: 50px; justify-content: space-between; padding: 0 40px; }
-
-        @media (max-width: 768px) { .analysis-grid { grid-template-columns: 1fr; } .grid-filters { grid-template-columns: 1fr; } }
+        .wa-btn { display: inline-flex; align-items: center; gap: 5px; background: #25d366; color: white; padding: 4px 12px; border-radius: 6px; text-decoration: none; font-size: 0.75rem; font-weight: 700; margin-top: 8px; }
 
         @media print {
             .no-print { display: none !important; }
-            .official-header, .signatures { display: flex !important; }
+            .official-header { display: flex !important; justify-content: space-between; text-align: center; }
             body { background: white; }
-            .container { max-width: 100%; margin: 0; padding: 0; }
-            .res-card { border: 1px solid #ddd !important; box-shadow: none !important; break-inside: avoid; margin-bottom: 20px; }
-            .st-item { border: none; border-bottom: 1px solid #eee; background: none; padding: 5px 0; }
-            .analysis-grid { display: block; }
+            .result-card { box-shadow: none; border: 1px solid #eee; break-inside: avoid; }
         }
     </style>
 </head>
 <body>
 
 <div class="official-header">
-    <div class="side">
-        سلطنة عمان<br>
-        وزارة التربية والتعليم<br>
-        المديرية العامة للتربية والتعليم بمحافظة ظفار<br>
-        مدرسة صلالة الشرقية للتعليم الأساسي (5-9)
-    </div>
-    <div class="center">
-        <i class="fas fa-graduation-cap" style="font-size: 2.5rem; color: #000;"></i>
-        <h2 style="margin: 10px 0; font-size: 1.2rem;">تقرير متابعة غياب الطلاب</h2>
-        <p style="font-size: 0.8rem;">تاريخ التقرير: <span id="pDate"></span></p>
-    </div>
-    <div class="side" style="text-align: left;">
-        قسم شؤون الطلاب<br>
-        مكتب مساعد المدير<br>
-        العام الدراسي: 2025 / 2026م
-    </div>
+    <div style="text-align: right;">سلطنة عمان<br>وزارة التربية والتعليم<br>مدرسة صلالة الشرقية (5-9)</div>
+    <div style="text-align: center;"><i class="fas fa-graduation-cap" style="font-size: 2rem;"></i><br><strong>تقرير غياب الطلاب المنقطعين</strong></div>
+    <div style="text-align: left;">تاريخ التقرير: <span id="printDate"></span><br>العام الدراسي: 2025/2026</div>
 </div>
 
 <header class="app-header no-print">
-    <h1><i class="fas fa-shield-halved"></i> منظومة الإشراف الإداري الرقمية</h1>
+    <h1><i class="fas fa-satellite-dish"></i> رادار المتابعة الإشرافية</h1>
 </header>
 
 <div class="container">
+    <div class="radar-box no-print" id="radarSection" style="display: none;">
+        <div class="radar-title"><i class="fas fa-bullseye" style="color:var(--danger)"></i> خريطة التدخل السريع (صفوف تحتاج متابعة)</div>
+        <div class="radar-grid" id="radarGrid"></div>
+    </div>
+
     <div class="filter-card no-print">
-        <div class="grid-filters">
-            <div>
-                <label style="font-size:0.8rem; font-weight:800;">الصف الدراسي:</label>
-                <select id="gradeSel" onchange="updateSec()"></select>
-            </div>
-            <div>
-                <label style="font-size:0.8rem; font-weight:800;">الشعبة:</label>
-                <select id="secSel" onchange="analyze()"><option value="">-- اختر الشعبة --</option></select>
-            </div>
-            <button class="btn btn-print" onclick="window.print()">
-                <i class="fas fa-file-pdf"></i> طباعة تقرير رسمي
-            </button>
-        </div>
+        <div><label style="font-size:0.7rem; font-weight:800;">الصف:</label><select id="gSel" onchange="updateS()"></select></div>
+        <div><label style="font-size:0.7rem; font-weight:800;">الشعبة:</label><select id="sSel" onchange="run()"></select></div>
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
     </div>
 
-    <div class="analysis-grid">
-        <div class="res-card red">
-            <h3 style="color:var(--danger)"><i class="fas fa-user-slash"></i> حالات الانقطاع (متتالي)</h3>
-            <div id="consecutiveArea" class="empty-state">يرجى اختيار الصف أولاً</div>
+    <div id="resArea">
+        <div style="text-align:center; padding:50px; color:#94a3b8;">
+            <i class="fas fa-search" style="font-size:2rem; margin-bottom:10px;"></i>
+            <p>اختر صفاً من الرادار أو القائمة لعرض البيانات</p>
         </div>
-
-        <div class="res-card gold">
-            <h3 style="color:var(--accent)"><i class="fas fa-exclamation-triangle"></i> تجاوز الحد الأسبوعي (3+ أيام)</h3>
-            <div id="weeklyArea" class="empty-state">يرجى اختيار الصف أولاً</div>
-        </div>
-    </div>
-
-    <div class="signatures">
-        <div style="text-align: center;">إعداد مشرف الصف<br><br>...........................</div>
-        <div style="text-align: center;">مساعد مدير المدرسة<br><br>...........................</div>
-        <div style="text-align: center;">اعتماد مدير المدرسة<br><br>...........................</div>
     </div>
 </div>
 
 <script>
     let students = []; let history = [];
 
-    async function loadData() {
+    async function start() {
         const v = Date.now();
         const [sR, hR] = await Promise.all([
             fetch(`student_fone.json?v=${v}`),
@@ -136,99 +101,121 @@
         students = await sR.json();
         history = await hR.json();
         
-        document.getElementById('pDate').innerText = new Date().toLocaleDateString('ar-OM');
+        document.getElementById('printDate').innerText = new Date().toLocaleDateString('ar-OM');
+        
+        initFilters();
+        buildRadar();
+    }
 
+    function initFilters() {
         const grades = [...new Set(students.map(s => String(s.grade)))].sort();
-        document.getElementById('gradeSel').innerHTML = '<option value="">-- اختر الصف --</option>' + 
+        document.getElementById('gSel').innerHTML = '<option value="">الصف</option>' + 
             grades.map(g => `<option value="${g}">${g}</option>`).join('');
     }
 
-    function updateSec() {
-        const g = document.getElementById('gradeSel').value;
+    function updateS() {
+        const g = document.getElementById('gSel').value;
         const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => String(s.section)))].sort();
-        document.getElementById('secSel').innerHTML = '<option value="">الشعبة</option>' + 
+        document.getElementById('sSel').innerHTML = '<option value="">الشعبة</option>' + 
             sections.map(s => `<option value="${s}">${s}</option>`).join('');
-        analyze(); // لتصفير البيانات عند تغيير الصف
+        run();
     }
 
-    function analyze() {
-        const g = document.getElementById('gradeSel').value;
-        const s = document.getElementById('secSel').value;
-        const conArea = document.getElementById('consecutiveArea');
-        const weekArea = document.getElementById('weeklyArea');
+    // بناء الرادار الذكي (مسح كافة الصفوف فور الفتح)
+    function buildRadar() {
+        const radarGrid = document.getElementById('radarGrid');
+        const radarSection = document.getElementById('radarSection');
+        radarGrid.innerHTML = "";
+        
+        let alerts = [];
+        const classes = [...new Set(students.map(s => `${s.grade}|${s.section}`))];
 
-        if(!g || !s) {
-            conArea.innerHTML = weekArea.innerHTML = '<div class="empty-state">في انتظار اختيار الشعبة...</div>';
-            return;
-        }
+        classes.forEach(cls => {
+            const [g, s] = cls.split('|');
+            const classStudents = students.filter(st => String(st.grade)===g && String(st.section)===s);
+            let hasRed = false; let hasOrange = false;
 
-        let conHTML = ""; let weekHTML = "";
-        const filteredStudents = students.filter(x => String(x.grade) === g && String(x.section) === s);
+            classStudents.forEach(st => {
+                const stAbs = history.filter(h => h.name === st.name).map(h => h.date).sort();
+                if(getConsec(stAbs) >= 3) hasRed = true;
+                else if(getMaxWeek(stAbs) >= 3) hasOrange = true;
+            });
 
-        filteredStudents.forEach(st => {
-            const stAbs = history.filter(h => h.name === st.name).map(h => h.date).sort();
-            if(stAbs.length === 0) return;
-
-            const maxConsec = getConsecutive(stAbs);
-            const maxInWeek = getMaxInWeek(stAbs);
-
-            // إضافة للمنقطعين
-            if(maxConsec >= 3) {
-                conHTML += renderItem(st, `منقطع لـ (${maxConsec}) أيام متتالية`, stAbs, "منقطع", maxConsec);
-            }
-
-            // إضافة للمتجاوزين أسبوعياً
-            if(maxInWeek >= 3) {
-                weekHTML += renderItem(st, `غائب (${maxInWeek}) أيام في أسبوع واحد`, stAbs, "متكرر", maxInWeek);
+            if(hasRed || hasOrange) {
+                const badge = document.createElement('div');
+                badge.className = `radar-badge ${hasRed ? 'bg-red' : 'bg-orange'}`;
+                badge.innerHTML = `<span>${g}/${s}</span><span class="badge-sub">${hasRed ? 'انقطاع' : 'تكرار'}</span>`;
+                badge.onclick = () => {
+                    document.getElementById('gSel').value = g;
+                    updateS();
+                    document.getElementById('sSel').value = s;
+                    run();
+                };
+                radarGrid.appendChild(badge);
             }
         });
 
-        conArea.innerHTML = conHTML || '<div class="empty-state">لا توجد حالات انقطاع</div>';
-        weekArea.innerHTML = weekHTML || '<div class="empty-state">لا توجد تجاوزات أسبوعية</div>';
+        if(radarGrid.innerHTML !== "") radarSection.style.display = 'block';
     }
 
-    function renderItem(st, reason, dates, type, count) {
-        let waMsg = `مدرسة صلالة الشرقية\nإلى ولي أمر الطالب: ${st.name}\n`;
-        if(type === "منقطع") waMsg += `نحيطكم علماً بأن ابنكم منقطع عن الدراسة لمدة (${count}) أيام متتالية. يرجى مراجعة المدرسة فوراً لتوضيح السبب.`;
-        else waMsg += `نلاحظ تكرار غياب ابنكم بمعدل (${count}) أيام في الأسبوع. نرجو منكم المتابعة والحرص على انتظامه.`;
+    function run() {
+        const g = document.getElementById('gSel').value;
+        const s = document.getElementById('sSel').value;
+        const area = document.getElementById('resArea');
+        if(!g || !s) return;
 
-        return `
-            <div class="st-item">
-                <span class="st-name">${st.name}</span>
-                <span class="st-days"><strong>الحالة:</strong> ${reason}</span><br>
-                <span class="st-days"><strong>التواريخ:</strong> ${dates.join(' | ')}</span>
-                <div class="no-print">
-                    <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(waMsg)}" target="_blank" class="wa-btn">
-                        <i class="fab fa-whatsapp"></i> مراسلة ولي الأمر
-                    </a>
-                </div>
-            </div>`;
+        let html = "";
+        const filtered = students.filter(x => String(x.grade) === g && String(x.section) === s);
+
+        filtered.forEach(st => {
+            const stAbs = history.filter(h => h.name === st.name).map(h => h.date).sort();
+            const con = getConsec(stAbs);
+            const week = getMaxWeek(stAbs);
+
+            if(con >= 3 || week >= 3) {
+                const isCrit = con >= 3;
+                html += `
+                <div class="result-card ${isCrit ? 'critical' : ''}">
+                    <div class="student-item">
+                        <span class="st-name">${st.name}</span>
+                        <span class="st-meta"><strong>الحالة:</strong> ${isCrit ? 'انقطاع متواصل ('+con+' أيام)' : 'غياب متكرر أسبوعياً ('+week+' أيام)'}</span><br>
+                        <span class="st-meta"><strong>التواريخ:</strong> ${stAbs.join(' | ')}</span>
+                        <div class="no-print">
+                            <a href="https://wa.me/${st.phone}?text=${encodeURIComponent('مدرسة صلالة الشرقية\nبخصوص الطالب: ' + st.name + '\nنحيطكم علماً بوجود ملاحظات على غيابه المستمر. يرجى مراجعة المدرسة.')}" target="_blank" class="wa-btn">
+                                <i class="fab fa-whatsapp"></i> مراسلة ولي الأمر
+                            </a>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        });
+
+        area.innerHTML = html || '<p style="text-align:center; color:#94a3b8;">لا توجد ملاحظات على هذه الشعبة</p>';
     }
 
-    function getConsecutive(dates) {
+    // دوال التحليل
+    function getConsec(dates) {
         if(dates.length < 2) return dates.length;
-        const dObjs = dates.map(d => new Date(d)).sort((a,b)=>a-b);
-        let max = 1, curr = 1;
-        for(let i=1; i<dObjs.length; i++) {
-            if((dObjs[i]-dObjs[i-1])/(1000*60*60*24) === 1) curr++;
-            else { max = Math.max(max, curr); curr = 1; }
+        const d = dates.map(x => new Date(x)).sort((a,b)=>a-b);
+        let max=1, c=1;
+        for(let i=1; i<d.length; i++) {
+            if((d[i]-d[i-1])/(1000*60*60*24) === 1) c++;
+            else { max=Math.max(max,c); c=1; }
         }
-        return Math.max(max, curr);
+        return Math.max(max,c);
     }
 
-    function getMaxInWeek(dates) {
+    function getMaxWeek(dates) {
         const counts = {};
-        dates.forEach(d => {
-            const date = new Date(d);
-            const week = Math.ceil(date.getDate() / 7);
-            const key = `${date.getMonth()}-${week}`;
-            counts[key] = (counts[key] || 0) + 1;
+        dates.forEach(x => {
+            const d = new Date(x);
+            const k = `${d.getMonth()}-${Math.ceil(d.getDate()/7)}`;
+            counts[k] = (counts[k] || 0) + 1;
         });
         return Math.max(...Object.values(counts), 0);
     }
 
-    window.onload = loadData;
+    window.onload = start;
 </script>
-
 </body>
 </html>
