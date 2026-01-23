@@ -1,0 +1,20 @@
+[
+  {
+    "name": "المدير العام",
+    "pass": "admin123",
+    "role": "admin",
+    "classes": []
+  },
+  {
+    "name": "أحمد محمد",
+    "pass": "1234",
+    "role": "teacher",
+    "classes": ["5-1", "5-2", "6-1"]
+  },
+  {
+    "name": "سارة علي",
+    "pass": "5678",
+    "role": "teacher",
+    "classes": ["7-1", "7-2"]
+  }
+]
