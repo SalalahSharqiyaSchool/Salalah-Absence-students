@@ -3,44 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <title>استعلام ولي الأمر - مدرسة صلالة الشرقية</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card: #ffffff; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--primary); }
+        :root { 
+            --primary: #0f172a; 
+            --accent: #d4af37; 
+            --bg: #f1f5f9; 
+            --card: #ffffff; 
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
         
-        .parent-container { max-width: 700px; margin: 0 auto; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        .header { text-align: center; margin-bottom: 30px; }
-        .header img { width: 80px; margin-bottom: 10px; }
-        .header h1 { font-size: 1.4rem; color: var(--primary); margin: 0; }
-        .header p { color: #64748b; font-size: 0.9rem; }
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 15px; 
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+        
+        .parent-container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding-bottom: 40px;
+        }
+        
+        .header { 
+            text-align: center; 
+            margin: 20px 0 30px; 
+        }
+        .header i { 
+            font-size: 3.5rem; 
+            color: var(--accent);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        .header h1 { 
+            font-size: 1.6rem; 
+            color: var(--primary); 
+            margin: 15px 0 5px; 
+            font-weight: 900;
+        }
+        .header p { 
+            color: var(--text-muted); 
+            font-size: 0.95rem; 
+            margin: 0;
+        }
 
-        .search-card { background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .search-card label { display: block; font-weight: 700; margin-bottom: 10px; }
+        .search-card { 
+            background: var(--card); 
+            padding: 25px 20px; 
+            border-radius: 24px; 
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); 
+            border: 1px solid rgba(226, 232, 240, 0.8); 
+        }
         
-        input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-family: 'Cairo'; font-size: 1.1rem; box-sizing: border-box; text-align: center; margin-bottom: 20px; transition: 0.3s; }
-        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1); }
+        .search-card label { 
+            display: block; 
+            font-weight: 700; 
+            margin-bottom: 15px; 
+            font-size: 1rem;
+            color: var(--primary);
+        }
+        
+        input { 
+            width: 100%; 
+            padding: 16px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 16px; 
+            font-family: 'Cairo'; 
+            font-size: 1.2rem; 
+            text-align: center; 
+            margin-bottom: 20px; 
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        input:focus { 
+            border-color: var(--accent); 
+            outline: none; 
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); 
+        }
 
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; }
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 16px; 
+            font-family: 'Cairo'; 
+            font-weight: 800; 
+            cursor: pointer; 
+            transition: all 0.3s active; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            font-size: 1.1rem; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn:active { transform: scale(0.98); }
+        
         .btn-search { background: var(--primary); color: var(--accent); }
-        .btn-print { background: #334155; color: white; margin-top: 15px; display: none; }
+        .btn-print { background: #334155; color: white; margin-top: 20px; display: none; }
 
-        .result-area { margin-top: 30px; display: none; }
-        .student-info { background: #f8fafc; padding: 20px; border-radius: 12px; border-right: 5px solid var(--accent); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .result-area { margin-top: 25px; display: none; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .student-info { 
+            background: #f8fafc; 
+            padding: 18px; 
+            border-radius: 16px; 
+            border-right: 6px solid var(--accent); 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
+        }
         
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        th { background: var(--primary); color: white; padding: 12px; font-size: 0.9rem; }
-        td { padding: 12px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: white;
+        }
+        
+        table { width: 100%; border-collapse: collapse; min-width: 300px; }
+        th { background: var(--primary); color: white; padding: 14px 10px; font-size: 0.85rem; font-weight: 600; }
+        td { padding: 14px 10px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; color: var(--text-main); }
         tr:last-child td { border: none; }
 
-        .no-data { text-align: center; padding: 40px; color: #94a3b8; }
-        .no-data i { font-size: 3rem; display: block; margin-bottom: 10px; }
+        .no-data { text-align: center; padding: 40px 20px; color: #94a3b8; }
+        .no-data i { font-size: 3.5rem; display: block; margin-bottom: 15px; opacity: 0.5; }
 
-        /* تنسيق الطباعة الرسمي */
+        /* بطاقة المصمم المميزة */
+        .designer-card {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 20px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .designer-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .designer-info { position: relative; z-index: 1; }
+        .designer-name { 
+            color: var(--accent); 
+            font-weight: 900; 
+            font-size: 1.1rem; 
+            display: block;
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+        }
+        .designer-title {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .copyright {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+
+        /* تنسيق الطباعة */
         #printHeader { display: none; }
-        
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
@@ -52,6 +197,14 @@
             table { border: 2px solid #000; box-shadow: none; }
             th { background: #eee !important; color: #000 !important; border: 1px solid #000; }
             td { border: 1px solid #000; color: #000; }
+        }
+
+        /* تحسينات للهواتف الصغيرة جداً */
+        @media (max-width: 360px) {
+            .header h1 { font-size: 1.3rem; }
+            input { font-size: 1.1rem; padding: 14px; }
+            .btn { font-size: 1rem; }
+            th, td { padding: 10px 5px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -78,15 +231,15 @@
     </div>
 
     <div class="header no-print">
-        <i class="fas fa-user-shield" style="font-size: 3.5rem; color: var(--accent);"></i>
+        <i class="fas fa-user-shield"></i>
         <h1>بوابة ولي الأمر الرقمية</h1>
         <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
     </div>
 
     <div class="search-card">
         <div class="no-print">
-            <label><i class="fas fa-phone-alt"></i> أدخل رقم الهاتف المسجل في نظام المدرسة:</label>
-            <input type="tel" id="phoneInput" placeholder="أدخل 8 أرقام" maxlength="8">
+            <label><i class="fas fa-phone-alt" style="color: var(--accent);"></i> رقم الهاتف المسجل:</label>
+            <input type="tel" id="phoneInput" placeholder="أدخل 8 أرقام" maxlength="8" inputmode="numeric">
             <button class="btn btn-search" onclick="searchAttendance()">
                 <i class="fas fa-search"></i> استعلام عن الغياب
             </button>
@@ -95,20 +248,22 @@
         <div id="resultArea" class="result-area">
             <div id="studentData" class="student-info"></div>
             
-            <table id="attendanceTable">
-                <thead>
-                    <tr>
-                        <th>م</th>
-                        <th>اليوم</th>
-                        <th>التاريخ</th>
-                        <th>الحالة</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+            <div class="table-container">
+                <table id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>اليوم</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
             
-            <div style="margin-top: 20px; font-size: 0.85rem; color: #64748b;" class="no-print">
-                <i class="fas fa-info-circle"></i> يمكنك حفظ هذا التقرير كملف PDF من خلال الضغط على زر الطباعة واختيار "Save as PDF".
+            <div style="margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); text-align: center;" class="no-print">
+                <i class="fas fa-info-circle"></i> يمكنك حفظ التقرير كملف PDF عبر زر الطباعة.
             </div>
 
             <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
@@ -118,13 +273,20 @@
 
         <div id="notFound" class="no-data" style="display: none;">
             <i class="fas fa-search-minus"></i>
-            <p>لم يتم العثور على بيانات مرتبطة بهذا الرقم.<br><small>تأكد من إدخال الرقم الصحيح المسجل لدى إدارة المدرسة.</small></p>
+            <p>لم يتم العثور على بيانات.<br><small>تأكد من الرقم المسجل في نظام المدرسة.</small></p>
         </div>
     </div>
 
-    <footer class="no-print" style="text-align: center; margin-top: 40px; font-size: 0.8rem; color: #94a3b8;">
-        نظام إدارة الغياب الرقمي &copy; 2026 | مدرسة صلالة الشرقية
-    </footer>
+    <!-- بطاقة المصمم المميزة -->
+    <div class="designer-card no-print">
+        <div class="designer-info">
+            <span class="designer-title">تصميم وتنفيذ</span>
+            <span class="designer-name">الأستاذ فيصل العريبي</span>
+            <div class="copyright">
+                نظام إدارة الغياب الرقمي &copy; 2026 | مدرسة صلالة الشرقية
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -146,12 +308,10 @@
             return; 
         }
 
-        // إضافة مفتاح الدولة 968 تلقائياً إذا لم يكن موجوداً
         if (!phone.startsWith('968')) {
             phone = '968' + phone;
         }
 
-        // إظهار مؤشر تحميل بسيط
         const searchBtn = document.querySelector('.btn-search');
         const originalText = searchBtn.innerHTML;
         searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري البحث...';
@@ -167,7 +327,6 @@
             const students = await sR.json();
             const history = await hR.json();
 
-            // البحث عن الطالب بالهاتف (بعد إضافة 968)
             const student = students.find(s => String(s.phone) === phone);
 
             if(student) {
@@ -176,20 +335,19 @@
                 printBtn.style.display = 'flex';
 
                 studentData.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div>
-                            <div style="font-weight:900; font-size:1.2rem; color:var(--primary);">${student.name}</div>
-                            <div style="font-size:1rem; color:#475569; margin-top:5px;">
-                                <i class="fas fa-school"></i> الصف: ${student.grade} / الشعبة: ${student.section}
+                            <div style="font-weight:900; font-size:1.1rem; color:var(--primary);">${student.name}</div>
+                            <div style="font-size:0.9rem; color:var(--text-muted); margin-top:4px;">
+                                <i class="fas fa-school"></i> ${student.grade} / ${student.section}
                             </div>
                         </div>
-                        <div style="text-align:left;">
-                            <span style="background:var(--primary); color:var(--accent); padding:5px 15px; border-radius:20px; font-size:0.8rem; font-weight:bold;">طالب مسجل</span>
+                        <div>
+                            <span style="background:var(--primary); color:var(--accent); padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:bold;">طالب مسجل</span>
                         </div>
                     </div>
                 `;
 
-                // فلترة الغيابات الخاصة بهذا الطالب
                 const records = history.filter(h => h.name === student.name).sort((a,b) => new Date(b.date) - new Date(a.date));
                 
                 if(records.length > 0) {
@@ -204,22 +362,27 @@
                         </tr>`;
                     }).join('');
                 } else {
-                    tableBody.innerHTML = `<tr><td colspan="4" style="padding:30px; color:#059669; font-weight:bold;"><i class="fas fa-check-circle"></i> لا توجد أيام غياب مسجلة لهذا الطالب. سجل نظيف!</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="4" style="padding:30px; color:#059669; font-weight:bold;"><i class="fas fa-check-circle"></i> لا توجد أيام غياب مسجلة.</td></tr>`;
                 }
+                
+                // التمرير التلقائي للنتائج في الهواتف
+                setTimeout(() => {
+                    resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+
             } else {
                 resultArea.style.display = 'none';
                 notFound.style.display = 'block';
             }
         } catch(e) {
             console.error(e);
-            alert("حدث خطأ أثناء الاتصال بالنظام. يرجى المحاولة لاحقاً.");
+            alert("حدث خطأ أثناء الاتصال بالنظام.");
         } finally {
             searchBtn.innerHTML = originalText;
             searchBtn.disabled = false;
         }
     }
 
-    // السماح بالبحث عند الضغط على Enter
     document.getElementById('phoneInput').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             searchAttendance();
