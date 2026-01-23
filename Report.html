@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>استعلام ولي الأمر - مدرسة صلالة الشرقية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card: #ffffff; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--primary); }
+        
+        .parent-container { max-width: 600px; margin: 0 auto; }
+        
+        .header { text-align: center; margin-bottom: 30px; }
+        .header img { width: 80px; margin-bottom: 10px; }
+        .header h1 { font-size: 1.4rem; color: var(--primary); margin: 0; }
+        .header p { color: #64748b; font-size: 0.9rem; }
+
+        .search-card { background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .search-card label { display: block; font-weight: 700; margin-bottom: 10px; }
+        
+        input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-family: 'Cairo'; font-size: 1.1rem; box-sizing: border-box; text-align: center; margin-bottom: 20px; transition: 0.3s; }
+        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1); }
+
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; }
+        .btn-search { background: var(--primary); color: var(--accent); }
+        .btn-print { background: var(--accent); color: var(--primary); margin-top: 15px; display: none; }
+
+        .result-area { margin-top: 30px; display: none; }
+        .student-info { background: #fff; padding: 15px; border-radius: 12px; border-right: 5px solid var(--accent); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        th { background: var(--primary); color: white; padding: 12px; font-size: 0.9rem; }
+        td { padding: 12px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+        tr:last-child td { border: none; }
+
+        .no-data { text-align: center; padding: 40px; color: #94a3b8; }
+        .no-data i { font-size: 3rem; display: block; margin-bottom: 10px; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .search-card { box-shadow: none; border: none; padding: 0; }
+            .result-area { display: block !important; margin-top: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="parent-container">
+    <div class="header no-print">
+        <i class="fas fa-graduation-cap" style="font-size: 3rem; color: var(--accent);"></i>
+        <h1>منصة استعلام أولياء الأمور</h1>
+        <p>مدرسة صلالة الشرقية (5-9)</p>
+    </div>
+
+    <div class="search-card">
+        <div class="no-print">
+            <label><i class="fas fa-phone"></i> أدخل رقم الهاتف المسجل لدينا:</label>
+            <input type="tel" id="phoneInput" placeholder="9xxxxxxx" maxlength="8">
+            <button class="btn btn-search" onclick="searchAttendance()">
+                <i class="fas fa-search"></i> بحث عن الطالب
+            </button>
+        </div>
+
+        <div id="resultArea" class="result-area">
+            <div id="studentData" class="student-info">
+                </div>
+            <table id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>اليوم</th>
+                        <th>التاريخ</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            
+            <button class="btn btn-print no-print" id="printBtn" onclick="window.print()">
+                <i class="fas fa-file-pdf"></i> طباعة التقرير / حفظ PDF
+            </button>
+        </div>
+
+        <div id="notFound" class="no-data" style="display: none;">
+            <i class="fas fa-user-slash"></i>
+            <p>عذراً، لم يتم العثور على طالب مرتبط بهذا الرقم.</p>
+        </div>
+    </div>
+
+    <footer class="no-print" style="text-align: center; margin-top: 40px; font-size: 0.8rem; color: #94a3b8;">
+        جميع الحقوق محفوظة لمدرسة صلالة الشرقية &copy; 2026
+    </footer>
+</div>
+
+<script>
+    async function searchAttendance() {
+        const phone = document.getElementById('phoneInput').value.trim();
+        const resultArea = document.getElementById('resultArea');
+        const notFound = document.getElementById('notFound');
+        const tableBody = document.getElementById('tableBody');
+        const studentData = document.getElementById('studentData');
+        const printBtn = document.getElementById('printBtn');
+
+        if(!phone) { alert("يرجى إدخال رقم الهاتف"); return; }
+
+        try {
+            const v = Date.now();
+            // جلب بيانات الطلاب والتاريخ
+            const [sR, hR] = await Promise.all([
+                fetch(`student_fone.json?v=${v}`),
+                fetch(`attendance_history.json?v=${v}`)
+            ]);
+            
+            const students = await sR.json();
+            const history = await hR.json();
+
+            // البحث عن الطالب بالهاتف
+            const student = students.find(s => String(s.phone) === phone);
+
+            if(student) {
+                notFound.style.display = 'none';
+                resultArea.style.display = 'block';
+                printBtn.style.display = 'flex';
+
+                studentData.innerHTML = `
+                    <div style="font-weight:900; font-size:1.1rem; color:var(--primary);">${student.name}</div>
+                    <div style="font-size:0.9rem; color:#64748b;">الصف: ${student.grade} - شعبة: ${student.section}</div>
+                `;
+
+                // فلترة الغيابات الخاصة بهذا الطالب
+                const records = history.filter(h => h.name === student.name);
+                
+                if(records.length > 0) {
+                    tableBody.innerHTML = records.map(r => {
+                        const day = new Date(r.date).toLocaleDateString('ar-OM', {weekday: 'long'});
+                        return `<tr>
+                            <td>${day}</td>
+                            <td>${r.date}</td>
+                            <td style="color:red; font-weight:bold;">غياب</td>
+                        </tr>`;
+                    }).join('');
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="3" style="padding:20px; color:green; font-weight:bold;">لا توجد أيام غياب مسجلة لهذا الطالب</td></tr>`;
+                }
+            } else {
+                resultArea.style.display = 'none';
+                notFound.style.display = 'block';
+            }
+        } catch(e) {
+            console.error(e);
+            alert("حدث خطأ أثناء جلب البيانات.");
+        }
+    }
+</script>
+
+</body>
+</html>
