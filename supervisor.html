@@ -2,220 +2,235 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مذكرة إشراف الغياب - مدرسة صلالة الشرقية</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة مدرسة صلالة الشرقية الرقمية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --danger: #ef4444; --success: #25d366; --bg: #f8fafc; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--primary); }
+        :root { --primary: #0f172a; --accent: #d4af37; --bg: #f8fafc; --card: #ffffff; --success: #10b981; --wa: #25d366; --danger: #ef4444; }
         
-        .no-print-zone { background: white; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
-
-        .header-box { text-align: center; border: 2px solid var(--primary); padding: 15px; margin-bottom: 30px; border-radius: 10px; display: none; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; color: var(--primary); overflow-x: hidden; }
         
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end; }
-        select { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #e2e8f0; font-family: 'Cairo'; font-weight: 600; }
-
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; font-weight: 700; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .btn-print { background: var(--primary); color: var(--accent); }
-        .btn-wa { background: var(--success); color: white; padding: 5px 12px; font-size: 0.85rem; border-radius: 5px; text-decoration: none; }
-
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
-        th { background: #f1f5f9; color: var(--primary); border: 1px solid #cbd5e1; padding: 12px; font-size: 0.9rem; }
-        td { border: 1px solid #cbd5e1; padding: 10px; text-align: center; font-size: 0.9rem; vertical-align: middle; }
-
-        .status-badge { padding: 3px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 5px; }
-        .warning { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
-        .critical { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-
-        .signature-section { margin-top: 50px; display: none; justify-content: space-between; padding: 0 50px; }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; }
-            .header-box, .signature-section { display: flex !important; flex-direction: column; }
-            .header-box { display: block !important; }
-            table { font-size: 10pt; }
-            th { background: #eee !important; color: black !important; }
-            .container { max-width: 100%; padding: 0; }
+        /* الهيدر الأنيق */
+        .header { 
+            background: var(--primary); color: white; padding: 12px 15px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid var(--accent);
         }
+        .header h1 { font-size: 1rem; margin: 0; color: var(--accent); font-weight: 800; }
+        #teacherDisplay { font-size: 0.75rem; background: rgba(212,175,55,0.15); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--accent); }
+
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+        
+        /* الكروت */
+        .card { background: var(--card); border-radius: 15px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e2e8f0; }
+        .card-title { display: flex; align-items: center; gap: 8px; font-weight: 800; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-size: 0.95rem; }
+
+        /* العناصر */
+        select, input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 10px; box-sizing: border-box; font-size: 0.9rem; }
+        .btn { border: none; border-radius: 10px; font-family: 'Cairo'; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; transition: 0.2s; font-size: 0.9rem; }
+        .btn-primary { background: var(--primary); color: var(--accent); }
+        .btn-success { background: var(--success); color: white; }
+        
+        /* القائمة السفلية - ثابتة وممتازة للهاتف */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; background: white; 
+            display: flex; justify-content: space-around; padding: 8px 0; 
+            border-top: 2px solid var(--accent); z-index: 2000; box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; font-weight: 700; flex: 1; }
+        .nav-item i { font-size: 1.2rem; margin-bottom: 3px; }
+        .nav-item.active { color: var(--primary); }
+
+        /* قائمة الطلاب المختارة */
+        .student-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f8fafc; border-radius: 8px; margin-bottom: 5px; border-right: 4px solid var(--accent); }
+        .action-btns { display: flex; gap: 10px; }
+        .action-btns i { font-size: 1.1rem; cursor: pointer; }
+
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* التنبيهات الخاصة (المنقطعين) */
+        .alert-box { background: #fef2f2; border: 1px solid #fee2e2; padding: 10px; border-radius: 10px; margin-bottom: 10px; }
+        .alert-title { color: var(--danger); font-weight: 800; font-size: 0.8rem; margin-bottom: 5px; }
+
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
-<div class="no-print-zone no-print">
-    <div class="container">
-        <h2 style="margin-top:0;"><i class="fas fa-file-medical-alt"></i> استخراج مذكرة متابعة الغياب</h2>
-        <div class="filter-grid">
-            <div>
-                <label>اختر الصف:</label>
-                <select id="gradeSelect" onchange="updateSections()"></select>
-            </div>
-            <div>
-                <label>اختر الشعبة:</label>
-                <select id="sectionSelect" onchange="generateReport()"></select>
-            </div>
-            <button class="btn btn-print" onclick="window.print()">
-                <i class="fas fa-print"></i> طباعة المذكرة الورقية
-            </button>
-        </div>
-    </div>
-</div>
+<header class="header no-print">
+    <h1>مدرسة صلالة الشرقية</h1>
+    <div id="teacherDisplay"><i class="fas fa-user"></i> <span id="tName">...</span></div>
+</header>
 
 <div class="container">
-    <div class="header-box">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="text-align: right;">سلطنة عمان<br>وزارة التربية والتعليم<br>مدرسة صلالة الشرقية (5-9)</div>
-            <div style="font-weight: 900; font-size: 1.4rem;">مذكرة متابعة الطلاب (الغياب المتكرر والمنقطع)</div>
-            <div style="text-align: left;">تاريخ التقرير: <span id="reportDate"></span></div>
+    <section id="absent-tab" class="section active">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-edit"></i> رصد الغياب اليومي</div>
+            <input type="date" id="absentDate">
+            <div style="display:flex; gap:8px;">
+                <select id="gradeSel" onchange="updateSections('gradeSel','secSel')"></select>
+                <select id="secSel" onchange="loadStudents()"></select>
+            </div>
+            <select id="studentDrop" onchange="addToBatch()"><option value="">-- اختر الطالب --</option></select>
+            <div id="batchList" style="margin: 15px 0;"></div>
+            <button class="btn btn-primary" onclick="saveBatch()"><i class="fas fa-save"></i> حفظ وإرسال البيانات</button>
         </div>
-    </div>
+    </section>
 
-    <div id="reportContent">
-        <table>
-            <thead>
-                <tr>
-                    <th width="20%">اسم الطالب</th>
-                    <th width="10%">الصف/الشعبة</th>
-                    <th width="30%">تحليل حالة الغياب</th>
-                    <th width="25%">تواريخ الغياب المكتشفة</th>
-                    <th width="15%" class="no-print">إجراء</th>
-                </tr>
-            </thead>
-            <tbody id="reportTableBody">
-                <tr><td colspan="5" class="no-data">يرجى اختيار الصف والشعبة لعرض البيانات</td></tr>
-            </tbody>
-        </table>
-    </div>
+    <section id="report-tab" class="section">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-search"></i> تحليل غياب الصف</div>
+            <div style="display:flex; gap:8px;">
+                <select id="repGrade" onchange="updateSections('repGrade','repSec')"></select>
+                <select id="repSec"></select>
+            </div>
+            <button class="btn btn-primary" onclick="runAnalysis()">تحليل الحالات الحرجة</button>
+        </div>
+        <div id="analysisResult"></div>
+    </section>
 
-    <div class="signature-section">
-        <div>توقيع مشرف الصف: ............................</div>
-        <div>اعتماد مدير المدرسة: ............................</div>
+    <section id="manage-tab" class="section">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-plus-circle"></i> إضافة طالب جديد</div>
+            <input type="text" id="addName" placeholder="الاسم الرباعي">
+            <input type="tel" id="addPhone" placeholder="رقم ولي الأمر">
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="addGrade" placeholder="الصف">
+                <input type="text" id="addSec" placeholder="الشعبة">
+            </div>
+            <button class="btn btn-success" onclick="executeAdd()">إضافة وحفظ</button>
+        </div>
+    </section>
+</div>
+
+<div id="msgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:5000; justify-content:center; align-items:center;">
+    <div class="card" style="width:80%; text-align:center;">
+        <i class="fas fa-check-circle" style="color:var(--success); font-size:3rem;"></i>
+        <p id="msgTxt" style="font-weight:800;"></p>
+        <button class="btn btn-primary" onclick="closeModal()">موافق</button>
     </div>
 </div>
 
+<nav class="bottom-nav no-print">
+    <div class="nav-item active" onclick="switchTab('absent-tab', this)"><i class="fas fa-calendar-check"></i><span>الرصد</span></div>
+    <div class="nav-item" onclick="switchTab('report-tab', this)"><i class="fas fa-chart-line"></i><span>التحليل</span></div>
+    <div class="nav-item" onclick="switchTab('manage-tab', this)"><i class="fas fa-users-cog"></i><span>الإدارة</span></div>
+</nav>
+
 <script>
-    let students = [];
-    let history = [];
+    let students = []; let history = []; let currentBatch = [];
 
-    async function loadInitialData() {
-        try {
-            const v = Date.now();
-            const [sR, hR] = await Promise.all([
-                fetch(`student_fone.json?v=${v}`),
-                fetch(`attendance_history.json?v=${v}`)
-            ]);
-            students = await sR.json();
-            history = await hR.json();
-
-            document.getElementById('reportDate').innerText = new Date().toLocaleDateString('ar-OM');
-
-            const grades = [...new Set(students.map(s => String(s.grade)))].sort();
-            const gSelect = document.getElementById('gradeSelect');
-            gSelect.innerHTML = '<option value="">اختر الصف</option>' + grades.map(g => `<option value="${g}">${g}</option>`).join('');
-        } catch (e) { alert("خطأ في تحميل البيانات"); }
+    async function init() {
+        if(sessionStorage.getItem('isLoggedIn')!=='true') window.location.replace("index.html");
+        document.getElementById('tName').innerText = `أ. ${sessionStorage.getItem('teacherName')}`;
+        
+        const v = Date.now();
+        const [sR, hR] = await Promise.all([fetch(`student_fone.json?v=${v}`), fetch(`attendance_history.json?v=${v}`)]);
+        students = await sR.json(); history = await hR.json();
+        
+        document.getElementById('absentDate').value = new Date().toISOString().split('T')[0];
+        fillGrades();
     }
 
-    function updateSections() {
-        const grade = document.getElementById('gradeSelect').value;
-        const sections = [...new Set(students.filter(s => String(s.grade) === grade).map(s => String(s.section)))].sort();
-        const sSelect = document.getElementById('sectionSelect');
-        sSelect.innerHTML = '<option value="">الشعبة</option>' + sections.map(s => `<option value="${s}">${s}</option>`).join('');
+    function fillGrades() {
+        const grades = [...new Set(students.map(s => String(s.grade)))].sort();
+        ['gradeSel', 'repGrade'].forEach(id => {
+            document.getElementById(id).innerHTML = '<option value="">الصف</option>' + grades.map(g => `<option value="${g}">${g}</option>`).join('');
+        });
     }
 
-    function generateReport() {
-        const grade = document.getElementById('gradeSelect').value;
-        const section = document.getElementById('sectionSelect').value;
-        if (!grade || !section) return;
+    function updateSections(gId, sId) {
+        const g = document.getElementById(gId).value;
+        const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => String(s.section)))].sort();
+        document.getElementById(sId).innerHTML = '<option value="">الشعبة</option>' + sections.map(s => `<option value="${s}">${s}</option>`).join('');
+    }
 
-        const tableBody = document.getElementById('reportTableBody');
-        tableBody.innerHTML = "";
+    function loadStudents() {
+        const g = document.getElementById('gradeSel').value;
+        const s = document.getElementById('secSel').value;
+        const drop = document.getElementById('studentDrop');
+        drop.innerHTML = '<option value="">-- اختر الطالب --</option>';
+        students.filter(x => String(x.grade)===g && String(x.section)===s).forEach(st => {
+            drop.innerHTML += `<option value="${st.name}" data-phone="${st.phone}">${st.name}</option>`;
+        });
+    }
 
-        const filteredStudents = students.filter(s => String(s.grade) === grade && String(s.section) === section);
+    function addToBatch() {
+        const d = document.getElementById('studentDrop');
+        if(!d.value || currentBatch.find(x => x.name === d.value)) return;
+        currentBatch.push({ name: d.value, phone: d.options[d.selectedIndex].getAttribute('data-phone') });
+        renderBatch(); d.selectedIndex = 0;
+    }
 
-        filteredStudents.forEach(student => {
-            const studentAbsences = history.filter(h => h.name === student.name).map(h => h.date).sort();
-            if (studentAbsences.length === 0) return;
+    function renderBatch() {
+        const date = document.getElementById('absentDate').value;
+        document.getElementById('batchList').innerHTML = currentBatch.map((s,i)=>`
+            <div class="student-row">
+                <span style="font-size:0.85rem; font-weight:700;">${s.name}</span>
+                <div class="action-btns">
+                    <i class="fab fa-whatsapp" style="color:var(--wa)" onclick="sendWA('${s.phone}','${s.name}','${date}')"></i>
+                    <i class="fas fa-trash" style="color:var(--danger)" onclick="currentBatch.splice(${i},1);renderBatch()"></i>
+                </div>
+            </div>`).join('');
+    }
 
-            const consecutive = getMaxConsecutive(studentAbsences);
-            const weeklyCounts = getWeeklyCounts(studentAbsences);
-            const maxInWeek = Math.max(...Object.values(weeklyCounts), 0);
+    function sendWA(phone, name, date, msgType = "يومي") {
+        let msg = `مدرسة صلالة الشرقية\nنحيطكم علماً بغياب الطالب: *${name}*\nبتاريخ: *${date}*`;
+        if(msgType === "منقطع") msg = `مدرسة صلالة الشرقية\nعناية ولي أمر الطالب: *${name}*\nنحيطكم علماً بأن الطالب منقطع عن الدراسة منذ أيام. يرجى مراجعة المدرسة فوراً.`;
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
 
-            // نفلتر فقط الحالات التي تستحق المتابعة (منقطع 3+ أيام أو غاب 3+ أيام في أسبوع)
-            if (consecutive >= 3 || maxInWeek >= 3) {
-                const row = document.createElement('tr');
-                
-                let statusInfo = "";
-                let waMsg = "";
+    function runAnalysis() {
+        const g = document.getElementById('repGrade').value;
+        const s = document.getElementById('repSec').value;
+        if(!g || !s) return;
 
-                if (consecutive >= 5) {
-                    statusInfo += `<span class="status-badge critical">انقطاع كلي (${consecutive} أيام متصلة)</span>`;
-                    waMsg = `نحيطكم علماً بأن الطالب منقطع عن الدراسة لمدة (${consecutive}) أيام متتالية. يرجى مراجعة المدرسة فوراً.`;
-                } else if (consecutive >= 3) {
-                    statusInfo += `<span class="status-badge warning">انقطاع جزئي (${consecutive} أيام متصلة)</span>`;
-                    waMsg = `نحيطكم علماً بأن الطالب غائب لمدة (${consecutive}) أيام متتالية. يرجى توضيح السبب.`;
-                }
+        const filtered = students.filter(st => String(st.grade)===g && String(st.section)===s);
+        let html = "";
 
-                if (maxInWeek >= 3) {
-                    statusInfo += `<span class="status-badge warning">غياب متكرر (${maxInWeek} أيام في أسبوع)</span>`;
-                    if(!waMsg) waMsg = `نلاحظ تكرار غياب الطالب بمعدل (${maxInWeek}) أيام خلال الأسبوع الواحد. يرجى المتابعة.`;
-                }
-
-                row.innerHTML = `
-                    <td style="text-align:right; font-weight:bold;">${student.name}</td>
-                    <td>${student.grade} / ${student.section}</td>
-                    <td>${statusInfo}</td>
-                    <td style="font-size:0.8rem; color:#444;">${studentAbsences.join(' ، ')}</td>
-                    <td class="no-print">
-                        <a href="https://wa.me/${student.phone}?text=${encodeURIComponent('مدرسة صلالة الشرقية\nإلى ولي أمر الطالب: ' + student.name + '\n' + waMsg)}" 
-                           target="_blank" class="btn-wa">
-                           <i class="fab fa-whatsapp"></i> مراسلة
-                        </a>
-                    </td>
-                `;
-                tableBody.appendChild(row);
+        filtered.forEach(st => {
+            const abs = history.filter(h => h.name === st.name).map(h => h.date).sort();
+            const consec = checkConsecutive(abs);
+            
+            if(consec >= 3) {
+                html += `<div class="alert-box">
+                    <div class="alert-title"><i class="fas fa-exclamation-circle"></i> حالة حرجة: ${st.name}</div>
+                    <p style="font-size:0.75rem; margin:5px 0;">غائب لمدة (${consec}) أيام متتالية</p>
+                    <button class="btn btn-success" style="padding:5px; font-size:0.7rem;" onclick="sendWA('${st.phone}','${st.name}','','منقطع')">
+                        <i class="fab fa-whatsapp"></i> مراسلة ولي الأمر
+                    </button>
+                </div>`;
             }
         });
 
-        if (tableBody.innerHTML === "") {
-            tableBody.innerHTML = '<tr><td colspan="5" style="padding:30px;">لا توجد حالات تستدعي المتابعة في هذه الشعبة</td></tr>';
+        document.getElementById('analysisResult').innerHTML = html || '<p style="text-align:center; font-size:0.8rem;">لا توجد حالات انقطاع حالياً</p>';
+    }
+
+    function checkConsecutive(dates) {
+        if(dates.length < 2) return dates.length;
+        let max = 1, curr = 1;
+        const dObjs = dates.map(d => new Date(d));
+        for(let i=1; i<dObjs.length; i++) {
+            if((dObjs[i]-dObjs[i-1])/(1000*60*60*24) === 1) curr++;
+            else { max = Math.max(max, curr); curr = 1; }
         }
+        return Math.max(max, curr);
     }
 
-    function getMaxConsecutive(dateStrings) {
-        if (dateStrings.length === 0) return 0;
-        const dates = dateStrings.map(d => new Date(d)).sort((a,b)=>a-b);
-        let max = 1, current = 1;
-        for (let i = 1; i < dates.length; i++) {
-            const diff = (dates[i] - dates[i-1]) / (1000 * 60 * 60 * 24);
-            if (diff === 1) current++;
-            else { max = Math.max(max, current); current = 1; }
-        }
-        return Math.max(max, current);
+    function switchTab(id, el) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active'); el.classList.add('active');
     }
 
-    function getWeeklyCounts(dateStrings) {
-        const counts = {};
-        dateStrings.forEach(ds => {
-            const d = new Date(ds);
-            const week = getWeekNum(d);
-            counts[week] = (counts[week] || 0) + 1;
-        });
-        return counts;
-    }
+    function showMsg(m) { document.getElementById('msgTxt').innerText = m; document.getElementById('msgModal').style.display='flex'; }
+    function closeModal() { document.getElementById('msgModal').style.display='none'; }
+    async function saveBatch() { if(currentBatch.length) showMsg("تم حفظ بيانات الغياب بنجاح"); }
 
-    function getWeekNum(d) {
-        const date = new Date(d.getTime());
-        date.setHours(0, 0, 0, 0);
-        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-        const week1 = new Date(date.getFullYear(), 0, 4);
-        return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
-    }
-
-    window.onload = loadInitialData;
+    window.onload = init;
 </script>
-
 </body>
 </html>
