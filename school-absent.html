@@ -525,51 +525,50 @@
     // --- 3. دوال الاتصال بالسيرفر (Load & Sync) ---
 
     // دالة تحميل البيانات
-    async function loadData() {
+  async function loadData() {
         const tName = sessionStorage.getItem('teacherName');
         const userRole = sessionStorage.getItem('userRole');
 
+        // تحديث اسم المعلم في الهيدر
         if(tName && document.getElementById('displayTeacherName')) {
             document.getElementById('displayTeacherName').innerText = tName + (userRole === 'admin' ? ' (مدير)' : '');
         }
 
-        const SECRET_KEY = getSecureKey();
-        
-        // ملاحظة: نفترض وجود ملفات JSON للقراءة، أو يمكن إنشاء API للقراءة أيضاً.
-        // هنا سنستخدم fetch مباشر لملفات JSON إذا كانت عامة، أو API إذا كانت محمية.
-        // للتوافق مع كودك، سنفترض وجود API للقراءة أو تحميل مباشر.
+        // إظهار رسالة جاري التحميل (اختياري)
+        console.log("جاري جلب البيانات من السيرفر...");
         
         try {
-            // محاكاة جلب البيانات (أو استبدلها بـ API حقيقي إذا أنشأته للقراءة)
-            // في Vercel عادة نستخدم API للقراءة أيضاً لحماية البيانات
-            // هنا سأفترض مسارات افتراضية أو يمكنك تعديلها
-            
-            // 1. جلب الطلاب
-            // بما أنك لم ترسل كود قراءة الطلاب، سنفترض وجود ملف student_fone.json عام أو API
-            // سأستخدم المسار الافتراضي للملف العام للتسهيل، أو API إذا وجد
-            let response = await fetch('student_fone.json?v=' + Date.now()); 
-            if (!response.ok) {
-                // محاولة بديلة عبر API إذا وجد (اختياري)
-                 throw new Error("فشل تحميل قائمة الطلاب");
+            // 1. جلب قائمة الطلاب من الـ API الآمن
+            // نستخدم ?v= لضمان عدم استرجاع بيانات قديمة من ذاكرة المتصفح (Cache)
+            let response = await fetch('/api/get-students?v=' + Date.now()); 
+            if (response.ok) {
+                students = await response.json();
+                console.log("تم تحميل قائمة الطلاب بنجاح");
+            } else {
+                throw new Error("فشل في الوصول لمسار الطلاب");
             }
-            students = await response.json();
 
-            // 2. جلب السجل
-            let historyResponse = await fetch('attendance_history.json?v=' + Date.now());
+            // 2. جلب سجل الغياب من الـ API الآمن
+            let historyResponse = await fetch('/api/get-history?v=' + Date.now());
             if (historyResponse.ok) {
                 history = await historyResponse.json();
+                console.log("تم تحميل سجل الغياب بنجاح");
             } else {
-                history = []; // سجل جديد
+                history = []; // إذا لم يوجد سجل سابق (أول مرة تشغيل)
             }
             
+            // 3. تهيئة القوائم المنسدلة بناءً على البيانات المستلمة
             initGrades();
+            
         } catch(e) { 
-            console.error("Data Load Error:", e);
-            // في حال الفشل (أول مرة)، لا بأس، القوائم ستكون فارغة
-            initGrades();
+            console.error("خطأ أثناء تحميل البيانات:", e);
+            // تنبيه المستخدم في حال وجود خطأ في الاتصال
+            if(typeof showCustomAlert === "function") {
+                showCustomAlert("فشل الاتصال بقاعدة البيانات. تأكد من إعدادات Vercel", "error");
+            }
+            initGrades(); // لضمان بقاء الواجهة قابلة للاستخدام
         }
     }
-
     // --- 4. العمليات الأساسية (Add, Edit, Delete, Save) ---
 
     // رصد الغياب اليومي (يستخدم save-attendance.js)
