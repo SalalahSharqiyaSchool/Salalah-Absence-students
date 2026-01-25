@@ -373,9 +373,18 @@
                 <input type="text" id="newName" placeholder="اسم الطالب الثلاثي">
                 <input type="tel" id="newPhone" placeholder="رقم هاتف ولي الأمر">
                 <div style="display:flex; gap:10px;">
-                    <input type="number" id="newGrade" placeholder="الصف (مثال: 5)">
-                    <input type="number" id="newSection" placeholder="الشعبة (مثال: 1)">
-                </div>
+    <select id="newGrade">
+        <option value="">اختر الصف</option>
+        <option value="الخامس">الخامس</option>
+        <option value="السادس">السادس</option>
+        <option value="السابع">السابع</option>
+        <option value="الثامن">الثامن</option>
+        <option value="التاسع">التاسع</option>
+    </select>
+
+    <input type="number" id="newSection" placeholder="الشعبة (مثال: 1)">
+</div>
+
                 <button class="btn btn-success" onclick="addNewStudent()">
                     <i class="fas fa-plus-circle"></i> إضافة لقاعدة البيانات
                 </button>
@@ -613,44 +622,51 @@
     }
 
     // إضافة طالب جديد (يستخدم update-students.js)
-    async function addNewStudent() {
-        const n = document.getElementById('newName').value.trim();
-        const p = document.getElementById('newPhone').value.trim();
-        const g = document.getElementById('newGrade').value.trim();
-        const s = document.getElementById('newSection').value.trim();
+  async function addNewStudent() {
+    const n = document.getElementById('newName').value.trim();
+    const p = document.getElementById('newPhone').value.trim();
+    const g = document.getElementById('newGrade').value;   // نص
+    const s = document.getElementById('newSection').value.trim(); // رقم
 
-        if(!n || !p || !g || !s) return showCustomAlert("يرجى إكمال جميع الحقول", "error");
-
-        // التحقق من الصلاحيات (اختياري حسب منطقك)
-        const userRole = sessionStorage.getItem('userRole');
-        
-        // إضافة للمصفوفة المحلية
-        students.push({name: n, phone: p, grade: g, section: s});
-
-        try {
-            // إرسال المصفوفة الكاملة للتحديث
-            const res = await fetch('/api/update-students', { 
-                method:'POST', 
-                headers:{
-                    'Content-Type':'application/json',
-                    'x-app-secret': getSecureKey()
-                }, 
-                body:JSON.stringify(students) // استبدال كامل
-            });
-
-            if(res.ok) { 
-                document.getElementById('newName').value = "";
-                document.getElementById('newPhone').value = ""; 
-                refreshUI(); 
-                showSuccess("تمت إضافة الطالب " + n + " بنجاح");
-            } else {
-                throw new Error("فشل الحفظ في السيرفر");
-            }
-        } catch(e) { 
-            students.pop(); // تراجع في حال الفشل
-            showCustomAlert("فشل الاتصال بالسيرفر", "error");
-        }
+    if(!n || !p || !g || !s) {
+        return showCustomAlert("يرجى إكمال جميع الحقول", "error");
     }
+
+    // إضافة الطالب
+    students.push({
+        name: n,
+        phone: p,
+        grade: g,        // مثال: "الخامس"
+        section: s       // مثال: "1"
+    });
+
+    try {
+        const res = await fetch('/api/update-students', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-app-secret': getSecureKey()
+            },
+            body: JSON.stringify(students)
+        });
+
+        if(res.ok) {
+            document.getElementById('newName').value = "";
+            document.getElementById('newPhone').value = "";
+            document.getElementById('newSection').value = "";
+            document.getElementById('newGrade').selectedIndex = 0;
+
+            refreshUI();
+            showSuccess("تمت إضافة الطالب بنجاح");
+        } else {
+            throw new Error();
+        }
+    } catch {
+        students.pop();
+        showCustomAlert("فشل الاتصال بالسيرفر", "error");
+    }
+}
+
 
     // تحديث بيانات الطالب (يستخدم update-students.js)
     async function submitStudentEdit() {
