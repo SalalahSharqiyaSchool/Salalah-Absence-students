@@ -482,6 +482,34 @@ function getSecureKey() {
     }
 }
 
+// دالة المزامنة الشاملة (تُستدعى عند حذف طالب أو تعديل السجل بالكامل)
+async function syncFullHistory(updatedHistory) {
+    try {
+        const response = await fetch('/api/save-attendance-full', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-app-secret': getSecureKey() // ضروري جداً لتجاوز قفل الأمان
+            },
+            body: JSON.stringify(updatedHistory) // إرسال المصفوفة المفلترة الجديدة
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showCustomAlert("تم تحديث السجل الشامل بنجاح", "success");
+            return true;
+        } else {
+            throw new Error(result.error || "فشل التحديث");
+        }
+    } catch (error) {
+        console.error("Full Sync Error:", error);
+        showCustomAlert("خطأ في الأمان أو الاتصال: " + error.message, "error");
+        return false;
+    }
+}
+
+    
 // 2. دالة تحميل البيانات المؤمنة
 async function loadData() {
     const tName = sessionStorage.getItem('teacherName');
