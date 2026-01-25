@@ -741,11 +741,15 @@ updateLiveDateTime();
 
         try {
             // 2. تحديث ملف الطلاب في GitHub (عبر API update-students)
-            const resStudents = await fetch('/api/update-students', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(students) 
-            });
+            // الكود الجديد (يرسل كلمة السر)
+const resStudents = await fetch('/api/update-students', { 
+    method: 'POST', 
+    headers: { 
+        'Content-Type': 'application/json',
+        'x-app-secret': 'كلمة_السر_التي_وضعتها_في_Vercel' // استبدل هذا بكلمة السر الحقيقية
+    }, 
+    body: JSON.stringify(students) 
+});
 
             // 3. تحديث سجل الغياب بالكامل في GitHub (عبر API save-attendance-full)
             // هذا السطر هو الذي يضمن عدم ظهور الغيابات القديمة مرة أخرى
