@@ -131,26 +131,30 @@
         let teachers = [];
 
         // دالة جلب البيانات من ملف الـ JSON الموجود على جيت هب
-        async function fetchTeachers() {
-            try {
-                // استبدل هذا الرابط برابط الـ Raw الحقيقي لملفك إذا كان في مستودع آخر
-                const response = await fetch('teachers.json?v=' + Date.now());
-                teachers = await response.json();
-                
-                const select = document.getElementById('teacherSelect');
-                select.innerHTML = '<option value="">-- اختر المعلم --</option>'; // تفريغ القائمة
-                
-                teachers.forEach(t => {
-                    let opt = document.createElement('option');
-                    opt.value = t.name;
-                    opt.innerText = t.name;
-                    select.appendChild(opt);
-                });
-            } catch (e) {
-                console.error("خطأ في تحميل ملف المعلمين. تأكد من وجود ملف teachers.json");
-                document.getElementById('teacherSelect').innerHTML = '<option value="">خطأ في جلب البيانات</option>';
+       async function fetchTeachers() {
+    try {
+        // يجب إرسال مفتاح الأمان في الـ Headers لكي يسمح لك الـ API بالدخول
+        const response = await fetch('/api/get-teachers', {
+            method: 'GET',
+            headers: {
+                'x-app-secret': 'MySecret@2026!#' // نفس المفتاح الموجود في Vercel
             }
-        }
+        });
+
+        if (!response.ok) throw new Error("فشل استجابة السيرفر");
+
+        teachers = await response.json();
+        
+        const select = document.getElementById('teacherSelect');
+        select.innerHTML = '<option value=\"\">اختر الاسم...</option>';
+        teachers.forEach(t => {
+            select.innerHTML += `<option value=\"${t.name}\">${t.name}</option>`;
+        });
+    } catch (e) {
+        console.error("خطأ:", e);
+        document.getElementById('teacherSelect').innerHTML = '<option value=\"\">خطأ في تحميل البيانات</option>';
+    }
+}
 
        function checkLogin() {
     const name = document.getElementById('teacherSelect').value;
