@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | مدرسة صلالة الشرقية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { --primary: #0f172a; --accent: #d4af37; --white: #ffffff; }
+        body {
+            font-family: 'Cairo', sans-serif; background-color: var(--primary);
+            margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+        }
+        .header {
+            background: #1e293b; border-bottom: 3px solid var(--accent);
+            padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .login-container {
+            flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2); padding: 40px;
+            border-radius: 25px; width: 100%; max-width: 400px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        h1 { color: var(--white); margin-bottom: 10px; font-size: 1.8rem; }
+        p { color: #94a3b8; margin-bottom: 30px; }
+        .input-group { margin-bottom: 20px; position: relative; }
+        select, input {
+            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(0,0,0,0.2); color: white; font-family: 'Cairo'; outline: none; box-sizing: border-box;
+        }
+        .btn-login {
+            background: var(--accent); color: var(--primary); border: none; padding: 15px;
+            width: 100%; border-radius: 50px; font-weight: 900; cursor: pointer;
+            transition: 0.3s; font-size: 1.1rem;
+        }
+        .btn-login:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4); }
+        .error-box { color: #ff4d4d; margin-top: 15px; display: none; font-weight: bold; }
+        .loading-spinner { color: var(--accent); display: none; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div style="color:white">
+            <div style="font-weight:900; color:var(--accent)">سلطنة عمان</div>
+            <div style="font-size:0.8rem">وزارة التربية والتعليم</div>
+        </div>
+        <i class="fas fa-shield-alt" style="color:var(--accent); font-size:2rem"></i>
+    </header>
+
+    <main class="login-container">
+        <div class="login-card" id="loginCard">
+            <i class="fas fa-user-circle" style="font-size: 4rem; color: var(--accent); margin-bottom: 20px;"></i>
+            <h1>منصة المعلم</h1>
+            <p>أهلاً بك، يرجى تسجيل الدخول للمتابعة</p>
+
+            <div id="loading" class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> جاري تحميل القائمة...</div>
+
+            <div class="input-group">
+                <select id="teacherSelect">
+                    <option value="">-- اختر اسمك من القائمة --</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="passInput" placeholder="أدخل رمز الدخول الخاص بك">
+            </div>
+
+            <button onclick="handleLogin()" class="btn-login">
+                دخول النظام <i class="fas fa-arrow-left" style="margin-right:10px"></i>
+            </button>
+
+            <div id="errorArea" class="error-box">عذراً، البيانات غير صحيحة!</div>
+        </div>
+    </main>
+
+    <script>
+        let teachers = [];
+
+        // 1. دالة التمويه (نفس المستخدمة في المنصة)
+        function getSecureKey() {
+            const obfuscated = "jEhNiAyMHRBZXJjZVN5WVR";
+            return atob(obfuscated.split("").reverse().join(""));
+        }
+
+        // 2. جلب قائمة المعلمين عبر الـ API المؤمن
+        async function fetchTeachers() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            try {
+                const response = await fetch('/api/get-teachers', {
+                    headers: { 'x-app-secret': getSecureKey() }
+                });
+                if (!response.ok) throw new Error();
+                teachers = await response.json();
+                
+                const select = document.getElementById('teacherSelect');
+                teachers.forEach(t => {
+                    let opt = document.createElement('option');
+                    opt.value = t.name;
+                    opt.innerText = t.name;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                alert("خطأ في الاتصال بالسيرفر. يرجى تحديث الصفحة.");
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // 3. معالجة الدخول
+        function handleLogin() {
+            const name = document.getElementById('teacherSelect').value;
+            const pass = document.getElementById('passInput').value;
+            const error = document.getElementById('errorArea');
+
+            if (!name || !pass) {
+                alert("يرجى اختيار الاسم وإدخال الرمز");
+                return;
+            }
+
+            const user = teachers.find(t => t.name === name);
+
+            if (user && String(user.pass) === String(pass)) {
+                // حفظ البيانات في الجلسة لتعمل المنصة بناءً عليها
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('teacherName', name);
+                sessionStorage.setItem('userRole', user.role || 'teacher');
+                sessionStorage.setItem('userClasses', JSON.stringify(user.classes || []));
+                
+                // الانتقال لصفحة المنصة
+                window.location.href = 'school-absent.html';
+            } else {
+                error.style.display = 'block';
+                document.getElementById('loginCard').style.animation = 'shake 0.4s';
+                setTimeout(() => { document.getElementById('loginCard').style.animation = ''; }, 400);
+            }
+        }
+
+        window.onload = fetchTeachers;
+    </script>
+</body>
+</html>
