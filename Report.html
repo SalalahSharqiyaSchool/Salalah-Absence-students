@@ -10,124 +10,163 @@
 
 <style>
 :root{
---primary:#0f172a;
---accent:#d4af37;
---bg:#f1f5f9;
---card:#ffffff;
---text-main:#1e293b;
---text-muted:#64748b;
---gold-gradient:linear-gradient(135deg,#d4af37 0%,#f5e0a3 50%,#b8860b 100%);
+  --primary:#0f172a;
+  --accent:#d4af37;
+  --bg:#f1f5f9;
+  --card:#ffffff;
+  --text-main:#1e293b;
+  --text-muted:#64748b;
+  --gold-gradient:linear-gradient(135deg,#d4af37 0%,#f5e0a3 50%,#b8860b 100%);
 }
+
 *{box-sizing:border-box}
 body{
-font-family:'Cairo',sans-serif;
-background:var(--bg);
-margin:0;
-padding:10px;
-display:flex;
-justify-content:center;
-align-items:flex-start;
+  font-family:'Cairo',sans-serif;
+  background:var(--bg);
+  margin:0;
+  padding:10px;
+  display:flex;
+  justify-content:center;
 }
+
 .page-border{
-max-width:650px;
-width:100%;
-padding:5px;
-background:var(--gold-gradient);
-border-radius:30px;
+  max-width:700px;
+  width:100%;
+  padding:10px;
+  background:var(--gold-gradient);
+  border-radius:25px;
 }
+
 .parent-container{
-background:var(--bg);
-border-radius:26px;
-padding:20px 15px;
+  background:var(--bg);
+  border-radius:20px;
+  padding:20px;
 }
+
+/* رأس رسمي */
 .official-header{
-text-align:center;
-margin-bottom:20px;
-border-bottom:1px solid rgba(212,175,55,.2);
-padding-bottom:15px;
+  text-align:center;
+  margin-bottom:20px;
+  border-bottom:1px solid rgba(212,175,55,.2);
+  padding-bottom:15px;
 }
 .official-header p{
-margin:2px 0;
-font-size:.85rem;
-font-weight:700;
+  margin:3px 0;
+  font-size:.85rem;
+  font-weight:700;
 }
 .official-header .country{color:var(--accent)}
-.header{text-align:center;margin-bottom:25px}
-.header i{font-size:2.5rem;color:var(--accent)}
-.header h1{margin:10px 0 5px;font-size:1.4rem}
-.header p{font-size:.85rem;color:var(--text-muted)}
 
-.search-card{
-background:#fff;
-padding:25px 20px;
-border-radius:24px;
-box-shadow:0 10px 25px rgba(0,0,0,.05);
+.header{
+  text-align:center;
+  margin-bottom:25px;
 }
-label{font-weight:700;margin-bottom:10px;display:block}
+.header i{
+  font-size:2.5rem;
+  color:var(--accent);
+}
+.header h1{
+  margin:10px 0 5px;
+  font-size:1.4rem;
+}
+.header p{
+  font-size:.85rem;
+  color:var(--text-muted);
+}
+
+/* بطاقة البحث */
+.search-card{
+  background:#fff;
+  padding:25px 20px;
+  border-radius:20px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+label{
+  font-weight:700;
+  margin-bottom:10px;
+  display:block;
+}
 input{
-width:100%;
-padding:16px;
-font-size:1.2rem;
-border-radius:16px;
-border:2px solid #e2e8f0;
-text-align:center;
-margin-bottom:20px;
+  width:100%;
+  padding:14px;
+  font-size:1.1rem;
+  border-radius:12px;
+  border:2px solid #e2e8f0;
+  text-align:center;
+  margin-bottom:15px;
 }
 .btn{
-width:100%;
-padding:16px;
-border:none;
-border-radius:16px;
-font-weight:800;
-cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:10px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
 .btn-search{background:var(--primary);color:var(--accent)}
-.btn-print{background:#334155;color:#fff;margin-top:20px;display:none}
+.btn-print{background:#334155;color:#fff;margin-top:15px;display:none}
 
-.result-area{display:none;margin-top:25px}
+/* نتيجة البحث */
+.result-area{display:none;margin-top:20px}
 .student-info{
-background:#f8fafc;
-padding:18px;
-border-radius:16px;
-border-right:6px solid var(--accent);
-margin-bottom:20px;
+  background:#f8fafc;
+  padding:15px;
+  border-radius:12px;
+  border-right:5px solid var(--accent);
+  margin-bottom:15px;
+  font-size:1rem;
 }
-.table-container{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
+.table-container{
+  overflow-x:auto;
+  margin-top:10px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
 th{
-background:var(--primary);
-color:#fff;
-padding:12px;
-font-size:.85rem;
+  background:var(--primary);
+  color:#fff;
+  padding:10px;
+  font-size:.85rem;
 }
 td{
-padding:12px;
-text-align:center;
-border-bottom:1px solid #f1f5f9;
+  padding:10px;
+  text-align:center;
+  border-bottom:1px solid #f1f5f9;
+  font-size:.9rem;
 }
-.no-data{text-align:center;color:#94a3b8;padding:30px}
+
+/* لا توجد بيانات */
+.no-data{
+  text-align:center;
+  color:#94a3b8;
+  padding:25px;
+}
+
+/* تذييل */
 .designer-card{
-margin-top:25px;
-background:linear-gradient(135deg,#0f172a,#1e293b);
-padding:15px 20px;
-border-radius:18px;
-color:white;
-text-align:center;
-border:1px solid rgba(212,175,55,.3);
+  margin-top:25px;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  padding:12px 15px;
+  border-radius:15px;
+  color:white;
+  text-align:center;
+  border:1px solid rgba(212,175,55,.3);
+  font-size:.85rem;
 }
 .designer-name-row b{color:var(--accent)}
 </style>
 </head>
 <body>
 
-<div class="page-border" id="mainBorder">
+<div class="page-border">
 <div class="parent-container">
 
-<!-- واجهة البحث -->
 <div class="official-header">
 <p class="country">سلطنة عمان</p>
 <p>وزارة التعليم</p>
@@ -194,8 +233,8 @@ async function searchAttendance(){
   if(phone.length < 8){ alert("أدخل رقم صحيح"); return; }
 
   try{
-    const students = await (await fetch('/api/students')).json();
-    const history  = await (await fetch('/api/attendance')).json();
+    const students = await (await fetch('data/student_fone.json')).json();
+    const history  = await (await fetch('data/attendance_history.json')).json();
 
     const student = students.find(s => {
       const sPhone = String(s.phone).replace(/\D/g,'');
