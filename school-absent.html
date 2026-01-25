@@ -203,21 +203,20 @@
             } catch(e) { console.error("Load Error"); }
         }
 
-      function updateSections() {
-    const gradeSelect = document.getElementById('mainGradeSelect'); 
-    const sectionSelect = document.getElementById('mainSectionSelect');
-    const selectedGrade = gradeSelect.value; // القيمة المختارة مثل "السابع"
+    function updateSections(gradeId, sectionId) {
+    const gradeSelect = document.getElementById(gradeId);
+    const sectionSelect = document.getElementById(sectionId);
+    const selectedGrade = gradeSelect.value;
 
-    sectionSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
-
+    sectionSelect.innerHTML = '<option value="">الشعبة</option>';
     if (!selectedGrade) return;
 
     const userRole = sessionStorage.getItem('userRole');
     const userClasses = JSON.parse(sessionStorage.getItem('userClasses') || '[]');
 
     if (userRole === 'admin') {
-        // للمدير: استخراج الشعب من بيانات الطلاب
-        const availableSections = [...new Set(students
+        // للأدمن: استخراج الشعب من قائمة الطلاب الشاملة
+        const availableSections = [...new Set(studentsData
             .filter(s => s.grade === selectedGrade)
             .map(s => s.section))].sort();
 
@@ -225,12 +224,10 @@
             sectionSelect.innerHTML += `<option value="${sec}">${sec}</option>`;
         });
     } else {
-        // للمعلم (مثل أ.عصام): البحث عن الصفوف التي تبدأ بـ "السابع-"
+        // للمعلم (مثل أ.عصام): البحث عن "السابع-1" وفصلها
         userClasses.forEach(cls => {
-            // التحقق إذا كان النص يحتوي على اسم الصف المختارة (مثلاً السابع)
             if (cls.startsWith(selectedGrade)) {
-                // فصل النص عند الشرطة "-" لأخذ الرقم
-                // إذا كان النص "السابع-1" فإن parts[1] سيكون "1"
+                // هنا نستخدم '-' بناءً على تنسيق ملفك
                 const parts = cls.split('-'); 
                 if (parts.length > 1) {
                     const secNum = parts[1];
