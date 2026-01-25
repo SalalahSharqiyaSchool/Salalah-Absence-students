@@ -512,15 +512,10 @@
     // ⭐ دالة مفتاح الأمان (يجب أن تتطابق مع المتوقع في السيرفر)
    // ⭐ دالة مفتاح الأمان (تم تحديثها لتطابق MySecret@2026!#)
     function getSecureKey() {
-        // النص المشفر الجديد المطابق لمفتاحك
-        const obfuscated = "jEjNiAyMkB0ZXJjZVNlXT"; 
-        try {
-            return atob(obfuscated.split("").reverse().join(""));
-        } catch (e) {
-            console.error("خطأ في مفتاح الأمان");
-            return null;
-        }
-    }
+    const obfuscated = "jI1MjRAMXJ5Y25lU215VFA=";
+    return atob(obfuscated.split("").reverse().join(""));
+}
+
 
     // --- 3. دوال الاتصال بالسيرفر (Load & Sync) ---
 
