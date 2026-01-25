@@ -478,7 +478,9 @@ updateLiveDateTime();
     }
 
     // 2. إعداد مفتاح السر (يجب أن يطابق ما وضعته في Vercel)
-    const SECRET_KEY = 'كلمة_السر_التي_وضعتها_في_Vercel';
+   const part1 = "MySecret";
+    const part2 = "@2026!#";
+    const SECRET_KEY = part1 + part2;
 
     // 3. تجهيز معايير الفلترة (نرسل الصف والشعبة إذا لم يكن مديراً)
     const queryParams = new URLSearchParams({
