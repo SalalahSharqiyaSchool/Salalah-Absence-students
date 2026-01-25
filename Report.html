@@ -222,10 +222,11 @@ if(phone.length<8){alert("أدخل رقم صحيح");return;}
 
 if(!phone.startsWith('968')) phone='968'+phone;
 
-const students=await (await fetch('student_fone.json')).json();
-const history=await (await fetch('attendance_history.json')).json();
+// ✅ تعديل مسار JSON ليكون داخل api/data
+const students = await (await fetch('api/data/student_fone.json')).then(r=>r.json());
+const history = await (await fetch('api/data/attendance_history.json')).then(r=>r.json());
 
-const student=students.find(s=>String(s.phone)===phone);
+const student = students.find(s => String(s.phone) === phone);
 
 if(!student){
 resultArea.style.display='none';
@@ -244,21 +245,21 @@ studentData.innerHTML=`
 <span>${student.grade} / ${student.section}</span>
 `;
 
-const records=history.filter(h=>h.name===student.name)
-.sort((a,b)=>new Date(b.date)-new Date(a.date));
+// البحث عن الغياب بحسب الاسم
+const records = history.filter(h => h.name === student.name)
+                       .sort((a,b)=> new Date(b.date) - new Date(a.date));
 
-tableBody.innerHTML=records.length
+tableBody.innerHTML = records.length
 ? records.map((r,i)=>{
-const day=new Date(r.date)
-.toLocaleDateString('ar-OM',{weekday:'long'});
-return `<tr>
-<td>${i+1}</td>
-<td>${day}</td>
-<td>${r.date}</td>
-<td style="color:#e11d48;font-weight:bold">غياب</td>
-</tr>`;
+    const day = new Date(r.date).toLocaleDateString('ar-OM',{weekday:'long'});
+    return `<tr>
+        <td>${i+1}</td>
+        <td>${day}</td>
+        <td>${r.date}</td>
+        <td style="color:#e11d48;font-weight:bold">غياب</td>
+    </tr>`;
 }).join('')
-:`<tr><td colspan="4">لا يوجد غياب مسجل</td></tr>`;
+: `<tr><td colspan="4">لا يوجد غياب مسجل</td></tr>`;
 }
 </script>
 
