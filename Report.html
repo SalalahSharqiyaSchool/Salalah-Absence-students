@@ -113,9 +113,7 @@ padding:12px;
 text-align:center;
 border-bottom:1px solid #f1f5f9;
 }
-
 .no-data{text-align:center;color:#94a3b8;padding:30px}
-
 .designer-card{
 margin-top:25px;
 background:linear-gradient(135deg,#0f172a,#1e293b);
@@ -126,7 +124,6 @@ text-align:center;
 border:1px solid rgba(212,175,55,.3);
 }
 .designer-name-row b{color:var(--accent)}
-
 #printHeader{display:none}
 @media print{
 .no-print{display:none!important}
@@ -134,7 +131,6 @@ border:1px solid rgba(212,175,55,.3);
 }
 </style>
 </head>
-
 <body>
 
 <div class="page-border" id="mainBorder">
@@ -160,7 +156,7 @@ border:1px solid rgba(212,175,55,.3);
 <div class="search-card">
 <div class="no-print">
 <label>رقم الهاتف المسجل</label>
-<input type="tel" id="phoneInput" placeholder="أدخل 8 أرقام" maxlength="11">
+<input type="tel" id="phoneInput" placeholder="أدخل 8 أو 11 رقم" maxlength="11">
 <button class="btn btn-search" onclick="searchAttendance()">
 <i class="fas fa-search"></i> استعلام عن الغياب
 </button>
@@ -204,62 +200,62 @@ border:1px solid rgba(212,175,55,.3);
 
 <script>
 function preparePrint(){
-document.getElementById('reportDate').innerText=
-new Date().toLocaleDateString('ar-OM');
-window.print();
+  document.getElementById('reportDate').innerText =
+    new Date().toLocaleDateString('ar-OM');
+  window.print();
 }
 
 async function searchAttendance(){
-let phone=document.getElementById('phoneInput').value.trim();
-const resultArea=document.getElementById('resultArea');
-const notFound=document.getElementById('notFound');
-const tableBody=document.getElementById('tableBody');
-const studentData=document.getElementById('studentData');
-const printBtn=document.getElementById('printBtn');
-const mainBorder=document.getElementById('mainBorder');
+  let phone = document.getElementById('phoneInput').value.trim();
+  const resultArea = document.getElementById('resultArea');
+  const notFound = document.getElementById('notFound');
+  const tableBody = document.getElementById('tableBody');
+  const studentData = document.getElementById('studentData');
+  const printBtn = document.getElementById('printBtn');
+  const mainBorder = document.getElementById('mainBorder');
 
-if(phone.length<8){alert("أدخل رقم صحيح");return;}
+  if(phone.length < 8){ alert("أدخل رقم صحيح"); return; }
 
-if(!phone.startsWith('968')) phone='968'+phone;
+  // قراءة JSON من مجلد api/data
+  const students = await (await fetch('api/data/student_fone.json')).then(r=>r.json());
+  const history = await (await fetch('api/data/attendance_history.json')).then(r=>r.json());
 
-// ✅ تعديل مسار JSON ليكون داخل api/data
-const students = await (await fetch('api/data/student_fone.json')).then(r=>r.json());
-const history = await (await fetch('api/data/attendance_history.json')).then(r=>r.json());
+  // البحث برقم الهاتف مع أو بدون 968
+  const student = students.find(s => {
+    const sPhone = String(s.phone).replace(/\D/g,'');
+    const inputPhone = phone.replace(/\D/g,'');
+    return sPhone === inputPhone || sPhone.endsWith(inputPhone);
+  });
 
-const student = students.find(s => String(s.phone) === phone);
+  if(!student){
+    resultArea.style.display='none';
+    notFound.style.display='block';
+    mainBorder.classList.remove('no-border');
+    return;
+  }
 
-if(!student){
-resultArea.style.display='none';
-notFound.style.display='block';
-mainBorder.classList.remove('no-border');
-return;
-}
+  mainBorder.classList.add('no-border');
+  notFound.style.display='none';
+  resultArea.style.display='block';
+  printBtn.style.display='flex';
 
-mainBorder.classList.add('no-border');
-notFound.style.display='none';
-resultArea.style.display='block';
-printBtn.style.display='flex';
+  studentData.innerHTML = `<b>${student.name}</b><br><span>${student.grade} / ${student.section}</span>`;
 
-studentData.innerHTML=`
-<b>${student.name}</b><br>
-<span>${student.grade} / ${student.section}</span>
-`;
+  // استخراج سجلات الغياب للطالب
+  const records = history.filter(h => h.name === student.name)
+                         .sort((a,b) => new Date(b.date) - new Date(a.date));
 
-// البحث عن الغياب بحسب الاسم
-const records = history.filter(h => h.name === student.name)
-                       .sort((a,b)=> new Date(b.date) - new Date(a.date));
-
-tableBody.innerHTML = records.length
-? records.map((r,i)=>{
-    const day = new Date(r.date).toLocaleDateString('ar-OM',{weekday:'long'});
-    return `<tr>
-        <td>${i+1}</td>
-        <td>${day}</td>
-        <td>${r.date}</td>
-        <td style="color:#e11d48;font-weight:bold">غياب</td>
-    </tr>`;
-}).join('')
-: `<tr><td colspan="4">لا يوجد غياب مسجل</td></tr>`;
+  tableBody.innerHTML = records.length
+    ? records.map((r,i)=>{
+        const day = new Date(r.date).toLocaleDateString('ar-OM',{weekday:'long'});
+        return `<tr>
+          <td>${i+1}</td>
+          <td>${day}</td>
+          <td>${r.date}</td>
+          <td style="color:#e11d48;font-weight:bold">غياب</td>
+        </tr>`;
+      }).join('')
+    : `<tr><td colspan="4">لا يوجد غياب مسجل</td></tr>`;
 }
 </script>
 
