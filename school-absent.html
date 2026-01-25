@@ -467,33 +467,52 @@ updateLiveDateTime();
         return days[new Date(dateString).getDay()];
     }
 
-   async function loadData() {
-    const tName = sessionStorage.getItem('teacherName'); [cite: 96]
-    const userRole = sessionStorage.getItem('userRole'); [cite: 97]
-    const userClasses = JSON.parse(sessionStorage.getItem('userClasses') || '[]'); [cite: 105]
+  async function loadData() {
+    const tName = sessionStorage.getItem('teacherName');
+    const userRole = sessionStorage.getItem('userRole');
+    const userClasses = JSON.parse(sessionStorage.getItem('userClasses') || '[]');
 
-    // تحديث اسم المعلم في الواجهة
+    // 1. تحديث اسم المعلم في الواجهة
     if(tName && document.getElementById('displayTeacherName')) {
-         document.getElementById('displayTeacherName').innerText = tName + (userRole === 'admin' ? ' (مدير)' : ''); [cite: 97]
+         document.getElementById('displayTeacherName').innerText = tName + (userRole === 'admin' ? ' (مدير)' : '');
     }
 
-    // بدلاً من طلب الملف كاملاً، نطلب الـ API مع إرسال معايير الفلترة
+    // 2. إعداد مفتاح السر (يجب أن يطابق ما وضعته في Vercel)
+    const SECRET_KEY = 'كلمة_السر_التي_وضعتها_في_Vercel';
+
+    // 3. تجهيز معايير الفلترة (نرسل الصف والشعبة إذا لم يكن مديراً)
     const queryParams = new URLSearchParams({
-        role: userRole,
-        // هنا نرسل أول فصل مخصص للمعلم كمثال أو نتركها للفلترة اللاحقة
+        role: userRole
     });
 
     try {
-        const response = await fetch(`/api/get-students?${queryParams}`);
+        // جلب بيانات الطلاب عبر الـ API المؤمن
+        const response = await fetch(`/api/get-students?${queryParams}`, {
+            method: 'GET',
+            headers: {
+                'x-app-secret': SECRET_KEY // إرسال مفتاح الأمان للحصول على البيانات
+            }
+        });
+        
+        if (!response.ok) throw new Error("فشل في جلب بيانات الطلاب");
         students = await response.json(); 
+
+        // 4. جلب سجل الغياب عبر بوابة API (تأكد من إنشاء api/get-history.js بنفس المنطق)
+        const historyResponse = await fetch(`/api/get-history`, {
+            method: 'GET',
+            headers: {
+                'x-app-secret': SECRET_KEY
+            }
+        });
         
-        // جلب سجل الغياب (يجب تطبيق نفس الفكرة له لاحقاً)
-        const hR = await fetch(`/api/attendance-history`); // بوابة أخرى سننشئها
-        history = await hR.json(); [cite: 100]
+        if (!historyResponse.ok) throw new Error("فشل في جلب سجل الغياب");
+        history = await historyResponse.json();
         
-        initGrades(); [cite: 102]
+        // تشغيل واجهة الفصول
+        initGrades();
     } catch(e) { 
-        console.error("Error loading secure data", e); [cite: 103]
+        console.error("Security Error:", e);
+        showCustomAlert("فشل في تحميل البيانات المؤمنة. يرجى التحقق من الاتصال.", "error");
     }
 }
 
