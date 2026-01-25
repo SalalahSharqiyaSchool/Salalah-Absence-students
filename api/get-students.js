@@ -4,7 +4,7 @@ export default async function handler(req, res) {
     // إعدادات GitHub
     const octokit = new Octokit({ auth: process.env.GH_TOKEN });
     const [owner, repo] = process.env.GH_REPO.split('/');
-    const path = 'student_fone.json'; // اسم ملف الطلاب في المستودع
+    const path = 'data/student_fone.json'; // اسم ملف الطلاب في المستودع
 
     try {
         // جلب محتوى الملف
