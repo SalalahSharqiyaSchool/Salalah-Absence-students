@@ -1,28 +1,22 @@
-import fs from 'fs';
-import path from 'path';
+import { Octokit } from "@octokit/rest";
 
 export default async function handler(req, res) {
-    // 1. التحقق من مفتاح السر (نفس الذي وضعته في Vercel)
-    const clientSecret = req.headers['x-app-secret'];
-    if (clientSecret !== process.env.APP_SECRET_KEY) {
-        return res.status(401).json({ error: "غير مصرح لك بالوصول" });
-    }
+    const octokit = new Octokit({ auth: process.env.GH_TOKEN });
+    const [owner, repo] = process.env.GH_REPO.split('/');
+    const path = 'attendance_history.json'; // اسم ملف السجل
 
     try {
-        // 2. تحديد مسار ملف سجل الغياب المخفي
-        const filePath = path.join(process.cwd(), 'api', 'data', 'attendance_history.json');
+        const { data } = await octokit.repos.getContent({ owner, repo, path });
+        const content = Buffer.from(data.content, 'base64').toString('utf-8');
+        const history = JSON.parse(content);
         
-        // 3. قراءة البيانات
-        if (fs.existsSync(filePath)) {
-            const fileData = fs.readFileSync(filePath, 'utf8');
-            const history = JSON.parse(fileData);
-            res.status(200).json(history);
-        } else {
-            // إذا كان الملف غير موجود بعد (أول مرة تشغيل) نرسل مصفوفة فارغة
-            res.status(200).json([]);
-        }
+        return res.status(200).json(history);
+
     } catch (error) {
-        console.error("Error reading history:", error);
-        res.status(500).json({ error: "فشل في تحميل سجل الغياب" });
+        // إذا لم يوجد سجل سابق، نرجع مصفوفة فارغة
+        if (error.status === 404) {
+            return res.status(200).json([]);
+        }
+        return res.status(500).json({ error: "فشل جلب سجل الغياب" });
     }
 }
