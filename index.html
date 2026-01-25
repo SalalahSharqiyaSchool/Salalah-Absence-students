@@ -131,31 +131,31 @@
         let teachers = [];
 
         // دالة جلب البيانات من ملف الـ JSON الموجود على جيت هب
-       async function fetchTeachers() {
+      async function fetchTeachers() {
     try {
-        // يجب إرسال مفتاح الأمان في الـ Headers لكي يسمح لك الـ API بالدخول
         const response = await fetch('/api/get-teachers', {
             method: 'GET',
             headers: {
-                'x-app-secret': 'MySecret@2026!#' // نفس المفتاح الموجود في Vercel
+                // هامة جداً لفتح القفل
+                'x-app-secret': 'MySecret@2026!#' 
             }
         });
 
-        if (!response.ok) throw new Error("فشل استجابة السيرفر");
+        if (!response.ok) throw new Error("السيرفر رفض الطلب");
 
         teachers = await response.json();
         
         const select = document.getElementById('teacherSelect');
-        select.innerHTML = '<option value=\"\">اختر الاسم...</option>';
+        select.innerHTML = '<option value="">اختر اسم المعلم...</option>';
         teachers.forEach(t => {
-            select.innerHTML += `<option value=\"${t.name}\">${t.name}</option>`;
+            select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
         });
+        console.log("تم تحميل المعلمين بنجاح");
     } catch (e) {
-        console.error("خطأ:", e);
-        document.getElementById('teacherSelect').innerHTML = '<option value=\"\">خطأ في تحميل البيانات</option>';
+        console.error("خطأ جلب المعلمين:", e);
+        document.getElementById('teacherSelect').innerHTML = '<option value="">خطأ في الاتصال بالسيرفر</option>';
     }
 }
-
        function checkLogin() {
     const name = document.getElementById('teacherSelect').value;
     const pass = document.getElementById('passInput').value;
