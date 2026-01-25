@@ -203,14 +203,43 @@
             } catch(e) { console.error("Load Error"); }
         }
 
-        function updateSections(gId, sId) {
-            const g = document.getElementById(gId).value;
-            const sEl = document.getElementById(sId);
-            sEl.innerHTML = '<option value="">الشعبة</option>';
-            if(!g) return;
-            const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => s.section))].sort();
-            sections.forEach(s => { sEl.innerHTML += `<option value="${s}">${s}</option>`; });
-        }
+      function updateSections() {
+    const gradeSelect = document.getElementById('mainGradeSelect'); 
+    const sectionSelect = document.getElementById('mainSectionSelect');
+    const selectedGrade = gradeSelect.value; // القيمة المختارة مثل "السابع"
+
+    sectionSelect.innerHTML = '<option value="">-- اختر الشعبة --</option>';
+
+    if (!selectedGrade) return;
+
+    const userRole = sessionStorage.getItem('userRole');
+    const userClasses = JSON.parse(sessionStorage.getItem('userClasses') || '[]');
+
+    if (userRole === 'admin') {
+        // للمدير: استخراج الشعب من بيانات الطلاب
+        const availableSections = [...new Set(students
+            .filter(s => s.grade === selectedGrade)
+            .map(s => s.section))].sort();
+
+        availableSections.forEach(sec => {
+            sectionSelect.innerHTML += `<option value="${sec}">${sec}</option>`;
+        });
+    } else {
+        // للمعلم (مثل أ.عصام): البحث عن الصفوف التي تبدأ بـ "السابع-"
+        userClasses.forEach(cls => {
+            // التحقق إذا كان النص يحتوي على اسم الصف المختارة (مثلاً السابع)
+            if (cls.startsWith(selectedGrade)) {
+                // فصل النص عند الشرطة "-" لأخذ الرقم
+                // إذا كان النص "السابع-1" فإن parts[1] سيكون "1"
+                const parts = cls.split('-'); 
+                if (parts.length > 1) {
+                    const secNum = parts[1];
+                    sectionSelect.innerHTML += `<option value="${secNum}">${secNum}</option>`;
+                }
+            }
+        });
+    }
+}
 
         function updateStudents() {
             const g = document.getElementById('mainGradeSelect').value;
