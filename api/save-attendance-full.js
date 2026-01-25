@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
     const octokit = new Octokit({ auth: process.env.GH_TOKEN });
     const [owner, repo] = process.env.GH_REPO.split('/');
-    const path = 'attendance_history.json';
+    const path = 'api/data/attendance_history.json';
 
     try {
         // 4. جلب الـ SHA للملف الحالي (ضروري جداً لعمل Overwrite)
