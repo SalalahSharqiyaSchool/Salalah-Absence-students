@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>استعلام ولي الأمر - مدرسة صلالة الشرقية</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -34,10 +34,6 @@ width:100%;
 padding:5px;
 background:var(--gold-gradient);
 border-radius:30px;
-}
-.page-border.no-border{
-background:none;
-padding:0;
 }
 .parent-container{
 background:var(--bg);
@@ -124,14 +120,6 @@ text-align:center;
 border:1px solid rgba(212,175,55,.3);
 }
 .designer-name-row b{color:var(--accent)}
-
-#printHeader{display:none}
-
-@media print {
-  body * { visibility: hidden; }
-  #printHeader, #printHeader * { visibility: visible; }
-  #printHeader { position: absolute; left:0; top:0; width:100%; }
-}
 </style>
 </head>
 <body>
@@ -139,71 +127,25 @@ border:1px solid rgba(212,175,55,.3);
 <div class="page-border" id="mainBorder">
 <div class="parent-container">
 
-<!-- نسخة رسمية للطباعة -->
-<div id="printHeader">
-  <div style="text-align:center; margin-bottom:20px;">
-    <h2 style="margin:0; font-size:1.2rem;">وزارة التعليم - سلطنة عمان</h2>
-    <h3 style="margin:0; font-size:1rem;">المديرية العامة للتربية والتعليم بمحافظة ظفار</h3>
-    <h3 style="margin:5px 0 0 0; font-size:1rem;">مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</h3>
-    <p style="margin:5px 0; font-size:.85rem; color:#64748b;">نسخة إلكترونية غير رسمية</p>
-  </div>
-
-  <div style="text-align:center; margin-bottom:15px;">
-    <h3 style="margin:0; font-size:1.1rem;">تقرير غياب الطالب</h3>
-    <p id="reportDate" style="margin:0; font-size:.85rem; color:#1e293b;"></p>
-  </div>
-
-  <div style="margin-bottom:20px; font-size:1rem;">
-    <p><b>اسم الطالب:</b> <span id="printStudentName"></span></p>
-    <p><b>الصف / الشعبة:</b> <span id="printStudentGrade"></span></p>
-  </div>
-
-  <div class="table-container">
-    <table style="width:100%; border-collapse:collapse; font-size:.9rem;">
-      <thead>
-        <tr style="background:#0f172a; color:#fff;">
-          <th style="padding:10px;">م</th>
-          <th style="padding:10px;">اليوم</th>
-          <th style="padding:10px;">التاريخ</th>
-          <th style="padding:10px;">الحالة</th>
-        </tr>
-      </thead>
-      <tbody id="printTableBody"></tbody>
-    </table>
-  </div>
-
-  <div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
-    <div style="text-align:left; font-size:.85rem;">
-      <p>توقيع المدير:</p>
-      <p>_________________________</p>
-    </div>
-    <div style="text-align:right; font-size:.8rem; color:#e11d48;">
-      <p>تنبيه: هذه نسخة إلكترونية ولا تعتبر رسمية</p>
-    </div>
-  </div>
-</div>
-
 <!-- واجهة البحث -->
-<div class="official-header no-print">
+<div class="official-header">
 <p class="country">سلطنة عمان</p>
 <p>وزارة التعليم</p>
 <p>المديرية العامة للتربية والتعليم بمحافظة ظفار</p>
 </div>
 
-<div class="header no-print">
+<div class="header">
 <i class="fas fa-user-shield"></i>
 <h1>بوابة ولي الأمر الرقمية</h1>
 <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
 </div>
 
 <div class="search-card">
-<div class="no-print">
 <label>رقم الهاتف المسجل</label>
 <input type="tel" id="phoneInput" placeholder="أدخل 8 أو 11 رقم" maxlength="11">
 <button class="btn btn-search" onclick="searchAttendance()">
 <i class="fas fa-search"></i> استعلام عن الغياب
 </button>
-</div>
 
 <div id="resultArea" class="result-area">
 <div id="studentData" class="student-info"></div>
@@ -222,7 +164,7 @@ border:1px solid rgba(212,175,55,.3);
 </table>
 </div>
 
-<button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
+<button class="btn btn-print" id="printBtn" onclick="preparePrint()">
 <i class="fas fa-print"></i> طباعة التقرير / PDF
 </button>
 </div>
@@ -233,7 +175,7 @@ border:1px solid rgba(212,175,55,.3);
 </div>
 </div>
 
-<div class="designer-card no-print">
+<div class="designer-card">
 <span>نظام إدارة الغياب الرقمي © 2026</span><br>
 <span class="designer-name-row">تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
 </div>
@@ -248,8 +190,6 @@ async function searchAttendance(){
   const notFound = document.getElementById('notFound');
   const tableBody = document.getElementById('tableBody');
   const studentData = document.getElementById('studentData');
-  const printBtn = document.getElementById('printBtn');
-  const mainBorder = document.getElementById('mainBorder');
 
   if(phone.length < 8){ alert("أدخل رقم صحيح"); return; }
 
@@ -266,14 +206,11 @@ async function searchAttendance(){
     if(!student){
       resultArea.style.display='none';
       notFound.style.display='block';
-      mainBorder.classList.remove('no-border');
       return;
     }
 
-    mainBorder.classList.add('no-border');
     notFound.style.display='none';
     resultArea.style.display='block';
-    printBtn.style.display='flex';
 
     studentData.innerHTML = `<b>${student.name}</b><br><span>${student.grade} / ${student.section}</span>`;
 
@@ -295,27 +232,81 @@ async function searchAttendance(){
   }
 }
 
-function preparePrint(){
-  const reportDate = new Date().toLocaleDateString('ar-OM');
-  document.getElementById('reportDate').innerText = reportDate;
-
+function preparePrint() {
   const studentNameElem = document.querySelector('#studentData b');
   const studentGradeElem = document.querySelector('#studentData span');
+  const tableBody = document.getElementById('tableBody');
 
-  if(!studentNameElem || !studentGradeElem){
+  if (!studentNameElem || !studentGradeElem) {
     alert("لا يوجد بيانات للطباعة");
     return;
   }
 
-  document.getElementById('printStudentName').innerText = studentNameElem.innerText;
-  document.getElementById('printStudentGrade').innerText = studentGradeElem.innerText;
+  const studentName = studentNameElem.innerText;
+  const studentGrade = studentGradeElem.innerText;
+  const tableHTML = tableBody.innerHTML;
+  const reportDate = new Date().toLocaleDateString('ar-OM');
 
-  const tableBody = document.getElementById('tableBody');
-  document.getElementById('printTableBody').innerHTML = tableBody.innerHTML;
+  const printWindow = window.open('', '', 'width=900,height=700');
+  printWindow.document.write(`
+    <html lang="ar" dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>تقرير غياب الطالب</title>
+      <style>
+        body{font-family:'Cairo',sans-serif; padding:20px; color:#1e293b;}
+        h2,h3{margin:0; text-align:center;}
+        p{margin:5px 0;}
+        table{width:100%; border-collapse:collapse; margin-top:20px;}
+        th,td{border:1px solid #000; padding:8px; text-align:center;}
+        th{background:#0f172a; color:#fff;}
+        .signature{margin-top:30px; display:flex; justify-content:space-between; align-items:center;}
+        .warning{color:#e11d48; font-size:.9rem;}
+      </style>
+    </head>
+    <body>
+      <h2>وزارة التعليم - سلطنة عمان</h2>
+      <h3>المديرية العامة للتربية والتعليم بمحافظة ظفار</h3>
+      <h3>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</h3>
+      <p>نسخة إلكترونية غير رسمية</p>
 
-  document.getElementById('printHeader').style.display = 'block';
-  window.print();
-  document.getElementById('printHeader').style.display = 'none';
+      <h3 style="text-align:center; margin-top:20px;">تقرير غياب الطالب</h3>
+      <p style="text-align:center;">تاريخ التقرير: ${reportDate}</p>
+
+      <p><b>اسم الطالب:</b> ${studentName}</p>
+      <p><b>الصف / الشعبة:</b> ${studentGrade}</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>م</th>
+            <th>اليوم</th>
+            <th>التاريخ</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableHTML}
+        </tbody>
+      </table>
+
+      <div class="signature">
+        <div>
+          <p>توقيع المدير:</p>
+          <p>_________________________</p>
+        </div>
+        <div class="warning">
+          تنبيه: هذه نسخة إلكترونية ولا تعتبر رسمية
+        </div>
+      </div>
+
+      <script>
+        window.onload = function(){ window.print(); window.close(); }
+      </script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 </script>
 
