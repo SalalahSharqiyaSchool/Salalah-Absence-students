@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
     const octokit = new Octokit({ auth: process.env.GH_TOKEN });
     const [owner, repo] = process.env.GH_REPO.split('/');
-    const path = 'student_fone.json';
+    const path = 'api/data/student_fone.json';
 
     try {
         // 4. جلب الـ SHA الحالي (ضروري جداً لـ GitHub لتجنب تعارض البيانات)
