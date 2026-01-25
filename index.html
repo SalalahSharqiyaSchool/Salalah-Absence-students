@@ -3,102 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | مدرسة صلالة الشرقية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>تسجيل الدخول | منصة مدرسة صلالة الشرقية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --white: #ffffff; }
-        body {
-            font-family: 'Cairo', sans-serif; background-color: var(--primary);
-            margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+        :root {
+            --primary: #0f172a;
+            --accent: #d4af37;
+            --white: #white;
+            --gold-glow: rgba(212, 175, 55, 0.5);
         }
-        .header {
-            background: #1e293b; border-bottom: 3px solid var(--accent);
-            padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;
+        
+        body, html {
+            height: 100%; margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--primary);
+            overflow-x: hidden; 
+            display: flex; flex-direction: column;
         }
-        .login-container {
-            flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px;
+
+        .official-header {
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            border-bottom: 3px solid var(--accent);
+            padding: 12px 20px; display: flex;
+            justify-content: space-between; align-items: center;
+            color: white; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
-        .login-card {
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.2); padding: 40px;
-            border-radius: 25px; width: 100%; max-width: 400px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+
+        .header-titles .country { font-size: 1.2rem; font-weight: 900; color: var(--accent); display: block; line-height: 1.2; }
+        .header-titles .info { font-size: 0.8rem; font-weight: 600; opacity: 0.9; display: block; }
+
+        .logo-circle {
+            width: 65px; height: 65px; background-color: white;
+            border-radius: 50%; border: 2px solid var(--accent);
+            padding: 2px; object-fit: cover;
+            box-shadow: 0 0 15px var(--gold-glow); transition: 0.3s ease;
         }
-        h1 { color: var(--white); margin-bottom: 10px; font-size: 1.8rem; }
-        p { color: #94a3b8; margin-bottom: 30px; }
-        .input-group { margin-bottom: 20px; position: relative; }
+
+        .main-container {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            position: relative; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            padding: 20px 0;
+        }
+
+        .floating-card {
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.2); padding: 30px 25px;
+            border-radius: 30px; text-align: center; width: 85%; max-width: 380px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: floatEffect 4s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes floatEffect { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .floating-card h1 { color: white; font-size: 1.6rem; font-weight: 800; margin-bottom: 5px; }
+        .floating-card p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 25px; }
+
+        .input-group { margin-bottom: 15px; text-align: right; }
         select, input {
-            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.3);
-            background: rgba(0,0,0,0.2); color: white; font-family: 'Cairo'; outline: none; box-sizing: border-box;
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(255, 255, 255, 0.05); color: white; font-family: 'Cairo';
+            font-size: 1rem; outline: none; transition: 0.3s; box-sizing: border-box;
         }
-        .btn-login {
-            background: var(--accent); color: var(--primary); border: none; padding: 15px;
-            width: 100%; border-radius: 50px; font-weight: 900; cursor: pointer;
-            transition: 0.3s; font-size: 1.1rem;
+        select option { background: var(--primary); color: white; }
+
+        .enter-button {
+            background: linear-gradient(45deg, var(--accent), #f3d06b);
+            color: var(--primary); border: none; padding: 15px; width: 100%;
+            border-radius: 50px; font-weight: 900; font-size: 1.1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            gap: 10px; transition: 0.3s; margin-top: 10px;
         }
-        .btn-login:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4); }
-        .error-box { color: #ff4d4d; margin-top: 15px; display: none; font-weight: bold; }
-        .loading-spinner { color: var(--accent); display: none; margin-bottom: 10px; }
+        .error-msg { color: #ff4d4d; font-size: 0.85rem; margin-top: 10px; display: none; font-weight: 700; }
+
+        .footer { padding: 12px; text-align: center; background: #000; color: #fff; font-size: 0.85rem; border-top: 2px solid var(--accent); width: 100%; box-sizing: border-box; }
+        .designer { color: var(--accent); font-weight: 800; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div style="color:white">
-            <div style="font-weight:900; color:var(--accent)">سلطنة عمان</div>
-            <div style="font-size:0.8rem">وزارة التربية والتعليم</div>
+    <header class="official-header">
+        <div class="header-titles">
+            <span class="country">سلطنة عمان</span>
+            <span class="info">وزارة التربية والتعليم</span>
+            <span class="info">مدرسة صلالة الشرقية (5-9)</span>
         </div>
-        <i class="fas fa-shield-alt" style="color:var(--accent); font-size:2rem"></i>
+        <img src="data/logo.jpeg" class="logo-circle" alt="شعار المدرسة" onerror="this.src='https://via.placeholder.com/100'">
     </header>
 
-    <main class="login-container">
-        <div class="login-card" id="loginCard">
-            <i class="fas fa-user-circle" style="font-size: 4rem; color: var(--accent); margin-bottom: 20px;"></i>
-            <h1>منصة المعلم</h1>
-            <p>أهلاً بك، يرجى تسجيل الدخول للمتابعة</p>
-
-            <div id="loading" class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> جاري تحميل القائمة...</div>
-
+    <main class="main-container">
+        <div class="floating-card" id="loginCard">
+            <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 10px;">
+                <i class="fas fa-user-lock"></i>
+            </div>
+            <h1>تسجيل الدخول</h1>
+            <p>يرجى اختيار الاسم وإدخال الرمز</p>
+            
             <div class="input-group">
                 <select id="teacherSelect">
-                    <option value="">-- اختر اسمك من القائمة --</option>
+                    <option value="">-- جاري تحميل الأسماء... --</option>
                 </select>
             </div>
 
             <div class="input-group">
-                <input type="password" id="passInput" placeholder="أدخل رمز الدخول الخاص بك">
+                <input type="password" id="passInput" placeholder="كلمة المرور">
             </div>
 
-            <button onclick="handleLogin()" class="btn-login">
-                دخول النظام <i class="fas fa-arrow-left" style="margin-right:10px"></i>
+            <button onclick="checkLogin()" class="enter-button">
+                دخول النظام <i class="fas fa-sign-in-alt"></i>
             </button>
 
-            <div id="errorArea" class="error-box">عذراً، البيانات غير صحيحة!</div>
+            <div id="errorArea" class="error-msg">كلمة المرور غير صحيحة!</div>
         </div>
     </main>
+
+    <footer class="footer">
+        جميع الحقوق محفوظة &copy; 2026 | تصميم الأستاذ: <span class="designer">فيصل العريبي</span>
+    </footer>
 
     <script>
         let teachers = [];
 
-        // 1. دالة التمويه (نفس المستخدمة في المنصة)
-        function getSecureKey() {
-            const obfuscated = "jEhNiAyMHRBZXJjZVN5WVR";
-            return atob(obfuscated.split("").reverse().join(""));
-        }
-
-        // 2. جلب قائمة المعلمين عبر الـ API المؤمن
+        // دالة جلب البيانات من ملف الـ JSON الموجود على جيت هب
         async function fetchTeachers() {
-            const loading = document.getElementById('loading');
-            loading.style.display = 'block';
             try {
-                const response = await fetch('/api/get-teachers', {
-                    headers: { 'x-app-secret': getSecureKey() }
-                });
-                if (!response.ok) throw new Error();
+                // استبدل هذا الرابط برابط الـ Raw الحقيقي لملفك إذا كان في مستودع آخر
+                const response = await fetch('teachers.json?v=' + Date.now());
                 teachers = await response.json();
                 
                 const select = document.getElementById('teacherSelect');
+                select.innerHTML = '<option value="">-- اختر المعلم --</option>'; // تفريغ القائمة
+                
                 teachers.forEach(t => {
                     let opt = document.createElement('option');
                     opt.value = t.name;
@@ -106,38 +147,33 @@
                     select.appendChild(opt);
                 });
             } catch (e) {
-                alert("خطأ في الاتصال بالسيرفر. يرجى تحديث الصفحة.");
-            } finally {
-                loading.style.display = 'none';
+                console.error("خطأ في تحميل ملف المعلمين. تأكد من وجود ملف teachers.json");
+                document.getElementById('teacherSelect').innerHTML = '<option value="">خطأ في جلب البيانات</option>';
             }
         }
 
-        // 3. معالجة الدخول
-        function handleLogin() {
+        function checkLogin() {
             const name = document.getElementById('teacherSelect').value;
             const pass = document.getElementById('passInput').value;
             const error = document.getElementById('errorArea');
 
-            if (!name || !pass) {
-                alert("يرجى اختيار الاسم وإدخال الرمز");
-                return;
-            }
+            if (!name) { alert("لطفاً، اختر اسم المعلم أولاً"); return; }
 
             const user = teachers.find(t => t.name === name);
-
+            
+            // التحقق من كلمة المرور (String لضمان التطابق سواء كان الرقم نصاً أو عدداً)
             if (user && String(user.pass) === String(pass)) {
-                // حفظ البيانات في الجلسة لتعمل المنصة بناءً عليها
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('teacherName', name);
                 sessionStorage.setItem('userRole', user.role || 'teacher');
-                sessionStorage.setItem('userClasses', JSON.stringify(user.classes || []));
                 
-                // الانتقال لصفحة المنصة
+                // الانتقال لملف المنصة الرئيسي
                 window.location.href = 'school-absent.html';
             } else {
                 error.style.display = 'block';
-                document.getElementById('loginCard').style.animation = 'shake 0.4s';
-                setTimeout(() => { document.getElementById('loginCard').style.animation = ''; }, 400);
+                const card = document.getElementById('loginCard');
+                card.style.animation = 'none';
+                setTimeout(() => { card.style.animation = 'shake 0.4s'; }, 10);
             }
         }
 
