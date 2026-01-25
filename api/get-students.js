@@ -1,28 +1,28 @@
-import fs from 'fs';
-import path from 'path';
+import { Octokit } from "@octokit/rest";
 
 export default async function handler(req, res) {
-    // 1. تحديد مسار الملف في السيرفر
-    const filePath = path.join(process.cwd(), 'api', 'data', 'student_fone.json');
-    
+    // إعدادات GitHub
+    const octokit = new Octokit({ auth: process.env.GH_TOKEN });
+    const [owner, repo] = process.env.GH_REPO.split('/');
+    const path = 'student_fone.json'; // اسم ملف الطلاب في المستودع
+
     try {
-        const fileData = fs.readFileSync(filePath, 'utf8');
-        let students = JSON.parse(fileData);
+        // جلب محتوى الملف
+        const { data } = await octokit.repos.getContent({ owner, repo, path });
+        
+        // فك التشفير من Base64
+        const content = Buffer.from(data.content, 'base64').toString('utf-8');
+        const students = JSON.parse(content);
 
-        // 2. جلب المعلومات المرسلة من المتصفح (المعلم)
-        const { grade, section, role } = req.query;
+        // إرجاع البيانات للصفحة
+        return res.status(200).json(students);
 
-        // 3. منطق الحماية: الفلترة في السيرفر
-        // إذا لم يكن مديراً، نرسل له فقط طلاب فصله
-        if (role !== 'admin' && grade && section) {
-            students = students.filter(s => 
-                String(s.grade) === grade && String(s.section) === section
-            );
-        }
-
-        // 4. إرسال البيانات المفلترة فقط للمتصفح
-        res.status(200).json(students);
     } catch (error) {
-        res.status(500).json({ error: "فشل في قراءة البيانات" });
+        console.error("Error fetching students:", error);
+        // في حال كان الملف غير موجود (أول مرة)، نرجع مصفوفة فارغة بدلاً من الخطأ
+        if (error.status === 404) {
+            return res.status(200).json([]);
+        }
+        return res.status(500).json({ error: "فشل جلب قائمة الطلاب" });
     }
 }
