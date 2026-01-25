@@ -467,54 +467,69 @@ updateLiveDateTime();
         return days[new Date(dateString).getDay()];
     }
 
-  async function loadData() {
+  // 1. دالة فك التمويه - تجعل من الصعب على الطلاب معرفة كلمة السر
+function getSecureKey() {
+    // هذا النص ليس كلمة السر مباشرة، بل هو نص مشفر ومعكوس
+    const obfuscated = "jEhNiAyMHRBZXJjZVN5WVR"; 
+    
+    // فك التمويه: عكس النص ثم فك تشفير Base64
+    try {
+        const decoded = atob(obfuscated.split("").reverse().join(""));
+        return decoded;
+    } catch (e) {
+        console.error("خطأ في مفتاح الأمان");
+        return null;
+    }
+}
+
+// 2. دالة تحميل البيانات المؤمنة
+async function loadData() {
     const tName = sessionStorage.getItem('teacherName');
     const userRole = sessionStorage.getItem('userRole');
-    const userClasses = JSON.parse(sessionStorage.getItem('userClasses') || '[]');
 
-    // 1. تحديث اسم المعلم في الواجهة
+    // تحديث واجهة المستخدم
     if(tName && document.getElementById('displayTeacherName')) {
-         document.getElementById('displayTeacherName').innerText = tName + (userRole === 'admin' ? ' (مدير)' : '');
+        document.getElementById('displayTeacherName').innerText = tName + (userRole === 'admin' ? ' (مدير)' : '');
     }
 
-    // 2. إعداد مفتاح السر (يجب أن يطابق ما وضعته في Vercel)
-   const part1 = "MySecret";
-    const part2 = "@2026!#";
-    const SECRET_KEY = part1 + part2;
+    // الحصول على المفتاح الحقيقي من الدالة المموّهة
+    const SECRET_KEY = getSecureKey();
 
-    // 3. تجهيز معايير الفلترة (نرسل الصف والشعبة إذا لم يكن مديراً)
-    const queryParams = new URLSearchParams({
-        role: userRole
-    });
+    const queryParams = new URLSearchParams({ role: userRole });
 
     try {
-        // جلب بيانات الطلاب عبر الـ API المؤمن
+        // أ - جلب بيانات الطلاب
         const response = await fetch(`/api/get-students?${queryParams}`, {
             method: 'GET',
             headers: {
-                'x-app-secret': SECRET_KEY // إرسال مفتاح الأمان للحصول على البيانات
+                'x-app-secret': SECRET_KEY
             }
         });
-        
-        if (!response.ok) throw new Error("فشل في جلب بيانات الطلاب");
+
+        if (!response.ok) throw new Error("غير مصرح بالدخول");
         students = await response.json(); 
 
-        // 4. جلب سجل الغياب عبر بوابة API (تأكد من إنشاء api/get-history.js بنفس المنطق)
+        // ب - جلب سجل الغياب
         const historyResponse = await fetch(`/api/get-history`, {
             method: 'GET',
             headers: {
                 'x-app-secret': SECRET_KEY
             }
         });
-        
-        if (!historyResponse.ok) throw new Error("فشل في جلب سجل الغياب");
+
+        if (!historyResponse.ok) throw new Error("فشل تحميل السجل");
         history = await historyResponse.json();
         
-        // تشغيل واجهة الفصول
-        initGrades();
+        // ج - تشغيل واجهة النظام
+        if (typeof initGrades === "function") {
+            initGrades();
+        }
+
     } catch(e) { 
         console.error("Security Error:", e);
-        showCustomAlert("فشل في تحميل البيانات المؤمنة. يرجى التحقق من الاتصال.", "error");
+        if (typeof showCustomAlert === "function") {
+            showCustomAlert("فشل في الوصول للبيانات المؤمنة. تأكد من صلاحياتك.", "error");
+        }
     }
 }
 
