@@ -124,10 +124,13 @@ text-align:center;
 border:1px solid rgba(212,175,55,.3);
 }
 .designer-name-row b{color:var(--accent)}
+
 #printHeader{display:none}
-@media print{
-.no-print{display:none!important}
-#printHeader{display:block!important}
+
+@media print {
+  body * { visibility: hidden; }
+  #printHeader, #printHeader * { visibility: visible; }
+  #printHeader { position: absolute; left:0; top:0; width:100%; }
 }
 </style>
 </head>
@@ -136,11 +139,51 @@ border:1px solid rgba(212,175,55,.3);
 <div class="page-border" id="mainBorder">
 <div class="parent-container">
 
+<!-- نسخة رسمية للطباعة -->
 <div id="printHeader">
-<p>تقرير غياب طالب - مدرسة صلالة الشرقية</p>
-<p id="reportDate"></p>
+  <div style="text-align:center; margin-bottom:20px;">
+    <h2 style="margin:0; font-size:1.2rem;">وزارة التعليم - سلطنة عمان</h2>
+    <h3 style="margin:0; font-size:1rem;">المديرية العامة للتربية والتعليم بمحافظة ظفار</h3>
+    <h3 style="margin:5px 0 0 0; font-size:1rem;">مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</h3>
+    <p style="margin:5px 0; font-size:.85rem; color:#64748b;">نسخة إلكترونية غير رسمية</p>
+  </div>
+
+  <div style="text-align:center; margin-bottom:15px;">
+    <h3 style="margin:0; font-size:1.1rem;">تقرير غياب الطالب</h3>
+    <p id="reportDate" style="margin:0; font-size:.85rem; color:#1e293b;"></p>
+  </div>
+
+  <div style="margin-bottom:20px; font-size:1rem;">
+    <p><b>اسم الطالب:</b> <span id="printStudentName"></span></p>
+    <p><b>الصف / الشعبة:</b> <span id="printStudentGrade"></span></p>
+  </div>
+
+  <div class="table-container">
+    <table style="width:100%; border-collapse:collapse; font-size:.9rem;">
+      <thead>
+        <tr style="background:#0f172a; color:#fff;">
+          <th style="padding:10px;">م</th>
+          <th style="padding:10px;">اليوم</th>
+          <th style="padding:10px;">التاريخ</th>
+          <th style="padding:10px;">الحالة</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBody"></tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="text-align:left; font-size:.85rem;">
+      <p>توقيع المدير:</p>
+      <p>_________________________</p>
+    </div>
+    <div style="text-align:right; font-size:.8rem; color:#e11d48;">
+      <p>تنبيه: هذه نسخة إلكترونية ولا تعتبر رسمية</p>
+    </div>
+  </div>
 </div>
 
+<!-- واجهة البحث -->
 <div class="official-header no-print">
 <p class="country">سلطنة عمان</p>
 <p>وزارة التعليم</p>
@@ -200,8 +243,19 @@ border:1px solid rgba(212,175,55,.3);
 
 <script>
 function preparePrint(){
-  document.getElementById('reportDate').innerText =
-    new Date().toLocaleDateString('ar-OM');
+  const reportDate = new Date().toLocaleDateString('ar-OM');
+  document.getElementById('reportDate').innerText = reportDate;
+
+  // نسخ بيانات الطالب للنسخة الرسمية للطباعة
+  const studentName = document.querySelector('#studentData b').innerText;
+  const studentGrade = document.querySelector('#studentData span').innerText;
+  document.getElementById('printStudentName').innerText = studentName;
+  document.getElementById('printStudentGrade').innerText = studentGrade;
+
+  // نسخ جدول الغياب
+  const tableBody = document.getElementById('tableBody').innerHTML;
+  document.getElementById('printTableBody').innerHTML = tableBody;
+
   window.print();
 }
 
