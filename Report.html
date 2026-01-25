@@ -242,23 +242,6 @@ border:1px solid rgba(212,175,55,.3);
 </div>
 
 <script>
-function preparePrint(){
-  const reportDate = new Date().toLocaleDateString('ar-OM');
-  document.getElementById('reportDate').innerText = reportDate;
-
-  // نسخ بيانات الطالب للنسخة الرسمية للطباعة
-  const studentName = document.querySelector('#studentData b').innerText;
-  const studentGrade = document.querySelector('#studentData span').innerText;
-  document.getElementById('printStudentName').innerText = studentName;
-  document.getElementById('printStudentGrade').innerText = studentGrade;
-
-  // نسخ جدول الغياب
-  const tableBody = document.getElementById('tableBody').innerHTML;
-  document.getElementById('printTableBody').innerHTML = tableBody;
-
-  window.print();
-}
-
 async function searchAttendance(){
   let phone = document.getElementById('phoneInput').value.trim();
   const resultArea = document.getElementById('resultArea');
@@ -271,11 +254,9 @@ async function searchAttendance(){
   if(phone.length < 8){ alert("أدخل رقم صحيح"); return; }
 
   try{
-    // جلب البيانات من API داخل مجلد api
     const students = await (await fetch('/api/students')).json();
     const history  = await (await fetch('/api/attendance')).json();
 
-    // البحث بالهاتف مع أو بدون 968
     const student = students.find(s => {
       const sPhone = String(s.phone).replace(/\D/g,'');
       const inputPhone = phone.replace(/\D/g,'');
@@ -312,6 +293,29 @@ async function searchAttendance(){
     alert("حدث خطأ أثناء جلب البيانات");
     console.error(err);
   }
+}
+
+function preparePrint(){
+  const reportDate = new Date().toLocaleDateString('ar-OM');
+  document.getElementById('reportDate').innerText = reportDate;
+
+  const studentNameElem = document.querySelector('#studentData b');
+  const studentGradeElem = document.querySelector('#studentData span');
+
+  if(!studentNameElem || !studentGradeElem){
+    alert("لا يوجد بيانات للطباعة");
+    return;
+  }
+
+  document.getElementById('printStudentName').innerText = studentNameElem.innerText;
+  document.getElementById('printStudentGrade').innerText = studentGradeElem.innerText;
+
+  const tableBody = document.getElementById('tableBody');
+  document.getElementById('printTableBody').innerHTML = tableBody.innerHTML;
+
+  document.getElementById('printHeader').style.display = 'block';
+  window.print();
+  document.getElementById('printHeader').style.display = 'none';
 }
 </script>
 
