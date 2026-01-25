@@ -413,12 +413,17 @@
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
             <h3>تعديل بيانات الطالب</h3>
-            <h4 id="displayStudentName" style="color:var(--accent);"></h4>
             <input type="hidden" id="editOldName">
-            <label>الشعبة الجديدة:</label>
-            <input type="number" id="editSectionInput">
-            <label>رقم الهاتف:</label>
-            <input type="tel" id="editPhoneInput">
+
+<label>اسم الطالب:</label>
+<input type="text" id="editNameInput" placeholder="اسم الطالب الثلاثي">
+
+<label>الشعبة الجديدة:</label>
+<input type="number" id="editSectionInput">
+
+<label>رقم الهاتف:</label>
+<input type="tel" id="editPhoneInput">
+
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-primary" onclick="submitStudentEdit()">حفظ التعديلات</button>
                 <button class="btn btn-cancel" onclick="closeModal()">إلغاء</button>
@@ -670,37 +675,67 @@
 
     // تحديث بيانات الطالب (يستخدم update-students.js)
     async function submitStudentEdit() {
-        const oldN = document.getElementById('editOldName').value;
-        const nSec = document.getElementById('editSectionInput').value.trim();
-        const nPh = document.getElementById('editPhoneInput').value.trim();
-        
-        const backupStudents = JSON.parse(JSON.stringify(students));
-        
-        // تحديث المصفوفة المحلية
-        students = students.map(s => s.name === oldN ? {...s, section: nSec, phone: nPh} : s);
+    const oldName = document.getElementById('editOldName').value;
+    const newName = document.getElementById('editNameInput').value.trim();
+    const newSection = document.getElementById('editSectionInput').value.trim();
+    const newPhone = document.getElementById('editPhoneInput').value.trim();
 
-        try {
-            const res = await fetch('/api/update-students', { 
-                method:'POST', 
-                headers:{
-                    'Content-Type':'application/json',
-                    'x-app-secret': getSecureKey()
-                }, 
-                body:JSON.stringify(students) // استبدال كامل
-            });
-
-            if(res.ok) { 
-                closeModal(); 
-                refreshUI();
-                showSuccess("تم تحديث البيانات بنجاح"); 
-            } else {
-                throw new Error("Update failed");
-            }
-        } catch(e) { 
-            students = backupStudents; // تراجع
-            showCustomAlert("حدث خطأ أثناء التحديث", "error");
-        }
+    if(!newName || !newSection || !newPhone) {
+        return showCustomAlert("يرجى إكمال جميع الحقول", "error");
     }
+
+    const backupStudents = JSON.parse(JSON.stringify(students));
+    const backupHistory = JSON.parse(JSON.stringify(history));
+
+    // تحديث الطلاب
+    students = students.map(s =>
+        s.name === oldName
+            ? { ...s, name: newName, section: newSection, phone: newPhone }
+            : s
+    );
+
+    // تحديث سجل الغياب إذا تغيّر الاسم
+    history = history.map(h =>
+        h.name === oldName
+            ? { ...h, name: newName }
+            : h
+    );
+
+    try {
+        // تحديث ملف الطلاب
+        const resStudents = await fetch('/api/update-students', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-app-secret': getSecureKey()
+            },
+            body: JSON.stringify(students)
+        });
+
+        // تحديث سجل الغياب
+        const resHistory = await fetch('/api/save-attendance-full', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-app-secret': getSecureKey()
+            },
+            body: JSON.stringify(history)
+        });
+
+        if(resStudents.ok && resHistory.ok) {
+            closeModal();
+            refreshUI();
+            showSuccess("تم تحديث بيانات الطالب بنجاح");
+        } else {
+            throw new Error();
+        }
+    } catch {
+        students = backupStudents;
+        history = backupHistory;
+        showCustomAlert("حدث خطأ أثناء حفظ التعديلات", "error");
+    }
+}
+
 
     // حذف طالب نهائياً (يتطلب تحديث ملفين)
     function showDeleteModal(name) {
@@ -1045,11 +1080,13 @@
     function openEditModal(name) {
         const s = students.find(x => x.name === name);
         if(!s) return;
-        document.getElementById('editOldName').value = s.name; 
-        document.getElementById('displayStudentName').innerText = s.name;
-        document.getElementById('editSectionInput').value = s.section; 
-        document.getElementById('editPhoneInput').value = s.phone;
-        document.getElementById('editModal').style.display = 'flex';
+        document.getElementById('editOldName').value = s.name;
+document.getElementById('editNameInput').value = s.name;
+document.getElementById('editSectionInput').value = s.section;
+document.getElementById('editPhoneInput').value = s.phone;
+
+document.getElementById('editModal').style.display = 'flex';
+
     }
 
     // --- النوافذ المنبثقة ---
