@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>استعلام ولي الأمر - مدرسة صلالة الشرقية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #0f172a; 
+            --accent: #d4af37; 
+            --bg: #f1f5f9; 
+            --card: #ffffff; 
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f5e0a3 50%, #b8860b 100%);
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 10px; 
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .page-border {
+            width: 100%;
+            max-width: 650px;
+            padding: 5px;
+            background: var(--gold-gradient);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .page-border.no-border {
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
+        }
+        .parent-container { 
+            background: var(--bg);
+            border-radius: 26px;
+            padding: 20px 15px;
+            width: 100%;
+        }
+        .official-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .official-header p {
+            margin: 2px 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .official-header .country { color: var(--accent); font-size: 1rem; }
+
+        .header { text-align: center; margin: 15px 0 25px; }
+        .header i { font-size: 2.5rem; color: var(--accent); }
+        .header h1 { font-size: 1.4rem; margin: 10px 0 5px; }
+        .header p { color: var(--text-muted); font-size: 0.85rem; }
+
+        .search-card {
+            background: var(--card);
+            padding: 25px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        label { font-weight: 700; display: block; margin-bottom: 10px; }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-family: 'Cairo';
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-family: 'Cairo';
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-search { background: var(--primary); color: var(--accent); }
+        .btn-print { background: #334155; color: #fff; margin-top: 20px; display: none; }
+
+        .result-area { display: none; margin-top: 25px; }
+        .student-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 16px;
+            border-right: 6px solid var(--accent);
+            margin-bottom: 20px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--primary); color: #fff; padding: 10px; font-size: 0.85rem; }
+        td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+
+        .no-data { text-align: center; padding: 30px; color: #94a3b8; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="page-border" id="mainBorder">
+    <div class="parent-container">
+
+        <div class="official-header">
+            <p class="country">سلطنة عمان</p>
+            <p>وزارة التربية والتعليم</p>
+            <p>مدرسة صلالة الشرقية (5-9)</p>
+        </div>
+
+        <div class="header">
+            <i class="fas fa-user-shield"></i>
+            <h1>بوابة ولي الأمر</h1>
+            <p>الاستعلام عن غياب الطالب</p>
+        </div>
+
+        <div class="search-card">
+            <label>رقم الهاتف المسجل:</label>
+            <input type="tel" id="phoneInput" placeholder="أدخل رقم الهاتف">
+            <button class="btn btn-search" onclick="searchAttendance()">
+                <i class="fas fa-search"></i> بحث
+            </button>
+
+            <div id="resultArea" class="result-area">
+                <div id="studentData" class="student-info"></div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>اليوم</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+
+                <button class="btn btn-print" id="printBtn" onclick="window.print()">
+                    <i class="fas fa-print"></i> طباعة
+                </button>
+            </div>
+
+            <div id="notFound" class="no-data">
+                <i class="fas fa-search-minus"></i>
+                <p>لم يتم العثور على بيانات لهذا الرقم</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function searchAttendance() {
+    let phone = document.getElementById('phoneInput').value.trim();
+    if(!phone) return alert("أدخل رقم الهاتف");
+
+    phone = phone.replace(/^968/, '');
+
+    const resultArea = document.getElementById('resultArea');
+    const notFound = document.getElementById('notFound');
+    const tableBody = document.getElementById('tableBody');
+    const studentData = document.getElementById('studentData');
+    const printBtn = document.getElementById('printBtn');
+    const mainBorder = document.getElementById('mainBorder');
+
+    try {
+        const v = Date.now();
+        const [sR, hR] = await Promise.all([
+            fetch(`/api/get-students?v=${v}`),
+            fetch(`/api/get-history?v=${v}`)
+        ]);
+
+        const students = await sR.json();
+        const history = await hR.json();
+
+        const student = students.find(s => String(s.phone) === phone);
+
+        if(!student) {
+            resultArea.style.display = 'none';
+            notFound.style.display = 'block';
+            mainBorder.classList.remove('no-border');
+            return;
+        }
+
+        mainBorder.classList.add('no-border');
+        notFound.style.display = 'none';
+        resultArea.style.display = 'block';
+        printBtn.style.display = 'flex';
+
+        studentData.innerHTML = `
+            <b>${student.name}</b><br>
+            <small>${student.grade} / ${student.section}</small>
+        `;
+
+        const records = history
+            .filter(h => h.name === student.name)
+            .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+        if(records.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="color:green;font-weight:bold">
+                        لا توجد غيابات مسجلة
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        tableBody.innerHTML = records.map((r,i)=>{
+            const day = new Date(r.date).toLocaleDateString('ar-OM',{weekday:'long'});
+            return `
+            <tr>
+                <td>${i+1}</td>
+                <td>${day}</td>
+                <td>${r.date}</td>
+                <td style="color:#e11d48;font-weight:bold">غياب</td>
+            </tr>`;
+        }).join('');
+
+    } catch(e) {
+        alert("حدث خطأ أثناء الاتصال بالنظام");
+        console.error(e);
+    }
+}
+</script>
+
+</body>
+</html>
