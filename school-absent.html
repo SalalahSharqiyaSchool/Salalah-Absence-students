@@ -776,33 +776,61 @@
 
     // --- 5. دوال الواجهة المساعدة (UI Helpers) ---
     
-    function initGrades() {
-        const userRole = sessionStorage.getItem('userRole');
-        // يمكن إضافة منطق تصفية الصفوف للمعلم هنا إذا توفرت بيانات userClasses
-        
-        const grades = [...new Set(students.map(s => String(s.grade).trim()).filter(g => g))].sort();
-        
-        ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
-            const el = document.getElementById(id); 
-            if(!el) return;
-            const currentVal = el.value;
-            el.innerHTML = '<option value="">الصف</option>';
-            grades.forEach(g => el.innerHTML += `<option value="${g}">${g}</option>`);
-            el.value = currentVal;
+   function initGrades() {
+    const userRole = sessionStorage.getItem('userRole');
+    const userClassesRaw = sessionStorage.getItem('userClasses');
+    const userClasses = userClassesRaw ? JSON.parse(userClassesRaw) : [];
+
+    // سنقوم بتصفية قائمة الطلاب بناءً على صلاحيات المعلم
+    let filteredStudents = students;
+
+    if (userRole !== 'admin') {
+        filteredStudents = students.filter(s => {
+            // دمج الصف والشعبة كما هي في ملفك: "الخامس" + "-" + "1" = "الخامس-1"
+            const classKey = `${s.grade}-${s.section}`; 
+            return userClasses.includes(classKey);
         });
     }
 
-    function updateSections(gId, sId) {
-        const g = document.getElementById(gId).value;
-        const sEl = document.getElementById(sId); 
-        const currentVal = sEl.value;
-        sEl.innerHTML = '<option value="">الشعبة</option>'; 
-        if(!g) return;
+    // استخراج الصفوف الفريدة (الخامس، السادس...) من القائمة المفلترة
+    const grades = [...new Set(filteredStudents.map(s => s.grade))];
+    
+    // تحديث القوائم المنسدلة في الصفحة
+    ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
+        const el = document.getElementById(id); 
+        if(!el) return;
+        el.innerHTML = '<option value="">اختر الصف</option>';
+        grades.forEach(g => {
+            el.innerHTML += `<option value="${g}">${g}</option>`;
+        });
+    });
+}
 
-        const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => String(s.section)))].sort();
-        sections.forEach(s => sEl.innerHTML += `<option value="${s}">${s}</option>`);
-        if (Array.from(sEl.options).some(o => o.value === currentVal)) sEl.value = currentVal;
+   function updateSections(gId, sId) {
+    const selectedGrade = document.getElementById(gId).value;
+    const sEl = document.getElementById(sId);
+    const userRole = sessionStorage.getItem('userRole');
+    const userClasses = JSON.parse(sessionStorage.getItem('userClasses') || "[]");
+
+    sEl.innerHTML = '<option value="">الشعبة</option>'; 
+    if(!selectedGrade) return;
+
+    // جلب الشعب المتوفرة لهذا الصف
+    let sections = [...new Set(students.filter(s => s.grade === selectedGrade).map(s => s.section))];
+
+    // إذا كان المستخدم معلماً، نظهر له الشعب المخصصة له فقط في هذا الصف
+    if (userRole !== 'admin') {
+        sections = sections.filter(sec => {
+            const classKey = `${selectedGrade}-${sec}`;
+            return userClasses.includes(classKey);
+        });
     }
+
+    // ترتيب الشعب تصاعدياً وإضافتها للقائمة
+    sections.sort((a, b) => a - b).forEach(s => {
+        sEl.innerHTML += `<option value="${s}">${s}</option>`;
+    });
+}
 
     function updateStudents() {
         const g = document.getElementById('mainGradeSelect').value;
