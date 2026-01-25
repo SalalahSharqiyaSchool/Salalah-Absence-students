@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/rest";
 export default async function handler(req, res) {
     const octokit = new Octokit({ auth: process.env.GH_TOKEN });
     const [owner, repo] = process.env.GH_REPO.split('/');
-    const path = 'attendance_history.json'; // اسم ملف السجل
+    const path = 'data/attendance_history.json'; // اسم ملف السجل
 
     try {
         const { data } = await octokit.repos.getContent({ owner, repo, path });
