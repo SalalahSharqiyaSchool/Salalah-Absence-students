@@ -236,7 +236,6 @@
         .section { display: none; }
         .section.active { display: block; }
 
-        /* تنسيقات الطباعة الرسمية */
         #printHeader, .footer-stamp { display: none; }
 
         @media print {
@@ -484,18 +483,18 @@
     </div>
 
     <script>
-    // --- 1. المتغيرات والتهيئة ---
+   
     let students = [];
     let history = []; 
     let currentBatch = []; 
     let deleteTargetName = "";
 
-    // التحقق من تسجيل الدخول
+     
     if (sessionStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = 'index.html';
     }
 
-    // --- 2. أدوات الأمان والوقت ---
+   
     function logout() {
         sessionStorage.clear();
         window.location.href = 'index.html';
@@ -510,7 +509,7 @@
         const clockEl = document.getElementById('liveClock');
         if(clockEl) clockEl.innerHTML = `${dayName} | ${dateStr}`;
         
-        // تعيين تاريخ اليوم كقيمة افتراضية لحقل التاريخ
+       
         const todayInput = new Date().toISOString().split('T')[0];
         if(document.getElementById('absentDate')) {
             document.getElementById('absentDate').value = todayInput;
@@ -523,8 +522,8 @@
         return days[new Date(dateString).getDay()];
     }
 
-    // ⭐ دالة مفتاح الأمان (يجب أن تتطابق مع المتوقع في السيرفر)
-   // ⭐ دالة مفتاح الأمان (تم تحديثها لتطابق MySecret@2026!#)
+   
+   
     function getSecureKey() {
     return "MySecret@2026!#";
 }
@@ -532,24 +531,24 @@
 
 
 
-    // --- 3. دوال الاتصال بالسيرفر (Load & Sync) ---
+   
 
-    // دالة تحميل البيانات
+   
   async function loadData() {
         const tName = sessionStorage.getItem('teacherName');
         const userRole = sessionStorage.getItem('userRole');
 
-        // تحديث اسم المعلم في الهيدر
+        
         if(tName && document.getElementById('displayTeacherName')) {
             document.getElementById('displayTeacherName').innerText = tName + (userRole === 'admin' ? ' (مدير)' : '');
         }
 
-        // إظهار رسالة جاري التحميل (اختياري)
+        
         console.log("جاري جلب البيانات من السيرفر...");
         
         try {
-            // 1. جلب قائمة الطلاب من الـ API الآمن
-            // نستخدم ?v= لضمان عدم استرجاع بيانات قديمة من ذاكرة المتصفح (Cache)
+            
+          
             let response = await fetch('/api/get-students?v=' + Date.now()); 
             if (response.ok) {
                 students = await response.json();
@@ -558,30 +557,30 @@
                 throw new Error("فشل في الوصول لمسار الطلاب");
             }
 
-            // 2. جلب سجل الغياب من الـ API الآمن
+        
             let historyResponse = await fetch('/api/get-history?v=' + Date.now());
             if (historyResponse.ok) {
                 history = await historyResponse.json();
                 console.log("تم تحميل سجل الغياب بنجاح");
             } else {
-                history = []; // إذا لم يوجد سجل سابق (أول مرة تشغيل)
+                history = [];  
             }
             
-            // 3. تهيئة القوائم المنسدلة بناءً على البيانات المستلمة
+            
             initGrades();
             
         } catch(e) { 
             console.error("خطأ أثناء تحميل البيانات:", e);
-            // تنبيه المستخدم في حال وجود خطأ في الاتصال
+            
             if(typeof showCustomAlert === "function") {
                 showCustomAlert("فشل الاتصال بقاعدة البيانات. تأكد من إعدادات Vercel", "error");
             }
-            initGrades(); // لضمان بقاء الواجهة قابلة للاستخدام
+            initGrades(); 
         }
     }
-    // --- 4. العمليات الأساسية (Add, Edit, Delete, Save) ---
+  
 
-    // رصد الغياب اليومي (يستخدم save-attendance.js)
+  
     async function saveData() {
         if(!currentBatch.length) return showCustomAlert("لم يتم اختيار أي طالب!", "error");
         
@@ -591,7 +590,7 @@
         const g = document.getElementById('mainGradeSelect').value;
         const s = document.getElementById('mainSectionSelect').value;
         
-        // تجهيز البيانات
+         
         const entries = currentBatch.map(b => ({ 
             name: b.name, 
             date: date, 
@@ -600,21 +599,21 @@
         }));
 
         try {
-            // إرسال البيانات إلى save-attendance.js
+           
             const res = await fetch('/api/save-attendance', { 
                 method:'POST', 
                 headers:{
                     'Content-Type':'application/json',
-                    'x-app-secret': getSecureKey() // المصادقة
+                    'x-app-secret': getSecureKey()  
                 }, 
-                body:JSON.stringify(entries) // إرسال مصفوفة للإضافة (Append)
+                body:JSON.stringify(entries) 
             });
 
             if(res.ok) { 
-                // تحديث النسخة المحلية
+                 
                 history.push(...entries);
                 currentBatch = []; 
-                document.getElementById('selectedList').innerHTML = ''; // تفريغ الواجهة
+                document.getElementById('selectedList').innerHTML = '';  
                 showSuccess("تم حفظ الغياب بنجاح"); 
             } else {
                 const errData = await res.json();
@@ -626,7 +625,7 @@
         }
     }
 
-    // إضافة طالب جديد (يستخدم update-students.js)
+  
   async function addNewStudent() {
     const n = document.getElementById('newName').value.trim();
     const p = document.getElementById('newPhone').value.trim();
@@ -637,12 +636,12 @@
         return showCustomAlert("يرجى إكمال جميع الحقول", "error");
     }
 
-    // إضافة الطالب
+     
     students.push({
         name: n,
         phone: p,
-        grade: g,        // مثال: "الخامس"
-        section: s       // مثال: "1"
+        grade: g,        
+        section: s       
     });
 
     try {
@@ -673,7 +672,7 @@
 }
 
 
-    // تحديث بيانات الطالب (يستخدم update-students.js)
+   
     async function submitStudentEdit() {
     const oldName = document.getElementById('editOldName').value;
     const newName = document.getElementById('editNameInput').value.trim();
@@ -687,14 +686,14 @@
     const backupStudents = JSON.parse(JSON.stringify(students));
     const backupHistory = JSON.parse(JSON.stringify(history));
 
-    // تحديث الطلاب
+   
     students = students.map(s =>
         s.name === oldName
             ? { ...s, name: newName, section: newSection, phone: newPhone }
             : s
     );
 
-    // تحديث سجل الغياب إذا تغيّر الاسم
+    
     history = history.map(h =>
         h.name === oldName
             ? { ...h, name: newName }
@@ -702,7 +701,7 @@
     );
 
     try {
-        // تحديث ملف الطلاب
+       
         const resStudents = await fetch('/api/update-students', {
             method: 'POST',
             headers: {
@@ -712,7 +711,7 @@
             body: JSON.stringify(students)
         });
 
-        // تحديث سجل الغياب
+       
         const resHistory = await fetch('/api/save-attendance-full', {
             method: 'POST',
             headers: {
@@ -737,7 +736,7 @@
 }
 
 
-    // حذف طالب نهائياً (يتطلب تحديث ملفين)
+   
     function showDeleteModal(name) {
         deleteTargetName = name;
         document.getElementById('deleteStudentName').innerText = name;
@@ -747,12 +746,12 @@
             const backupStudents = JSON.parse(JSON.stringify(students));
             const backupHistory = JSON.parse(JSON.stringify(history));
 
-            // الحذف المحلي
+            
             students = students.filter(s => s.name !== deleteTargetName);
             history = history.filter(h => h.name !== deleteTargetName);
 
             try {
-                // 1. تحديث قائمة الطلاب (update-students.js)
+              
                 const resStudents = await fetch('/api/update-students', { 
                     method: 'POST', 
                     headers: { 
@@ -762,8 +761,8 @@
                     body: JSON.stringify(students) 
                 });
 
-                // 2. تحديث سجل الغياب (save-attendance-full.js)
-                // نستخدم save-attendance-full لأنه يسمح باستبدال الملف بالكامل
+              
+               
                 const resHistory = await fetch('/api/save-attendance-full', { 
                     method: 'POST', 
                     headers: { 
@@ -789,16 +788,16 @@
         };
     }
 
-    // حذف سجل غياب يوم محدد (يستخدم save-attendance-full.js)
+    
     async function deleteAttendanceRecord(name, date) {
         showConfirmDialog(`هل أنت متأكد من حذف غياب الطالب (${name}) بتاريخ ${date}؟`, async function() {
             const backupHistory = JSON.parse(JSON.stringify(history));
             
-            // الحذف من المصفوفة المحلية
+           
             history = history.filter(h => !(h.name === name && h.date === date));
 
             try {
-                // إرسال السجل الكامل المعدل لاستبدال الملف القديم
+                
                 const res = await fetch('/api/save-attendance-full', { 
                     method: 'POST', 
                     headers: { 
@@ -809,40 +808,40 @@
                 });
 
                 if (res.ok) {
-                    generateReport(); // إعادة رسم التقرير
+                    generateReport();  
                     showSuccess("تم حذف السجل بنجاح");
                 } else {
                     throw new Error("Server Error");
                 }
             } catch (e) {
-                history = backupHistory; // تراجع
+                history = backupHistory;  
                 showCustomAlert("فشل الاتصال بالخادم", "error");
             }
         });
     }
 
-    // --- 5. دوال الواجهة المساعدة (UI Helpers) ---
+   
     
    function initGrades() {
     const userRole = sessionStorage.getItem('userRole');
     const userClassesRaw = sessionStorage.getItem('userClasses');
     const userClasses = userClassesRaw ? JSON.parse(userClassesRaw) : [];
 
-    // سنقوم بتصفية قائمة الطلاب بناءً على صلاحيات المعلم
+     
     let filteredStudents = students;
 
     if (userRole !== 'admin') {
         filteredStudents = students.filter(s => {
-            // دمج الصف والشعبة كما هي في ملفك: "الخامس" + "-" + "1" = "الخامس-1"
+             
             const classKey = `${s.grade}-${s.section}`; 
             return userClasses.includes(classKey);
         });
     }
 
-    // استخراج الصفوف الفريدة (الخامس، السادس...) من القائمة المفلترة
+   
     const grades = [...new Set(filteredStudents.map(s => s.grade))];
     
-    // تحديث القوائم المنسدلة في الصفحة
+     
     ['mainGradeSelect', 'repGradeSelect', 'manageGradeSelect'].forEach(id => {
         const el = document.getElementById(id); 
         if(!el) return;
@@ -862,10 +861,10 @@
     sEl.innerHTML = '<option value="">الشعبة</option>'; 
     if(!selectedGrade) return;
 
-    // جلب الشعب المتوفرة لهذا الصف
+     
     let sections = [...new Set(students.filter(s => s.grade === selectedGrade).map(s => s.section))];
 
-    // إذا كان المستخدم معلماً، نظهر له الشعب المخصصة له فقط في هذا الصف
+  
     if (userRole !== 'admin') {
         sections = sections.filter(sec => {
             const classKey = `${selectedGrade}-${sec}`;
@@ -873,7 +872,7 @@
         });
     }
 
-    // ترتيب الشعب تصاعدياً وإضافتها للقائمة
+    
     sections.sort((a, b) => a - b).forEach(s => {
         sEl.innerHTML += `<option value="${s}">${s}</option>`;
     });
@@ -907,7 +906,7 @@
             phone: d.options[d.selectedIndex].getAttribute('data-phone') 
         });
         renderBatch(); 
-        d.selectedIndex = 0; // إعادة تعيين القائمة
+        d.selectedIndex = 0;  
     }
 
     function renderBatch() {
@@ -944,7 +943,7 @@
         window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
     }
 
-    // --- التقارير ---
+   
     function generateReport() {
         const mode = document.getElementById('reportMode').value;
         const start = document.getElementById('repDateStart').value;
@@ -988,7 +987,7 @@
             if (data.length === 0) html += '<p style="text-align:center; padding:10px;">لا توجد غيابات مسجلة في هذه الفترة.</p>';
         
         } else {
-            // تقرير الصف
+            
             const g = document.getElementById('repGradeSelect').value;
             const s = document.getElementById('repSectionSelect').value;
             
@@ -1000,7 +999,7 @@
             document.getElementById('dynamicTitlePrint').innerText = "كشف غياب صف مجمع";
             infoPrint = `<b>الصف:</b> ${g} / <b>الشعبة:</b> ${s} <br> <b>الفترة:</b> من ${start} إلى ${end}`;
             
-            // جلب جميع طلاب الصف (حتى من لم يغب)
+           
             const classStudents = students.filter(st => String(st.grade) === g && String(st.section) === s);
             
             classStudents.forEach(st => {
@@ -1050,7 +1049,7 @@
         window.print();
     }
 
-    // --- إدارة القوائم ---
+   
     function renderManagerList() {
         const g = document.getElementById('manageGradeSelect').value;
         const s = document.getElementById('manageSectionSelect').value;
@@ -1089,7 +1088,7 @@ document.getElementById('editModal').style.display = 'flex';
 
     }
 
-    // --- النوافذ المنبثقة ---
+  
     function showSuccess(msg) { 
         document.getElementById('successMsg').innerText = msg;
         document.getElementById('successModal').style.display = 'flex'; 
@@ -1134,7 +1133,7 @@ document.getElementById('editModal').style.display = 'flex';
         document.getElementById('confirmMsgContent').innerText = msg;
         document.getElementById('confirmActionModal').style.display = 'flex';
         
-        // إزالة الأحداث السابقة لتجنب التكرار
+        
         const yesBtn = document.getElementById('btnConfirmYes');
         const newBtn = yesBtn.cloneNode(true);
         yesBtn.parentNode.replaceChild(newBtn, yesBtn);
@@ -1148,7 +1147,7 @@ document.getElementById('editModal').style.display = 'flex';
         document.getElementById('confirmActionModal').style.display = 'none';
     }
 
-    // بدء التطبيق عند تحميل الصفحة
+    
     window.onload = loadData;
     </script>
 </body>
