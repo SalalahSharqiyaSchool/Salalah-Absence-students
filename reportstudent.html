@@ -17,17 +17,20 @@
 *{box-sizing:border-box}
 body{ font-family:'Cairo',sans-serif; background:var(--bg); margin:0; padding:10px; display:flex; justify-content:center; }
 
+/* إطار الصفحة الخارجي */
 .page-border{ max-width:650px; width:100%; padding:5px; background:var(--gold-gradient); border-radius:30px; }
 .parent-container{ background:var(--bg); border-radius:26px; padding:20px 15px; }
 
-/* تنسيق الواجهة */
+/* الرأس الرسمي في الموقع */
 .official-header{ text-align:center; margin-bottom:20px; border-bottom:1px solid rgba(212,175,55,.2); padding-bottom:15px; }
 .official-header p{ margin:2px 0; font-size:.85rem; font-weight:700; }
 .header{ text-align:center; margin-bottom:25px; }
 .header i{ font-size:2.5rem; color:var(--accent); }
 
+/* بطاقة البحث */
 .search-card{ background:#fff; padding:25px 20px; border-radius:24px; box-shadow:0 10px 25px rgba(0,0,0,0.05); }
 input{ width:100%; padding:16px; font-size:1.2rem; border-radius:16px; border:2px solid #e2e8f0; text-align:center; margin-bottom:20px; outline:none; }
+input:focus{ border-color:var(--accent); }
 
 .btn{ width:100%; padding:16px; border:none; border-radius:16px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; }
 .btn-search{ background:var(--primary); color:var(--accent); }
@@ -35,94 +38,99 @@ input{ width:100%; padding:16px; font-size:1.2rem; border-radius:16px; border:2p
 
 /* إحصائيات الغياب */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-.stat-card { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; }
+.stat-card { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; border-bottom: 3px solid var(--accent); }
 .stat-card span { display: block; font-size: 1.6rem; font-weight: 900; color: var(--primary); }
 .stat-card label { font-size: 0.75rem; color: #64748b; }
 
-/* نظام القوائم المنسدلة */
+/* نظام القوائم المنسدلة (الأكورديون) */
 .month-group { margin-bottom: 10px; border-radius: 12px; overflow: hidden; }
 .month-divider { 
     background: var(--primary); color: white; padding: 15px; 
     display: flex; justify-content: space-between; align-items: center; 
     cursor: pointer; transition: 0.3s;
 }
-.month-divider:hover { background: #1e293b; }
 .table-content { 
-    max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0, 1, 0, 1); 
+    max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; 
     background: #fff; border: 1px solid #e2e8f0; border-top: none; 
 }
-.month-group.active .table-content { max-height: 1000px; transition: max-height 1s ease-in; }
-.month-group.active .month-divider { border-radius: 12px 12px 0 0; background: var(--accent); color: var(--primary); }
+.month-group.active .table-content { max-height: 1000px; }
+.month-group.active .month-divider { background: var(--accent); color: var(--primary); font-weight: 900; }
 .arrow { transition: 0.3s; }
 .month-group.active .arrow { transform: rotate(180deg); }
 
 .table-container { padding: 10px; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
-th { background: #f1f5f9; color: var(--primary); padding: 10px; font-size: 0.8rem; }
+th { background: #f1f5f9; color: var(--primary); padding: 10px; font-size: 0.8rem; border-bottom: 2px solid #e2e8f0; }
 td { padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
 
-/* بطاقة المصمم المنسقة */
+/* بطاقة المصمم المحدثة */
 .designer-card {
     margin-top: 25px;
     background: var(--dark-card);
-    padding: 15px 20px;
-    border-radius: 18px;
+    padding: 20px;
+    border-radius: 20px;
     color: white;
     text-align: center;
-    border: 1px solid rgba(212,175,55,0.3);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid rgba(212,175,55,0.4);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
-.designer-card b { color: var(--accent); text-shadow: 0 0 5px rgba(212,175,55,0.2); }
+.designer-card b { color: var(--accent); font-weight: 900; font-size: 1.1rem; }
 
-/* تنسيق الطباعة المحسن */
-#printHeader, #printFooter, .warning-box { display: none; }
+/* ------------------------------------------------ */
+/* إعدادات الطباعة الصارمة (لضمان صفحة واحدة) */
+/* ------------------------------------------------ */
+#printHeader, #printFooter { display: none; }
 
 @media print {
-    @page { margin: 1cm; }
+    @page { margin: 0.4cm; size: auto; }
+    body { background: white !important; padding: 0; }
     .no-print { display: none !important; }
+    .page-border { background: none !important; padding: 0 !important; }
+    .parent-container { background: white !important; padding: 0 !important; width: 100%; }
     
-    #printHeader { display: block !important; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-    
-    /* منع كسر الصفحة بين الجدول والتوقيع */
-    .month-group, .warning-box, #printFooter { page-break-inside: avoid; }
+    #printHeader { display: block !important; text-align: center; border-bottom: 2px solid #000; margin-bottom: 15px; line-height: 1.1; }
+    #printHeader h2 { margin: 5px 0; font-size: 1.4rem; }
+
+    .table-content { max-height: none !important; display: block !important; overflow: visible !important; }
+    .month-group { page-break-inside: avoid; margin-bottom: 5px; }
     
     #printFooter { 
-        display: flex !important; 
-        justify-content: space-between; 
-        margin-top: 30px; 
+        display: block !important; 
+        page-break-inside: avoid; 
+        margin-top: 10px; 
+        border-top: 1px solid #000; 
         padding-top: 10px;
     }
+    .footer-cols { display: flex; justify-content: space-between; text-align: center; }
     
-    .table-content { max-height: none !important; display: block !important; }
-    .warning-box { 
+    .warning-box-print { 
         display: block !important; 
         text-align: center; 
-        color: #d11; 
-        padding: 10px; 
+        color: #000; 
         border: 1px dashed #000; 
-        margin: 20px 0; 
-        font-size: 0.75rem; 
+        padding: 4px; 
+        margin-bottom: 10px; 
+        font-size: 9pt; 
         font-weight: bold;
     }
-    
-    .month-divider { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #000; margin-top: 15px; }
-    th, td { border: 1px solid #000; }
-    .page-border { background: none; padding: 0; border-radius: 0; }
-    .parent-container { background: white; padding: 0; }
+
+    table { font-size: 9pt; }
+    th, td { border: 1px solid #000 !important; padding: 3px !important; }
+    .month-divider { background: #eee !important; color: #000 !important; border: 1px solid #000 !important; padding: 4px !important; font-size: 10pt; }
 }
 </style>
 </head>
 <body>
 
-<div class="page-border" id="mainBorder">
+<div class="page-border">
 <div class="parent-container">
 
     <div id="printHeader">
         <p>سلطنة عمان | وزارة التربية والتعليم</p>
         <p>المديرية العامة للتربية والتعليم بمحافظة ظفار</p>
-        <h2 style="margin:10px 0;">مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</h2>
-        <p>تقرير سجل غياب الطالب التفصيلي</p>
-        <small id="reportDateLabel"></small>
+        <h2>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</h2>
+        <p style="text-decoration: underline; font-weight: bold;">تقرير إحصاء غياب الطالب للفصل الدراسي</p>
+        <small id="reportDate"></small>
     </div>
 
     <div class="official-header no-print">
@@ -138,102 +146,107 @@ td { padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9; font-s
     <div class="search-card">
         <div class="no-print">
             <label>رقم الهاتف المسجل</label>
-            <input type="tel" id="phoneInput" placeholder="أدخل رقم الهاتف" maxlength="11">
+            <input type="tel" id="phoneInput" placeholder="أدخل رقم الهاتف المعتمد" maxlength="12">
             <button class="btn btn-search" onclick="searchAttendance()">
-                <i class="fas fa-search"></i> استعلام عن التقرير
+                <i class="fas fa-search"></i> استخراج التقرير
             </button>
         </div>
 
-        <div id="resultArea" style="display:none; margin-top:25px;">
+        <div id="resultArea" style="display:none; margin-top:20px;">
             <div id="studentData" class="student-info" style="background:#f8fafc; padding:15px; border-radius:15px; border-right:5px solid var(--accent); margin-bottom:15px;"></div>
 
             <div class="stats-grid no-print">
-                <div class="stat-card"> <span id="totalAbsence">0</span> <label>إجمالي الغياب</label> </div>
-                <div class="stat-card"> <span id="monthAbsence">0</span> <label>غياب الشهر الحالي</label> </div>
+                <div class="stat-card"> <span id="totalAbs">0</span> <label>إجمالي الغياب</label> </div>
+                <div class="stat-card"> <span id="monthAbs">0</span> <label>خلال هذا الشهر</label> </div>
             </div>
 
             <div id="attendanceTimeline"></div>
 
-            <div class="warning-box">
-                تنبيه: هذه نسخة إلكترونية مستخرجة من النظام الرقمي للمدرسة ولا تعتبر مستنداً رسمياً دون ختم وتوقيع الإدارة.
-            </div>
-
             <div id="printFooter">
-                <div style="text-align: center;">
-                    <p>يعتمد / مدير المدرسة</p>
-                    <br>
-                    <p>................................</p>
+                <div class="warning-box-print">
+                    هذا التقرير مستخرج إلكترونياً ولا يعتد به رسمياً دون توقيع وختم إدارة المدرسة.
                 </div>
-                <div style="text-align: center;">
-                    <p>ختم المدرسة الرسمي</p>
-                    <br>
-                    <div style="border: 1px solid #ccc; width: 80px; height: 80px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #eee;">الختم</div>
+                <div class="footer-cols">
+                    <div style="width: 45%;">
+                        <p style="font-weight: bold;">يعتمد / مدير المدرسة</p>
+                        <br>
+                        <p>................................</p>
+                    </div>
+                    <div style="width: 45%;">
+                        <p style="font-weight: bold;">ختم المدرسة الرسمي</p>
+                        <div style="border:1px solid #000; width:65px; height:65px; border-radius:50%; margin:5px auto; display:flex; align-items:center; justify-content:center; color:#ccc; font-size:8pt; border-style: dotted;">الختم</div>
+                    </div>
                 </div>
             </div>
 
-            <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
+            <button class="btn btn-print no-print" id="printBtn" onclick="doPrint()">
                 <i class="fas fa-print"></i> طباعة التقرير / PDF
             </button>
         </div>
 
-        <div id="notFound" class="no-print" style="display:none; text-align:center; padding:30px; color:#64748b;">
-            <i class="fas fa-search-minus" style="font-size:2rem;"></i>
-            <p>لم يتم العثور على بيانات</p>
+        <div id="notFound" class="no-print" style="display:none; text-align:center; padding:30px; border: 2px dashed #e2e8f0; border-radius: 20px;">
+            <i class="fas fa-user-times" style="color:#64748b; font-size:2.5rem; margin-bottom: 10px;"></i>
+            <p>عذراً، هذا الرقم غير مسجل في سجلات المدرسة</p>
         </div>
     </div>
 
     <div class="designer-card no-print">
-        <span style="font-size: 0.85rem; opacity: 0.9;">نظام إدارة الغياب الرقمي © 2026</span><br>
-        <span style="font-size: 1rem;">تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
+        <span style="opacity: 0.8; font-size: 0.8rem;">نظام إدارة الغياب الرقمي المطور © 2026</span><br>
+        <span style="font-size: 1.1rem;">تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
     </div>
 
 </div>
 </div>
 
 <script>
-function toggleMonth(element) {
-    element.parentElement.classList.toggle('active');
-}
+// وظيفة فتح وإغلاق الشهور
+function toggleMonth(el) { el.parentElement.classList.toggle('active'); }
 
-function preparePrint(){
-    document.getElementById('reportDateLabel').innerText = "تاريخ الاستخراج: " + new Date().toLocaleDateString('ar-OM');
+// وظيفة الطباعة
+function doPrint() {
+    document.getElementById('reportDate').innerText = "تاريخ الاستخراج: " + new Date().toLocaleDateString('ar-OM') + " - " + new Date().toLocaleTimeString('ar-OM');
     window.print();
 }
 
+// وظيفة البحث الأساسية
 async function searchAttendance(){
     let phone = document.getElementById('phoneInput').value.trim();
-    const resultArea = document.getElementById('resultArea');
-    const timeline = document.getElementById('attendanceTimeline');
-    const cleanInput = phone.replace(/\D/g,'').slice(-8);
+    // استخلاص آخر 8 أرقام للبحث المرن
+    const cleanPhone = phone.replace(/\D/g,'').slice(-8);
 
-    try{
-        const studentsRes = await fetch('/api/students');
-        const attendanceRes = await fetch('/api/attendance');
-        const students = await studentsRes.json();
-        const history = await attendanceRes.json();
+    if(cleanPhone.length < 8) { alert("يرجى إدخال رقم هاتف صحيح"); return; }
 
-        const student = students.find(s => String(s.phone).endsWith(cleanInput));
+    try {
+        const [sRes, aRes] = await Promise.all([fetch('api/student.js'), fetch('api/attendance.js')]);
+        
+        // ملاحظة: تأكد أن ملفات الـ JS تحتوي على JSON صافي [ { ... } ]
+        const students = await sRes.json();
+        const attendance = await aRes.json();
+
+        const student = students.find(s => String(s.phone).endsWith(cleanPhone));
 
         if(!student){
-            resultArea.style.display='none';
+            document.getElementById('resultArea').style.display='none';
             document.getElementById('notFound').style.display='block';
             return;
         }
 
         document.getElementById('notFound').style.display='none';
-        resultArea.style.display='block';
+        document.getElementById('resultArea').style.display='block';
         document.getElementById('printBtn').style.display='flex';
-        document.getElementById('studentData').innerHTML = `<b>اسم الطالب: ${student.name}</b><br><small>الصف الدراسي: ${student.grade} / ${student.section}</small>`;
+        document.getElementById('studentData').innerHTML = `<b>اسم الطالب: ${student.name}</b><br><span>الصف الدراسي: ${student.grade} / ${student.section}</span>`;
 
-        const records = history.filter(h => h.name === student.name).sort((a,b)=> new Date(b.date)-new Date(a.date));
+        const records = attendance.filter(h => h.name === student.name).sort((a,b)=>new Date(b.date)-new Date(a.date));
         
-        document.getElementById('totalAbsence').innerText = records.length;
+        // تحديث أرقام الإحصائيات
+        document.getElementById('totalAbs').innerText = records.length;
         const now = new Date();
-        document.getElementById('monthAbsence').innerText = records.filter(r => {
+        document.getElementById('monthAbs').innerText = records.filter(r => {
             const d = new Date(r.date);
             return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         }).length;
 
+        // تجميع الغياب حسب الشهر والسنة
         const groups = records.reduce((acc, r) => {
             const m = new Date(r.date).toLocaleDateString('ar-OM', { month: 'long', year: 'numeric' });
             if (!acc[m]) acc[m] = [];
@@ -241,15 +254,18 @@ async function searchAttendance(){
             return acc;
         }, {});
 
+        const timeline = document.getElementById('attendanceTimeline');
         timeline.innerHTML = "";
-        const months = Object.keys(groups);
-        months.forEach((month, index) => {
-            const isActive = index === 0 ? 'active' : '';
+        
+        const monthNames = Object.keys(groups);
+        monthNames.forEach((month, idx) => {
+            // الشهر الأول (الأحدث) يفتح تلقائياً
+            const isActive = idx === 0 ? 'active' : '';
             timeline.innerHTML += `
                 <div class="month-group ${isActive}">
                     <div class="month-divider" onclick="toggleMonth(this)">
                         <span><i class="far fa-calendar-alt"></i> ${month}</span>
-                        <span><small>(${groups[month].length} أيام) </small><i class="fas fa-chevron-down arrow"></i></span>
+                        <span><small>(${groups[month].length} أيام غياب) </small><i class="fas fa-chevron-down arrow"></i></span>
                     </div>
                     <div class="table-content">
                         <div class="table-container">
@@ -269,10 +285,13 @@ async function searchAttendance(){
                     </div>
                 </div>`;
         });
-        
-        if(records.length === 0) timeline.innerHTML = "<p style='text-align:center; padding:20px;'>لا يوجد غياب مسجل</p>";
 
-    } catch(err){ alert("خطأ في جلب البيانات"); }
+        if(records.length === 0) timeline.innerHTML = "<p style='text-align:center; padding:20px;'>لا يوجد سجل غياب مسجل لهذا الطالب</p>";
+
+    } catch(e) { 
+        alert("خطأ في الاتصال بقاعدة البيانات. تأكد من وجود ملفات api في نفس المسار.");
+        console.error(e); 
+    }
 }
 </script>
 
