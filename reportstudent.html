@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>استعلام ولي الأمر - مدرسة صلالة الشرقية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <script src="api/student.js"></script>
+    <script src="api/attendance.js"></script>
+
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #d4af37;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f5e0a3 50%, #b8860b 100%);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page-border {
+            max-width: 700px;
+            width: 100%;
+            padding: 10px;
+            background: var(--gold-gradient);
+            border-radius: 25px;
+        }
+
+        .parent-container {
+            background: var(--bg);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .official-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, .2);
+            padding-bottom: 15px;
+        }
+        .official-header p { margin: 3px 0; font-size: .85rem; font-weight: 700; }
+        .official-header .country { color: var(--accent); }
+
+        .header { text-align: center; margin-bottom: 25px; }
+        .header i { font-size: 2.5rem; color: var(--accent); }
+        .header h1 { margin: 10px 0 5px; font-size: 1.4rem; }
+
+        .search-card {
+            background: #fff;
+            padding: 25px 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+        }
+
+        label { font-weight: 700; margin-bottom: 10px; display: block; }
+        input {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-search { background: var(--primary); color: var(--accent); }
+        .btn-print { background: #334155; color: #fff; margin-top: 15px; display: none; }
+
+        .result-area { display: none; margin-top: 20px; }
+        .student-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border-right: 5px solid var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .table-container { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--primary); color: #fff; padding: 10px; font-size: .85rem; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: .9rem; }
+
+        .designer-card {
+            margin-top: 25px;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            padding: 12px 15px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            font-size: .85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-border">
+    <div class="parent-container">
+        <div class="official-header">
+            <p class="country">سلطنة عمان</p>
+            <p>وزارة التربية والتعليم</p>
+            <p>المديرية العامة للتربية والتعليم بمحافظة ظفار</p>
+        </div>
+
+        <div class="header">
+            <i class="fas fa-user-shield"></i>
+            <h1>بوابة ولي الأمر الرقمية</h1>
+            <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
+        </div>
+
+        <div class="search-card">
+            <label>رقم الهاتف المسجل</label>
+            <input type="tel" id="phoneInput" placeholder="أدخل رقم الهاتف" maxlength="11">
+            <button class="btn btn-search" onclick="searchAttendance()">
+                <i class="fas fa-search"></i> استعلام عن الغياب
+            </button>
+
+            <div id="resultArea" class="result-area">
+                <div id="studentData" class="student-info"></div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>م</th>
+                                <th>اليوم</th>
+                                <th>التاريخ</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <button class="btn btn-print" id="printBtn" onclick="preparePrint()">
+                    <i class="fas fa-print"></i> طباعة التقرير / PDF
+                </button>
+            </div>
+
+            <div id="notFound" style="display:none; text-align:center; padding:20px; color:#64748b;">
+                <i class="fas fa-search-minus" style="font-size:2rem;"></i>
+                <p>عذراً، لم يتم العثور على بيانات لهذا الرقم</p>
+            </div>
+        </div>
+
+        <div class="designer-card">
+            <span>نظام إدارة الغياب الرقمي © 2026</span><br>
+            <span>تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
+        </div>
+    </div>
+</div>
+
+<script>
+function searchAttendance() {
+    const phone = document.getElementById('phoneInput').value.trim();
+    const resultArea = document.getElementById('resultArea');
+    const notFound = document.getElementById('notFound');
+    const tableBody = document.getElementById('tableBody');
+    const studentData = document.getElementById('studentData');
+    const printBtn = document.getElementById('printBtn');
+
+    if (phone.length < 8) {
+        alert("يرجى إدخال رقم هاتف صحيح");
+        return;
+    }
+
+    // التحقق من وجود البيانات المستدعاة من ملفات الـ JS
+    // ملاحظة: افترضنا أن أسماء المتغيرات هي studentsData و attendanceData
+    if (typeof studentsData === 'undefined' || typeof attendanceData === 'undefined') {
+        alert("خطأ: لم يتم تحميل ملفات البيانات من مجلد api بشكل صحيح");
+        return;
+    }
+
+    // البحث عن الطالب
+    const student = studentsData.find(s => {
+        const sPhone = String(s.phone).replace(/\D/g, '');
+        const inputPhone = phone.replace(/\D/g, '');
+        return sPhone === inputPhone || sPhone.endsWith(inputPhone);
+    });
+
+    if (!student) {
+        resultArea.style.display = 'none';
+        notFound.style.display = 'block';
+        return;
+    }
+
+    // عرض النتائج
+    notFound.style.display = 'none';
+    resultArea.style.display = 'block';
+    printBtn.style.display = 'flex';
+
+    studentData.innerHTML = `
+        <div style="font-size: 1.1rem; color: var(--primary);">
+            <i class="fas fa-user"></i> <b>${student.name}</b>
+        </div>
+        <div style="font-size: 0.9rem; color: var(--text-muted); margin-top:5px;">
+            <i class="fas fa-graduation-cap"></i> ${student.grade} / ${student.section}
+        </div>
+    `;
+
+    // تصفية الغياب
+    const records = attendanceData.filter(h => h.name === student.name)
+                                  .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    if (records.length > 0) {
+        tableBody.innerHTML = records.map((r, i) => `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${new Date(r.date).toLocaleDateString('ar-OM', { weekday: 'long' })}</td>
+                <td>${r.date}</td>
+                <td style="color:#e11d48; font-weight:bold">غياب</td>
+            </tr>
+        `).join('');
+    } else {
+        tableBody.innerHTML = `<tr><td colspan="4">لا يوجد غياب مسجل لهذا الطالب</td></tr>`;
+    }
+}
+
+function preparePrint() {
+    const content = document.getElementById('resultArea').innerHTML;
+    const studentName = document.querySelector('#studentData b').innerText;
+    const printWindow = window.open('', '', 'width=800,height=600');
+    
+    printWindow.document.write(`
+        <html lang="ar" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <title>تقرير غياب - ${studentName}</title>
+            <style>
+                body { font-family: 'Cairo', sans-serif; padding: 40px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #000; padding: 10px; text-align: center; }
+                th { background: #eee; }
+                .btn-print { display: none; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h2>وزارة التربية والتعليم - سلطنة عمان</h2>
+                <h3>مدرسة صلالة الشرقية (5-9)</h3>
+                <hr>
+                <h4>تقرير غياب رسمي للطالب</h4>
+            </div>
+            ${content}
+            <script>window.onload = function() { window.print(); window.close(); }<\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+</script>
+
+</body>
+</html>
