@@ -8,102 +8,191 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<script src="api/student.js"></script>
-<script src="api/attendance.js"></script>
-
 <style>
 :root{
-    --primary:#0f172a; --accent:#d4af37; --bg:#f1f5f9; --card:#ffffff;
-    --text-main:#1e293b; --text-muted:#64748b;
-    --gold-gradient:linear-gradient(135deg,#d4af37 0%,#f5e0a3 50%,#b8860b 100%);
+--primary:#0f172a;
+--accent:#d4af37;
+--bg:#f1f5f9;
+--card:#ffffff;
+--text-main:#1e293b;
+--text-muted:#64748b;
+--gold-gradient:linear-gradient(135deg,#d4af37 0%,#f5e0a3 50%,#b8860b 100%);
 }
 *{box-sizing:border-box}
-body{ font-family:'Cairo',sans-serif; background:var(--bg); margin:0; padding:10px; display:flex; justify-content:center; }
-
-.page-border{ max-width:650px; width:100%; padding:5px; background:var(--gold-gradient); border-radius:30px; }
-.parent-container{ background:var(--bg); border-radius:26px; padding:20px 15px; min-height:500px; }
-
-/* تنسيق العرض الرقمي */
-.official-header{ text-align:center; margin-bottom:20px; border-bottom:1px solid rgba(212,175,55,.2); padding-bottom:15px; }
-.official-header p{ margin:2px 0; font-size:.85rem; font-weight:700; }
+body{
+font-family:'Cairo',sans-serif;
+background:var(--bg);
+margin:0;
+padding:10px;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+}
+.page-border{
+max-width:650px;
+width:100%;
+padding:5px;
+background:var(--gold-gradient);
+border-radius:30px;
+}
+.parent-container{
+background:var(--bg);
+border-radius:26px;
+padding:20px 15px;
+}
+.official-header{
+text-align:center;
+margin-bottom:20px;
+border-bottom:1px solid rgba(212,175,55,.2);
+padding-bottom:15px;
+}
+.official-header p{
+margin:2px 0;
+font-size:.85rem;
+font-weight:700;
+}
 .official-header .country{color:var(--accent)}
 
-.header{text-align:center; margin-bottom:25px}
-.header i{font-size:2.5rem; color:var(--accent)}
-.header h1{margin:10px 0 5px; font-size:1.4rem}
+.header{text-align:center;margin-bottom:25px}
+.header i{font-size:2.5rem;color:var(--accent)}
+.header h1{margin:10px 0 5px;font-size:1.4rem}
 
-.search-card{ background:#fff; padding:25px 20px; border-radius:24px; box-shadow:0 10px 25px rgba(0,0,0,.05); }
-input{ width:100%; padding:16px; font-size:1.2rem; border-radius:16px; border:2px solid #e2e8f0; text-align:center; margin-bottom:20px; outline:none; }
-input:focus{ border-color:var(--accent); }
+.search-card{
+background:#fff;
+padding:25px 20px;
+border-radius:24px;
+box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+label{font-weight:700;margin-bottom:10px;display:block}
+input{
+width:100%;
+padding:16px;
+font-size:1.2rem;
+border-radius:16px;
+border:2px solid #e2e8f0;
+text-align:center;
+margin-bottom:20px;
+}
+.btn{
+width:100%;
+padding:16px;
+border:none;
+border-radius:16px;
+font-weight:800;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+}
+.btn-search{background:var(--primary);color:var(--accent)}
+.btn-print{background:#334155;color:#fff;margin-top:20px;display:none}
 
-.btn{ width:100%; padding:16px; border:none; border-radius:16px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:0.3s; }
-.btn-search{background:var(--primary); color:var(--accent)}
-.btn-print{background:#334155; color:#fff; margin-top:20px; display:none}
+.result-area{display:none;margin-top:25px}
+.student-info{
+background:#f8fafc;
+padding:18px;
+border-radius:16px;
+border-right:6px solid var(--accent);
+margin-bottom:20px;
+}
 
-/* إحصائيات الغياب */
+/* تحسين إحصائيات الغياب */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.stat-card { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; border-bottom: 3px solid var(--accent); }
-.stat-card span { display: block; font-size: 1.6rem; font-weight: 900; color: var(--primary); }
-.stat-card label { font-size: 0.75rem; color: var(--text-muted); }
+.stat-card { background: #fff; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; }
+.stat-card span { display: block; font-size: 1.5rem; font-weight: 900; color: var(--primary); }
+.stat-card label { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
 
-.month-divider { background: var(--primary); color: white; padding: 8px 15px; border-radius: 8px; margin: 20px 0 10px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+/* فواصل الشهور */
+.month-divider {
+    background: var(--primary);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    margin: 20px 0 10px;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+}
 
-.result-area{display:none; margin-top:25px; animation: fadeIn 0.5s;}
-@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+.table-container{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{background:var(--primary);color:#fff;padding:12px;font-size:.85rem}
+td{padding:12px;text-align:center;border-bottom:1px solid #f1f5f9}
 
-.student-info{ background:#f8fafc; padding:18px; border-radius:16px; border-right:6px solid var(--accent); margin-bottom:20px; }
+.no-data{text-align:center;color:#94a3b8;padding:30px}
 
-.table-container{overflow-x:auto; margin-bottom: 10px;}
-table{width:100%; border-collapse:collapse; background: white; border-radius: 8px; overflow: hidden;}
-th{background:#f1f5f9; color:var(--primary); padding:12px; font-size:.85rem; border-bottom: 2px solid #e2e8f0;}
-td{padding:12px; text-align:center; border-bottom:1px solid #f1f5f9; font-size: 0.9rem;}
+.designer-card{
+margin-top:25px;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+padding:15px 20px;
+border-radius:18px;
+color:white;
+text-align:center;
+}
 
-.designer-card{ margin-top:25px; background:linear-gradient(135deg,#0f172a,#1e293b); padding:15px 20px; border-radius:18px; color:white; text-align:center; }
+#printHeader, #printFooter { display: none; }
 
-/* إعدادات الطباعة */
-#printHeader, #printFooter, .warning-box { display: none; }
 @media print {
+    body { background: white; padding: 0; }
     .no-print { display: none !important; }
-    #printHeader { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-    #printFooter { display: flex !important; justify-content: space-between; margin-top: 40px; }
-    .warning-box { display: block !important; text-align: center; color: red; border: 1px dashed red; padding: 10px; margin: 15px 0; font-size: 0.8rem; }
+    .page-border { background: none; padding: 0; max-width: 100%; }
+    .parent-container { background: white; padding: 0; }
+    .search-card { box-shadow: none; padding: 0; }
+    
+    #printHeader {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+    }
+    #printHeader h2 { margin: 5px 0; font-size: 1.4rem; }
+    #printHeader p { margin: 2px 0; font-weight: bold; }
+    
+    .student-info { border: 1px solid #000; background: #f9f9f9 !important; -webkit-print-color-adjust: exact; }
     .month-divider { background: #eee !important; color: black !important; border: 1px solid #000; }
-    th { background: #eee !important; color: black !important; border: 1px solid #000; }
+    th { border: 1px solid #000; color: black !important; background: #eee !important; }
     td { border: 1px solid #000; }
-    .page-border { background: none; padding: 0; }
+
+    #printFooter { display: flex !important; justify-content: space-between; margin-top: 40px; padding-top: 20px; }
+    .warning-box { display: block !important; text-align: center; font-size: 0.8rem; color: red; margin-top: 20px; border: 1px dashed red; padding: 10px; }
 }
 </style>
 </head>
 <body>
 
-<div class="page-border">
+<div class="page-border" id="mainBorder">
 <div class="parent-container">
 
     <div id="printHeader">
-        <p>سلطنة عمان | وزارة التربية والتعليم</p>
+        <p>سلطنة عمان</p>
+        <p>وزارة التربية والتعليم</p>
         <p>المديرية العامة للتربية والتعليم بمحافظة ظفار</p>
-        <h2 style="margin:10px 0;">مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</h2>
-        <p>تقرير إحصائيات سجل الغياب للفصل الدراسي</p>
-        <small id="reportFullDate"></small>
+        <h2>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</h2>
+        <hr>
+        <p>تقرير سجل غياب الطالب المجمع</p>
+        <small id="reportDateLabel"></small>
     </div>
 
     <div class="official-header no-print">
         <p class="country">سلطنة عمان</p>
-        <p>وزارة التربية والتعليم</p>
+        <p>وزارة التعليم</p>
+        <p>المديرية العامة للتربية والتعليم بمحافظة ظفار</p>
     </div>
 
     <div class="header no-print">
         <i class="fas fa-user-shield"></i>
         <h1>بوابة ولي الأمر الرقمية</h1>
-        <p>مدرسة صلالة الشرقية (5-9)</p>
+        <p>مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</p>
     </div>
 
     <div class="search-card">
         <div class="no-print">
             <label>رقم الهاتف المسجل</label>
-            <input type="tel" id="phoneInput" placeholder="أدخل رقم الهاتف" maxlength="12">
+            <input type="tel" id="phoneInput" placeholder="أدخل رقم الهاتف" maxlength="11">
             <button class="btn btn-search" onclick="searchAttendance()">
-                <i class="fas fa-search"></i> استعلام عن التقرير
+                <i class="fas fa-search"></i> استعلام عن الغياب
             </button>
         </div>
 
@@ -112,19 +201,19 @@ td{padding:12px; text-align:center; border-bottom:1px solid #f1f5f9; font-size: 
 
             <div class="stats-grid no-print">
                 <div class="stat-card">
-                    <span id="totalAbsenceCount">0</span>
-                    <label>إجمالي الغياب</label>
+                    <span id="totalAbsence">0</span>
+                    <label>إجمالي أيام الغياب</label>
                 </div>
                 <div class="stat-card">
-                    <span id="currentMonthCount">0</span>
+                    <span id="monthAbsence">0</span>
                     <label>غياب الشهر الحالي</label>
                 </div>
             </div>
 
             <div id="attendanceTimeline"></div>
 
-            <div class="warning-box">
-                تنبيه: هذه نسخة إلكترونية مستخرجة من النظام الرقمي للمدرسة ولا تعتبر مستنداً رسمياً دون ختم وتوقيع الإدارة.
+            <div class="warning-box" id="printWarning" style="display:none">
+                تنبيه: هذه نسخة إلكترونية مستخرجة من النظام الرقمي للمدرسة ولا تعتبر مستنداً رسمياً يعتد به دون ختم وتوقيع الإدارة.
             </div>
 
             <div id="printFooter">
@@ -132,45 +221,55 @@ td{padding:12px; text-align:center; border-bottom:1px solid #f1f5f9; font-size: 
                 <div><p>ختم المدرسة الرسمي</p><br><span>( )</span></div>
             </div>
 
-            <button class="btn btn-print no-print" id="printBtn" onclick="window.print()">
+            <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
                 <i class="fas fa-print"></i> طباعة التقرير / PDF
             </button>
         </div>
 
         <div id="notFound" class="no-data no-print" style="display:none">
-            <i class="fas fa-search-minus" style="font-size:2rem;"></i>
-            <p>لم يتم العثور على بيانات لهذا الرقم</p>
+            <i class="fas fa-search-minus"></i>
+            <p>لم يتم العثور على بيانات</p>
         </div>
     </div>
 
     <div class="designer-card no-print">
         <span>نظام إدارة الغياب الرقمي © 2026</span><br>
-        <span>تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
+        <span class="designer-name-row">تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
     </div>
 
 </div>
 </div>
 
 <script>
-// تحديث التاريخ في رأس الطباعة
-document.getElementById('reportFullDate').innerText = "تاريخ الاستخراج: " + new Date().toLocaleDateString('ar-OM');
+function preparePrint(){
+    const now = new Date();
+    document.getElementById('reportDateLabel').innerText = "تاريخ استخراج التقرير: " + now.toLocaleDateString('ar-OM') + " " + now.toLocaleTimeString('ar-OM');
+    document.getElementById('printWarning').style.display = 'block';
+    window.print();
+    setTimeout(() => { document.getElementById('printWarning').style.display = 'none'; }, 1000);
+}
 
 async function searchAttendance(){
-    let phoneInput = document.getElementById('phoneInput').value.trim();
+    let phone = document.getElementById('phoneInput').value.trim();
     const resultArea = document.getElementById('resultArea');
     const notFound = document.getElementById('notFound');
     const timeline = document.getElementById('attendanceTimeline');
     const studentData = document.getElementById('studentData');
     const printBtn = document.getElementById('printBtn');
 
-    if(phoneInput.length < 8){ alert("يرجى إدخال رقم صحيح"); return; }
-    
-    // تنظيف المدخلات (آخر 8 أرقام)
-    const cleanInput = phoneInput.replace(/\D/g,'').slice(-8);
+    if(phone.length < 8){ alert("يرجى إدخال رقم هاتف صحيح"); return; }
 
-    try {
-        // البحث عن الطالب في الملف الخارجي studentsData
-        const student = studentsData.find(s => String(s.phone).replace(/\D/g,'').endsWith(cleanInput));
+    try{
+        const studentsRes = await fetch('/api/students');
+        const attendanceRes = await fetch('/api/attendance');
+        const students = await studentsRes.json();
+        const history = await attendanceRes.json();
+
+        const student = students.find(s => {
+            const sPhone = String(s.phone).replace(/\D/g,'');
+            const inputPhone = phone.replace(/\D/g,'');
+            return sPhone === inputPhone || sPhone.endsWith(inputPhone);
+        });
 
         if(!student){
             resultArea.style.display='none';
@@ -184,32 +283,29 @@ async function searchAttendance(){
 
         studentData.innerHTML = `<strong>الاسم: ${student.name}</strong><br><span>الصف الدراسي: ${student.grade} / ${student.section}</span>`;
 
-        // تصفية الغياب للطالب المختار من ملف attendanceData
-        const records = attendanceData.filter(h => h.name === student.name)
-                                      .sort((a,b) => new Date(b.date) - new Date(a.date));
+        const records = history.filter(h => h.name === student.name)
+                               .sort((a,b)=> new Date(b.date)-new Date(a.date));
 
-        // حساب الإحصائيات
-        document.getElementById('totalAbsenceCount').innerText = records.length;
-        const thisMonth = new Date().getMonth();
-        const thisMonthRecords = records.filter(r => new Date(r.date).getMonth() === thisMonth);
-        document.getElementById('currentMonthCount').innerText = thisMonthRecords.length;
+        // معالجة الإحصائيات
+        document.getElementById('totalAbsence').innerText = records.length;
+        const currentMonth = new Date().getMonth();
+        const monthCount = records.filter(r => new Date(r.date).getMonth() === currentMonth).length;
+        document.getElementById('monthAbsence').innerText = monthCount;
 
-        // تصنيف الغياب حسب الشهر
-        const groups = records.reduce((acc, record) => {
-            const date = new Date(record.date);
-            const monthName = date.toLocaleDateString('ar-OM', { month: 'long', year: 'numeric' });
-            if (!acc[monthName]) acc[monthName] = [];
-            acc[monthName].push(record);
+        // تصنيف البيانات حسب الشهر
+        const groups = records.reduce((acc, r) => {
+            const m = new Date(r.date).toLocaleDateString('ar-OM', { month: 'long', year: 'numeric' });
+            if (!acc[m]) acc[m] = [];
+            acc[m].push(r);
             return acc;
         }, {});
 
-        // إنشاء جداول الشهور
         timeline.innerHTML = "";
         for (const month in groups) {
             timeline.innerHTML += `
                 <div class="month-divider">
                     <span><i class="far fa-calendar-alt"></i> شهر: ${month}</span>
-                    <span>${groups[month].length} أيام غياب</span>
+                    <span>${groups[month].length} أيام</span>
                 </div>
                 <div class="table-container">
                     <table>
@@ -218,18 +314,19 @@ async function searchAttendance(){
                             ${groups[month].map((r, i) => `
                                 <tr>
                                     <td>${i+1}</td>
-                                    <td>${new Date(r.date).toLocaleDateString('ar-OM', {weekday:'long'})}</td>
+                                    <td>${new Date(r.date).toLocaleDateString('ar-OM',{weekday:'long'})}</td>
                                     <td>${r.date}</td>
-                                    <td style="color:#e11d48; font-weight:bold;">غياب</td>
+                                    <td style="color:#e11d48;font-weight:bold">غياب</td>
                                 </tr>`).join('')}
                         </tbody>
                     </table>
                 </div>`;
         }
-        if(records.length === 0) timeline.innerHTML = "<p style='text-align:center; padding:20px;'>لا يوجد سجل غياب لهذا الطالب</p>";
+        
+        if(records.length === 0) timeline.innerHTML = "<p class='no-data'>لا يوجد سجل غياب لهذا الطالب</p>";
 
-    } catch(err) {
-        alert("تأكد من ربط ملفات API بشكل صحيح");
+    } catch(err){
+        alert("حدث خطأ في جلب البيانات");
         console.error(err);
     }
 }
