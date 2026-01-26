@@ -345,6 +345,9 @@
     </section>
 
     <section id="manage-section" class="section">
+        <button onclick="refreshData()" class="btn-refresh" style="background: var(--edit); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 15px;">
+    <i class="fas fa-sync-alt"></i> تحديث البيانات الآن
+</button>
         <div class="card">
             <div class="card-title"><i class="fas fa-user-plus"></i> إضافة طالب جديد</div>
             <input type="text" id="newName" placeholder="الاسم الرباعي">
@@ -433,7 +436,29 @@
     let history = []; 
     let currentBatch = []; 
     let deleteTargetName = "";
+async function refreshData() {
+    try {
+        // إظهار رسالة تحميل بسيطة
+        const btn = document.querySelector('.btn-refresh');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...';
+        
+        // استدعاء دالة التحميل الموجودة أصلاً في كودك
+        await loadData(); 
+        
+        // إعادة تحديث الجدول بناءً على البيانات الجديدة
+        if (typeof renderAdminTable === "function") {
+            renderAdminTable();
+        }
 
+        btn.innerHTML = originalText;
+        showCustomAlert("تم تحديث البيانات بنجاح من السيرفر", "success");
+    } catch (error) {
+        showCustomAlert("فشل التحديث، يرجى التحقق من الاتصال", "error");
+    }
+}
+
+    
     function logout() {
         sessionStorage.clear();
         window.location.href = 'index.html';
@@ -982,7 +1007,11 @@ async function deleteAttendanceRecord(name, date) {
             closeConfirmModal();
         };
     }
-    
+    // تحديث البيانات تلقائياً بمجرد رجوع المعلم لتبويب الموقع
+window.addEventListener('focus', () => {
+    console.log("تمت العودة للصفحة.. جاري تحديث البيانات تلقائياً");
+    loadData(); // الدالة الموجودة في كودك لجلب البيانات
+});
 </script>
 </body>
 </html>
