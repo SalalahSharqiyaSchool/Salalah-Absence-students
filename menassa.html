@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة مدرسة صلالة الشرقية الرقمية</title>
+    <title>منصة مدرسة صلالة الشرقية | 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
             --primary: #0f172a;
             --accent: #d4af37;
-            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.05);
             --gold-glow: rgba(212, 175, 55, 0.3);
         }
 
@@ -18,180 +18,184 @@
             font-family: 'Cairo', sans-serif;
             background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
             margin: 0; min-height: 100vh;
-            color: white; overflow-x: hidden;
-            display: flex; flex-direction: column;
+            color: white; display: flex; flex-direction: column;
         }
 
-        /* الهيدر */
-        .app-header {
+        /* تصميم الهيدر الرسمي */
+        .official-header {
             background: rgba(15, 23, 42, 0.9);
             border-bottom: 3px solid var(--accent);
-            padding: 15px 40px;
+            padding: 15px 30px;
             display: flex; justify-content: space-between; align-items: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); z-index: 1000;
         }
-        .school-info { display: flex; align-items: center; gap: 15px; }
-        .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); }
 
-        /* حاوية البطاقات */
-        .portal-container {
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .logo-img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--accent); background: white; }
+
+        /* حاوية البطاقات العائمة */
+        .portal-grid {
             flex: 1; display: flex; justify-content: center; align-items: center;
-            gap: 40px; padding: 40px; flex-wrap: wrap;
+            gap: 30px; padding: 40px; flex-wrap: wrap;
         }
 
-        /* تصميم البطاقة العائمة */
-        .main-card {
-            background: rgba(255, 255, 255, 0.05);
+        .portal-card {
+            background: var(--glass);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 30px;
-            width: 350px; padding: 40px 20px;
-            text-align: center; transition: 0.4s;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            position: relative; animation: float 6s ease-in-out infinite;
+            width: 350px; padding: 35px;
+            text-align: center; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            animation: floating 5s ease-in-out infinite;
         }
-        .main-card:nth-child(2) { animation-delay: 2s; }
-        .main-card:hover { transform: translateY(-15px); border-color: var(--accent); box-shadow: 0 20px 50px var(--gold-glow); }
+        .portal-card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 20px 40px var(--gold-glow); }
 
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        .icon-box { font-size: 4rem; color: var(--accent); margin-bottom: 20px; }
-        h2 { margin: 0 0 15px 0; font-weight: 900; }
-        p { color: #94a3b8; margin-bottom: 30px; }
+        .icon-circle { width: 80px; height: 80px; background: rgba(212, 175, 55, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2.5rem; color: var(--accent); }
+        
+        h2 { font-weight: 900; margin-bottom: 10px; }
+        p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px; }
 
-        /* الأزرار */
-        .btn-group { display: flex; flex-direction: column; gap: 12px; }
-        .btn {
-            background: rgba(255,255,255,0.1);
-            color: white; text-decoration: none;
-            padding: 15px; border-radius: 15px;
-            font-weight: 700; border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.3s; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+        /* الأزرار داخل البطاقات */
+        .nav-link {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            background: rgba(255,255,255,0.08); color: white;
+            padding: 14px; border-radius: 15px; margin-bottom: 10px;
+            text-decoration: none; font-weight: 700; transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.05); cursor: pointer;
         }
-        .btn:hover { background: var(--accent); color: var(--primary); }
-        .btn-primary { background: var(--accent); color: var(--primary); border: none; }
+        .nav-link:hover { background: var(--accent); color: var(--primary); }
+        .nav-link.admin-btn { background: var(--accent); color: var(--primary); }
 
-        /* نافذة تسجيل الدخول المنبثقة */
-        #loginOverlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
+        /* نافذة تسجيل الدخول */
+        .login-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
         }
-        .login-box {
-            background: var(--primary); padding: 30px; border-radius: 25px;
-            width: 90%; max-width: 400px; border: 2px solid var(--accent);
+        .login-card {
+            background: #1e293b; padding: 30px; border-radius: 25px;
+            width: 90%; max-width: 380px; border: 2px solid var(--accent);
+            text-align: center;
         }
-
         select, input {
-            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px;
-            border: 1px solid #334155; background: #1e293b; color: white; font-family: 'Cairo';
+            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px;
+            border: 1px solid #334155; background: #0f172a; color: white; font-family: 'Cairo'; box-sizing: border-box;
         }
 
-        .footer { padding: 15px; text-align: center; border-top: 1px solid #1e293b; font-size: 0.9rem; }
-        .designer { color: var(--accent); font-weight: 800; }
-
-        @media (max-width: 768px) { .portal-container { padding: 20px; } .main-card { width: 100%; } }
+        .footer { background: #000; color: #fff; padding: 15px; text-align: center; font-size: 0.85rem; border-top: 2px solid var(--accent); }
     </style>
 </head>
 <body>
 
-<header class="app-header">
-    <div class="school-info">
+<header class="official-header">
+    <div class="logo-section">
         <img src="logo.jpeg" class="logo-img" alt="Logo" onerror="this.src='https://via.placeholder.com/60'">
         <div>
-            <div style="font-weight: 900; color: var(--accent);">مدرسة صلالة الشرقية (5-9)</div>
-            <div style="font-size: 0.8rem; opacity: 0.8;">بوابة الخدمات الرقمية</div>
+            <div style="font-weight: 900; color: var(--accent); line-height: 1;">مدرسة صلالة الشرقية (5-9)</div>
+            <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 5px;">نظام الإشراف والتحليل الذكي</div>
         </div>
     </div>
-    <div class="date-now" id="currentDate"></div>
 </header>
 
-<main class="portal-container">
+<main class="portal-grid">
     
-    <div class="main-card">
-        <div class="icon-box"><i class="fas fa-user-graduate"></i></div>
+    <div class="portal-card">
+        <div class="icon-circle"><i class="fas fa-user-graduate"></i></div>
         <h2>ركن ولي الأمر</h2>
-        <p>خدمات تهم الطالب وولي الأمر للمتابعة والتحصيل العلمي</p>
-        <div class="btn-group">
-            <a href="https://external-grades-link.com" target="_blank" class="btn">
-                <i class="fas fa-chart-line"></i> تصفح درجات الطلاب
-            </a>
-            <a href="absence-report.html" class="btn">
-                <i class="fas fa-file-invoice"></i> تقارير الغياب
-            </a>
-        </div>
+        <p>متابعة درجات الطلاب وتقارير الغياب الدورية</p>
+        <a href="https://external-grades-link.com" target="_blank" class="nav-link">
+            <i class="fas fa-chart-bar"></i> تصفح درجات الطلاب
+        </a>
+        <a href="reports/absence-summary.html" class="nav-link">
+            <i class="fas fa-file-alt"></i> تقارير الغياب
+        </a>
     </div>
 
-    <div class="main-card">
-        <div class="icon-box"><i class="fas fa-user-shield"></i></div>
-        <h2>بوابة الهيئة الإدارية</h2>
-        <p>الأدوات الإشرافية والتحليلية المخصصة لإدارة المدرسة</p>
-        <div class="btn-group">
-            <a href="record-absence.html" class="btn">
-                <i class="fas fa-edit"></i> رصد الغياب اليومي
-            </a>
-            <button onclick="openLogin()" class="btn btn-primary">
-                <i class="fas fa-microscope"></i> منظومة تحليل الغياب
-            </button>
-        </div>
+    <div class="portal-card" style="animation-delay: 1s;">
+        <div class="icon-circle"><i class="fas fa-user-shield"></i></div>
+        <h2>بوابة الإدارة</h2>
+        <p>رصد الغياب اليومي وتحليل البيانات الإشرافية</p>
+        <button onclick="triggerLogin('record')" class="nav-link" style="width:100%">
+            <i class="fas fa-pen-nib"></i> رصد الغياب اليومي
+        </button>
+        <button onclick="triggerLogin('analyze')" class="nav-link admin-btn" style="width:100%">
+            <i class="fas fa-microscope"></i> منظومة التحليل الإشرافي
+        </button>
     </div>
 
 </main>
 
-<div id="loginOverlay">
-    <div class="login-box">
-        <h3 style="text-align:center; color: var(--accent);">تسجيل دخول المشرف</h3>
-        <select id="teacherSelect"><option value="">جاري التحميل...</option></select>
+<div class="login-overlay" id="loginModal">
+    <div class="login-card">
+        <h3 id="loginTitle" style="color: var(--accent); margin-bottom: 20px;">تسجيل الدخول</h3>
+        <select id="teacherSelect"><option value="">جاري تحميل القائمة...</option></select>
         <input type="password" id="passInput" placeholder="كلمة المرور">
-        <button onclick="checkLogin()" class="btn btn-primary" style="width:100%">دخول النظام</button>
-        <button onclick="closeLogin()" style="background:none; border:none; color:gray; width:100%; margin-top:10px; cursor:pointer;">إلغاء</button>
+        <button onclick="executeLogin()" class="nav-link admin-btn" style="width:100%; border:none;">دخول النظام</button>
+        <button onclick="closeModal()" style="background:none; border:none; color:#64748b; margin-top:15px; cursor:pointer;">إلغاء</button>
     </div>
 </div>
 
 <footer class="footer">
-    جميع الحقوق محفوظة &copy; 2026 | تصميم أ: <span class="designer">فيصل العريبي</span>
+    جميع الحقوق محفوظة &copy; 2026 | تصميم وتنفيذ أ: <b style="color:var(--accent)">فيصل العريبي</b>
 </footer>
 
 <script>
     let teachers = [];
+    let currentGoal = ''; // لتحديد الوجهة (رصد أم تحليل)
 
-    // جلب البيانات من السيرفر كما في كودك الأصلي
-    async function fetchTeachers() {
+    // جلب المعلمين باستخدام الـ API الخاص بك
+    async function loadTeachers() {
         try {
             const response = await fetch('/api/get-teachers', {
-                headers: { 'x-app-secret': 'MySecret@2026!#' }
+                headers: { 
+                    'x-app-secret': 'MySecret@2026!#' // تأكد أن هذا يطابق APP_SECRET_KEY في البيئة لديك
+                }
             });
+            if (!response.ok) throw new Error();
             teachers = await response.json();
+            
             const select = document.getElementById('teacherSelect');
             select.innerHTML = '<option value="">اختر الاسم...</option>';
             teachers.forEach(t => {
                 select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
             });
-        } catch (e) { console.error("Error loading teachers"); }
-    }
-
-    function openLogin() { document.getElementById('loginOverlay').style.display = 'flex'; }
-    function closeLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
-
-    function checkLogin() {
-        const name = document.getElementById('teacherSelect').value;
-        const pass = document.getElementById('passInput').value;
-
-        if (!name) { alert("اختر الاسم أولاً"); return; }
-
-        const user = teachers.find(t => t.name === name);
-        if (user && String(user.pass) === String(pass)) {
-            // تخزين الجلسة
-            sessionStorage.setItem('isLoggedIn', 'true');
-            sessionStorage.setItem('teacherName', name);
-            // الانتقال لصفحة التحليل
-            window.location.href = 'analysis.html'; 
-        } else {
-            alert("كلمة المرور خاطئة!");
+        } catch (err) {
+            document.getElementById('teacherSelect').innerHTML = '<option>خطأ في تحميل البيانات</option>';
         }
     }
 
-    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ar-OM');
-    window.onload = fetchTeachers;
+    function triggerLogin(goal) {
+        currentGoal = goal;
+        document.getElementById('loginTitle').innerText = goal === 'record' ? 'دخول رصد الغياب' : 'دخول منظومة التحليل';
+        document.getElementById('loginModal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+    function executeLogin() {
+        const name = document.getElementById('teacherSelect').value;
+        const pass = document.getElementById('passInput').value;
+        
+        const user = teachers.find(t => t.name === name);
+        
+        if (user && String(user.pass) === String(pass)) {
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('teacherName', name);
+            
+            // التوجيه بناءً على الزر الذي ضغط عليه المستخدم
+            if (currentGoal === 'record') {
+                window.location.href = 'school-absent.html';
+            } else {
+                window.location.href = 'analysis.html';
+            }
+        } else {
+            alert("فشل التحقق: الاسم أو كلمة المرور غير صحيحة");
+        }
+    }
+
+    window.onload = loadTeachers;
 </script>
 
 </body>
