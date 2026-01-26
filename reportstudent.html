@@ -12,6 +12,7 @@
 :root{
     --primary:#0f172a; --accent:#d4af37; --bg:#f1f5f9;
     --gold-gradient:linear-gradient(135deg,#d4af37 0%,#f5e0a3 50%,#b8860b 100%);
+    --dark-card:linear-gradient(135deg,#0f172a,#1e293b);
 }
 *{box-sizing:border-box}
 body{ font-family:'Cairo',sans-serif; background:var(--bg); margin:0; padding:10px; display:flex; justify-content:center; }
@@ -60,17 +61,54 @@ table { width: 100%; border-collapse: collapse; }
 th { background: #f1f5f9; color: var(--primary); padding: 10px; font-size: 0.8rem; }
 td { padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
 
-/* تنسيق الطباعة */
+/* بطاقة المصمم المنسقة */
+.designer-card {
+    margin-top: 25px;
+    background: var(--dark-card);
+    padding: 15px 20px;
+    border-radius: 18px;
+    color: white;
+    text-align: center;
+    border: 1px solid rgba(212,175,55,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.designer-card b { color: var(--accent); text-shadow: 0 0 5px rgba(212,175,55,0.2); }
+
+/* تنسيق الطباعة المحسن */
 #printHeader, #printFooter, .warning-box { display: none; }
+
 @media print {
+    @page { margin: 1cm; }
     .no-print { display: none !important; }
+    
     #printHeader { display: block !important; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-    #printFooter { display: flex !important; justify-content: space-between; margin-top: 50px; }
+    
+    /* منع كسر الصفحة بين الجدول والتوقيع */
+    .month-group, .warning-box, #printFooter { page-break-inside: avoid; }
+    
+    #printFooter { 
+        display: flex !important; 
+        justify-content: space-between; 
+        margin-top: 30px; 
+        padding-top: 10px;
+    }
+    
     .table-content { max-height: none !important; display: block !important; }
-    .warning-box { display: block !important; text-align: center; color: red; padding: 10px; border: 1px dashed red; margin: 20px 0; font-size: 0.8rem; }
-    .month-divider { background: #eee !important; color: #000 !important; border: 1px solid #000; margin-top: 15px; }
+    .warning-box { 
+        display: block !important; 
+        text-align: center; 
+        color: #d11; 
+        padding: 10px; 
+        border: 1px dashed #000; 
+        margin: 20px 0; 
+        font-size: 0.75rem; 
+        font-weight: bold;
+    }
+    
+    .month-divider { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #000; margin-top: 15px; }
     th, td { border: 1px solid #000; }
-    .page-border { background: none; padding: 0; }
+    .page-border { background: none; padding: 0; border-radius: 0; }
+    .parent-container { background: white; padding: 0; }
 }
 </style>
 </head>
@@ -121,8 +159,16 @@ td { padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9; font-s
             </div>
 
             <div id="printFooter">
-                <div><p>يعتمد / مدير المدرسة</p><p>................................</p></div>
-                <div><p>ختم المدرسة الرسمي</p><br><span>( )</span></div>
+                <div style="text-align: center;">
+                    <p>يعتمد / مدير المدرسة</p>
+                    <br>
+                    <p>................................</p>
+                </div>
+                <div style="text-align: center;">
+                    <p>ختم المدرسة الرسمي</p>
+                    <br>
+                    <div style="border: 1px solid #ccc; width: 80px; height: 80px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #eee;">الختم</div>
+                </div>
             </div>
 
             <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
@@ -136,8 +182,9 @@ td { padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9; font-s
         </div>
     </div>
 
-    <div class="no-print" style="margin-top:20px; text-align:center; font-size:0.8rem; color:#64748b;">
-        تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b> © 2026
+    <div class="designer-card no-print">
+        <span style="font-size: 0.85rem; opacity: 0.9;">نظام إدارة الغياب الرقمي © 2026</span><br>
+        <span style="font-size: 1rem;">تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
     </div>
 
 </div>
@@ -176,20 +223,17 @@ async function searchAttendance(){
         document.getElementById('notFound').style.display='none';
         resultArea.style.display='block';
         document.getElementById('printBtn').style.display='flex';
-        document.getElementById('studentData').innerHTML = `<b>الطالب: ${student.name}</b><br><small>الصف: ${student.grade} / ${student.section}</small>`;
+        document.getElementById('studentData').innerHTML = `<b>اسم الطالب: ${student.name}</b><br><small>الصف الدراسي: ${student.grade} / ${student.section}</small>`;
 
         const records = history.filter(h => h.name === student.name).sort((a,b)=> new Date(b.date)-new Date(a.date));
         
-        // حساب الإحصائيات
         document.getElementById('totalAbsence').innerText = records.length;
-        const currentMonthIdx = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
+        const now = new Date();
         document.getElementById('monthAbsence').innerText = records.filter(r => {
             const d = new Date(r.date);
-            return d.getMonth() === currentMonthIdx && d.getFullYear() === currentYear;
+            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         }).length;
 
-        // تجميع حسب الشهر
         const groups = records.reduce((acc, r) => {
             const m = new Date(r.date).toLocaleDateString('ar-OM', { month: 'long', year: 'numeric' });
             if (!acc[m]) acc[m] = [];
@@ -198,17 +242,14 @@ async function searchAttendance(){
         }, {});
 
         timeline.innerHTML = "";
-        const monthNames = Object.keys(groups);
-        
-        monthNames.forEach((month, index) => {
-            // جعل الشهر الأول (الأحدث) مفتوحاً تلقائياً
+        const months = Object.keys(groups);
+        months.forEach((month, index) => {
             const isActive = index === 0 ? 'active' : '';
-            
             timeline.innerHTML += `
                 <div class="month-group ${isActive}">
                     <div class="month-divider" onclick="toggleMonth(this)">
                         <span><i class="far fa-calendar-alt"></i> ${month}</span>
-                        <span><small>${groups[month].length} أيام</small> <i class="fas fa-chevron-down arrow"></i></span>
+                        <span><small>(${groups[month].length} أيام) </small><i class="fas fa-chevron-down arrow"></i></span>
                     </div>
                     <div class="table-content">
                         <div class="table-container">
