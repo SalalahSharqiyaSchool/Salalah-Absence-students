@@ -130,13 +130,13 @@
     <script>
         let teachers = [];
 
-        // دالة جلب البيانات من ملف الـ JSON الموجود على جيت هب
+     
       async function fetchTeachers() {
     try {
         const response = await fetch('/api/get-teachers', {
             method: 'GET',
             headers: {
-                // هامة جداً لفتح القفل
+                 
                 'x-app-secret': 'MySecret@2026!#' 
             }
         });
@@ -166,18 +166,18 @@
     const user = teachers.find(t => t.name === name);
     
     if (user && String(user.pass) === String(pass)) {
-        // 1. تخزين الحالة العامة للدخول
+       
         sessionStorage.setItem('isLoggedIn', 'true');
-        // 2. تخزين اسم المعلم
+        
         sessionStorage.setItem('teacherName', name);
-        // 3. تخزين الرتبة (admin أو teacher)
+       
         sessionStorage.setItem('userRole', user.role || 'teacher');
         
-        // 4. ⭐ السطر الأهم: تخزين الصفوف المحددة للمعلم من ملف JSON
-        // إذا لم توجد صفوف (للمدير مثلاً) سيخزن مصفوفة فارغة []
+        
+      
         sessionStorage.setItem('userClasses', JSON.stringify(user.classes || []));
         
-        // 5. الانتقال لصفحة الرصد (تأكد من الاسم الصحيح للملف هنا)
+        
         window.location.href = 'school-absent.html'; 
     } else {
         error.style.display = 'block';
