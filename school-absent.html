@@ -367,6 +367,9 @@
         </div>
 
         <div id="manageSection" class="section">
+            <button onclick="refreshData()" class="btn-refresh" style="background: var(--edit); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 15px;">
+    <i class="fas fa-sync-alt"></i> تحديث البيانات الآن
+</button>
             <div class="card">
                 <div class="card-title"><i class="fas fa-user-plus"></i> إضافة طالب جديد</div>
                 <input type="text" id="newName" placeholder="اسم الطالب الثلاثي">
@@ -530,7 +533,27 @@
 
 
 
+async function refreshData() {
+    try {
+        // إظهار رسالة تحميل بسيطة
+        const btn = document.querySelector('.btn-refresh');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...';
+        
+        // استدعاء دالة التحميل الموجودة أصلاً في كودك
+        await loadData(); 
+        
+        // إعادة تحديث الجدول بناءً على البيانات الجديدة
+        if (typeof renderAdminTable === "function") {
+            renderAdminTable();
+        }
 
+        btn.innerHTML = originalText;
+        showCustomAlert("تم تحديث البيانات بنجاح من السيرفر", "success");
+    } catch (error) {
+        showCustomAlert("فشل التحديث، يرجى التحقق من الاتصال", "error");
+    }
+}
    
 
    
@@ -1147,7 +1170,10 @@ document.getElementById('editModal').style.display = 'flex';
         document.getElementById('confirmActionModal').style.display = 'none';
     }
 
-    
+    window.onfocus = function() {
+    // سيقوم النظام بتحديث البيانات تلقائياً بمجرد رجوع المعلم لصفحة الموقع
+    loadData();
+};
     window.onload = loadData;
     </script>
 </body>
