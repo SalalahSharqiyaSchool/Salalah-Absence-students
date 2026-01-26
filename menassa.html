@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة مدرسة صلالة الشرقية الرقمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #d4af37;
+            --white: #ffffff;
+            --gold-glow: rgba(212, 175, 55, 0.3);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            margin: 0; min-height: 100vh;
+            color: white; overflow-x: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* الهيدر */
+        .app-header {
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 3px solid var(--accent);
+            padding: 15px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .school-info { display: flex; align-items: center; gap: 15px; }
+        .logo-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); }
+
+        /* حاوية البطاقات */
+        .portal-container {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            gap: 40px; padding: 40px; flex-wrap: wrap;
+        }
+
+        /* تصميم البطاقة العائمة */
+        .main-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 30px;
+            width: 350px; padding: 40px 20px;
+            text-align: center; transition: 0.4s;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            position: relative; animation: float 6s ease-in-out infinite;
+        }
+        .main-card:nth-child(2) { animation-delay: 2s; }
+        .main-card:hover { transform: translateY(-15px); border-color: var(--accent); box-shadow: 0 20px 50px var(--gold-glow); }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        .icon-box { font-size: 4rem; color: var(--accent); margin-bottom: 20px; }
+        h2 { margin: 0 0 15px 0; font-weight: 900; }
+        p { color: #94a3b8; margin-bottom: 30px; }
+
+        /* الأزرار */
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
+        .btn {
+            background: rgba(255,255,255,0.1);
+            color: white; text-decoration: none;
+            padding: 15px; border-radius: 15px;
+            font-weight: 700; border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn:hover { background: var(--accent); color: var(--primary); }
+        .btn-primary { background: var(--accent); color: var(--primary); border: none; }
+
+        /* نافذة تسجيل الدخول المنبثقة */
+        #loginOverlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .login-box {
+            background: var(--primary); padding: 30px; border-radius: 25px;
+            width: 90%; max-width: 400px; border: 2px solid var(--accent);
+        }
+
+        select, input {
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px;
+            border: 1px solid #334155; background: #1e293b; color: white; font-family: 'Cairo';
+        }
+
+        .footer { padding: 15px; text-align: center; border-top: 1px solid #1e293b; font-size: 0.9rem; }
+        .designer { color: var(--accent); font-weight: 800; }
+
+        @media (max-width: 768px) { .portal-container { padding: 20px; } .main-card { width: 100%; } }
+    </style>
+</head>
+<body>
+
+<header class="app-header">
+    <div class="school-info">
+        <img src="logo.jpeg" class="logo-img" alt="Logo" onerror="this.src='https://via.placeholder.com/60'">
+        <div>
+            <div style="font-weight: 900; color: var(--accent);">مدرسة صلالة الشرقية (5-9)</div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">بوابة الخدمات الرقمية</div>
+        </div>
+    </div>
+    <div class="date-now" id="currentDate"></div>
+</header>
+
+<main class="portal-container">
+    
+    <div class="main-card">
+        <div class="icon-box"><i class="fas fa-user-graduate"></i></div>
+        <h2>ركن ولي الأمر</h2>
+        <p>خدمات تهم الطالب وولي الأمر للمتابعة والتحصيل العلمي</p>
+        <div class="btn-group">
+            <a href="https://external-grades-link.com" target="_blank" class="btn">
+                <i class="fas fa-chart-line"></i> تصفح درجات الطلاب
+            </a>
+            <a href="absence-report.html" class="btn">
+                <i class="fas fa-file-invoice"></i> تقارير الغياب
+            </a>
+        </div>
+    </div>
+
+    <div class="main-card">
+        <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+        <h2>بوابة الهيئة الإدارية</h2>
+        <p>الأدوات الإشرافية والتحليلية المخصصة لإدارة المدرسة</p>
+        <div class="btn-group">
+            <a href="record-absence.html" class="btn">
+                <i class="fas fa-edit"></i> رصد الغياب اليومي
+            </a>
+            <button onclick="openLogin()" class="btn btn-primary">
+                <i class="fas fa-microscope"></i> منظومة تحليل الغياب
+            </button>
+        </div>
+    </div>
+
+</main>
+
+<div id="loginOverlay">
+    <div class="login-box">
+        <h3 style="text-align:center; color: var(--accent);">تسجيل دخول المشرف</h3>
+        <select id="teacherSelect"><option value="">جاري التحميل...</option></select>
+        <input type="password" id="passInput" placeholder="كلمة المرور">
+        <button onclick="checkLogin()" class="btn btn-primary" style="width:100%">دخول النظام</button>
+        <button onclick="closeLogin()" style="background:none; border:none; color:gray; width:100%; margin-top:10px; cursor:pointer;">إلغاء</button>
+    </div>
+</div>
+
+<footer class="footer">
+    جميع الحقوق محفوظة &copy; 2026 | تصميم أ: <span class="designer">فيصل العريبي</span>
+</footer>
+
+<script>
+    let teachers = [];
+
+    // جلب البيانات من السيرفر كما في كودك الأصلي
+    async function fetchTeachers() {
+        try {
+            const response = await fetch('/api/get-teachers', {
+                headers: { 'x-app-secret': 'MySecret@2026!#' }
+            });
+            teachers = await response.json();
+            const select = document.getElementById('teacherSelect');
+            select.innerHTML = '<option value="">اختر الاسم...</option>';
+            teachers.forEach(t => {
+                select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+            });
+        } catch (e) { console.error("Error loading teachers"); }
+    }
+
+    function openLogin() { document.getElementById('loginOverlay').style.display = 'flex'; }
+    function closeLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
+
+    function checkLogin() {
+        const name = document.getElementById('teacherSelect').value;
+        const pass = document.getElementById('passInput').value;
+
+        if (!name) { alert("اختر الاسم أولاً"); return; }
+
+        const user = teachers.find(t => t.name === name);
+        if (user && String(user.pass) === String(pass)) {
+            // تخزين الجلسة
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('teacherName', name);
+            // الانتقال لصفحة التحليل
+            window.location.href = 'analysis.html'; 
+        } else {
+            alert("كلمة المرور خاطئة!");
+        }
+    }
+
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ar-OM');
+    window.onload = fetchTeachers;
+</script>
+
+</body>
+</html>
