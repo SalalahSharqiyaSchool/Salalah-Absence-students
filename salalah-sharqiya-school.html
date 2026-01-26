@@ -21,7 +21,6 @@
             color: white; display: flex; flex-direction: column;
         }
 
-        /* تصميم الهيدر الرسمي */
         .official-header {
             background: rgba(15, 23, 42, 0.9);
             border-bottom: 3px solid var(--accent);
@@ -33,7 +32,6 @@
         .logo-section { display: flex; align-items: center; gap: 15px; }
         .logo-img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--accent); background: white; }
 
-        /* حاوية البطاقات العائمة */
         .portal-grid {
             flex: 1; display: flex; justify-content: center; align-items: center;
             gap: 30px; padding: 40px; flex-wrap: wrap;
@@ -58,18 +56,16 @@
         h2 { font-weight: 900; margin-bottom: 10px; }
         p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px; }
 
-        /* الأزرار داخل البطاقات */
         .nav-link {
             display: flex; align-items: center; justify-content: center; gap: 12px;
             background: rgba(255,255,255,0.08); color: white;
             padding: 14px; border-radius: 15px; margin-bottom: 10px;
             text-decoration: none; font-weight: 700; transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05); cursor: pointer; width: 100%; box-sizing: border-box;
         }
         .nav-link:hover { background: var(--accent); color: var(--primary); }
         .nav-link.admin-btn { background: var(--accent); color: var(--primary); }
 
-        /* نافذة تسجيل الدخول */
         .login-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85);
             display: none; justify-content: center; align-items: center; z-index: 2000;
@@ -117,10 +113,12 @@
         <div class="icon-circle"><i class="fas fa-user-shield"></i></div>
         <h2>بوابة الإدارة</h2>
         <p>رصد الغياب اليومي وتحليل البيانات الإشرافية</p>
-        <button onclick="triggerLogin('record')" class="nav-link" style="width:100%">
+        
+        <a href="index.html" class="nav-link">
             <i class="fas fa-pen-nib"></i> رصد الغياب اليومي
-        </button>
-        <button onclick="triggerLogin('analyze')" class="nav-link admin-btn" style="width:100%">
+        </a>
+
+        <button onclick="triggerLogin('analyze')" class="nav-link admin-btn">
             <i class="fas fa-microscope"></i> منظومة التحليل الإشرافي
         </button>
     </div>
@@ -129,10 +127,10 @@
 
 <div class="login-overlay" id="loginModal">
     <div class="login-card">
-        <h3 id="loginTitle" style="color: var(--accent); margin-bottom: 20px;">تسجيل الدخول</h3>
+        <h3 style="color: var(--accent); margin-bottom: 20px;">دخول منظومة التحليل</h3>
         <select id="teacherSelect"><option value="">جاري تحميل القائمة...</option></select>
         <input type="password" id="passInput" placeholder="كلمة المرور">
-        <button onclick="executeLogin()" class="nav-link admin-btn" style="width:100%; border:none;">دخول النظام</button>
+        <button onclick="executeLogin()" class="nav-link admin-btn" style="border:none;">دخول النظام</button>
         <button onclick="closeModal()" style="background:none; border:none; color:#64748b; margin-top:15px; cursor:pointer;">إلغاء</button>
     </div>
 </div>
@@ -143,19 +141,14 @@
 
 <script>
     let teachers = [];
-    let currentGoal = ''; // لتحديد الوجهة (رصد أم تحليل)
 
-    // جلب المعلمين باستخدام الـ API الخاص بك
     async function loadTeachers() {
         try {
             const response = await fetch('/api/get-teachers', {
-                headers: { 
-                    'x-app-secret': 'MySecret@2026!#' // تأكد أن هذا يطابق APP_SECRET_KEY في البيئة لديك
-                }
+                headers: { 'x-app-secret': 'MySecret@2026!#' }
             });
             if (!response.ok) throw new Error();
             teachers = await response.json();
-            
             const select = document.getElementById('teacherSelect');
             select.innerHTML = '<option value="">اختر الاسم...</option>';
             teachers.forEach(t => {
@@ -166,30 +159,24 @@
         }
     }
 
-    function triggerLogin(goal) {
-        currentGoal = goal;
-        document.getElementById('loginTitle').innerText = goal === 'record' ? 'دخول رصد الغياب' : 'دخول منظومة التحليل';
+    function triggerLogin() {
         document.getElementById('loginModal').style.display = 'flex';
     }
 
-    function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
+    function closeModal() {
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('passInput').value = '';
+    }
 
     function executeLogin() {
         const name = document.getElementById('teacherSelect').value;
         const pass = document.getElementById('passInput').value;
-        
         const user = teachers.find(t => t.name === name);
         
         if (user && String(user.pass) === String(pass)) {
             sessionStorage.setItem('isLoggedIn', 'true');
             sessionStorage.setItem('teacherName', name);
-            
-            // التوجيه بناءً على الزر الذي ضغط عليه المستخدم
-            if (currentGoal === 'record') {
-                window.location.href = 'index.html';
-            } else {
-                window.location.href = 'supervisor.html';
-            }
+            window.location.href = 'supervisor.html';
         } else {
             alert("فشل التحقق: الاسم أو كلمة المرور غير صحيحة");
         }
