@@ -7,63 +7,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --glass: rgba(255, 255, 255, 0.05); }
+        :root { --primary: #0f172a; --accent: #d4af37; --glass: rgba(255, 255, 255, 0.05); --gold-glow: rgba(212, 175, 55, 0.3); }
         body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); margin: 0; min-height: 100vh; color: white; display: flex; flex-direction: column; }
-        
-        .official-header { 
-            background: rgba(15, 23, 42, 0.9); border-bottom: 3px solid var(--accent); 
-            padding: 10px 30px; display: flex; align-items: center; justify-content: space-between;
-            backdrop-filter: blur(10px); sticky; top: 0; z-index: 1000;
-        }
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .logo-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent); background: white; }
-        
-        /* زر الرجوع */
-        .back-link {
-            text-decoration: none; color: white; background: rgba(255,255,255,0.1);
-            padding: 8px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 600;
-            display: flex; align-items: center; gap: 8px; transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .back-link:hover { background: var(--accent); color: var(--primary); }
-
+        .official-header { background: rgba(15, 23, 42, 0.9); border-bottom: 3px solid var(--accent); padding: 15px 30px; display: flex; align-items: center; gap: 15px; backdrop-filter: blur(10px); }
+        .logo-img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--accent); background: white; }
         .main-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .portal-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 30px; width: 100%; max-width: 400px; padding: 40px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4); animation: floating 5s ease-in-out infinite; }
         @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        
         .icon-circle { width: 80px; height: 80px; background: rgba(212, 175, 55, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2.5rem; color: var(--accent); }
-        h2 { font-weight: 900; margin-bottom: 10px; color: var(--accent); }
+        h2 { font-weight: 900; margin-bottom: 10px; }
+        p { color: #94a3b8; margin-bottom: 30px; font-size: 0.95rem; }
         .nav-link { display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(255,255,255,0.08); color: white; padding: 16px; border-radius: 15px; margin-bottom: 12px; text-decoration: none; font-weight: 700; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
-        .nav-link:hover { background: white; color: var(--primary); transform: scale(1.02); }
+        .nav-link:hover { background: var(--accent); color: var(--primary); transform: scale(1.02); }
         .footer { background: #000; color: #fff; padding: 15px; text-align: center; font-size: 0.85rem; border-top: 2px solid var(--accent); }
     </style>
 </head>
 <body>
     <header class="official-header">
-        <div class="header-right">
-            <img src="logo.jpeg" class="logo-img" alt="Logo" onerror="this.src='https://via.placeholder.com/60'">
-            <div>
-                <div style="font-weight: 900; color: var(--accent); font-size: 1.1rem;">منظومة الشرقية الرقمية</div>
-                <div style="font-size: 0.7rem; opacity: 0.8;">بوابة ولي الأمر</div>
-            </div>
+        <img src="logo.jpeg" class="logo-img" alt="Logo" onerror="this.src='https://via.placeholder.com/60'">
+        <div>
+            <div style="font-weight: 900; color: var(--accent);">مدرسة صلالة الشرقية (5-9)</div>
+            <div style="font-size: 0.75rem; opacity: 0.8;">ركن ولي الأمر - الخدمات الإلكترونية</div>
         </div>
-        <a href="portal.html" class="back-link"><i class="fas fa-home"></i> الرئيسية</a>
     </header>
-
     <main class="main-content">
         <div class="portal-card">
             <div class="icon-circle"><i class="fas fa-user-graduate"></i></div>
             <h2>ركن ولي الأمر</h2>
-            <p style="color: #94a3b8; margin-bottom: 30px;">نحيطكم علماً بمتابعة غياب ودرجات ابنكم عبر الروابط التالية</p>
+            <p>متابعة درجات الطلاب وتقارير الغياب الدورية</p>
             <a href="https://student-salalah-sharqiya.vercel.app/" target="_blank" class="nav-link">
                 <i class="fas fa-chart-bar"></i> تصفح درجات الطلاب
             </a>
             <a href="reportstudent.html" class="nav-link">
-                <i class="fas fa-file-alt"></i> تقارير الغياب التفصيلية
+                <i class="fas fa-file-alt"></i> تقارير الغياب
             </a>
         </div>
     </main>
-
-    <footer class="footer">جميع الحقوق محفوظة &copy; 2026 | أ: <b>فيصل العريبي</b></footer>
+    <footer class="footer">جميع الحقوق محفوظة &copy; 2026 | تصميم أ: <b style="color:var(--accent)">فيصل العريبي</b></footer>
 </body>
 </html>
