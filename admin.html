@@ -6,119 +6,310 @@
     <title>بوابة الإدارة | منظومة الشرقية الرقمية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
     <style>
-        :root { --primary: #0f172a; --accent: #d4af37; --glass: rgba(255, 255, 255, 0.05); }
-        body { font-family: 'Cairo', sans-serif; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); margin: 0; min-height: 100vh; color: white; display: flex; flex-direction: column; }
-        
-        .official-header { 
-            background: rgba(15, 23, 42, 0.9); border-bottom: 3px solid var(--accent); 
-            padding: 10px 30px; display: flex; align-items: center; justify-content: space-between;
-            backdrop-filter: blur(10px); sticky; top: 0; z-index: 1000;
+        :root {
+            --primary: #0f172a;
+            --accent: #d4af37;
+            --glass: rgba(255, 255, 255, 0.05);
+            --gold-glow: rgba(212, 175, 55, 0.2);
         }
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .logo-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent); background: white; }
-        
-        .back-link {
-            text-decoration: none; color: white; background: rgba(255,255,255,0.1);
-            padding: 8px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 600;
-            display: flex; align-items: center; gap: 8px; transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
-        .back-link:hover { background: var(--accent); color: var(--primary); }
 
-        .main-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .portal-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 30px; width: 100%; max-width: 400px; padding: 40px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4); animation: floating 5s ease-in-out infinite; }
-        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* الهيدر الرسمي - بدون زر رجوع */
+        .official-header {
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 3px solid var(--accent);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
 
-        .icon-circle { width: 80px; height: 80px; background: rgba(212, 175, 55, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2.5rem; color: var(--accent); }
-        h2 { font-weight: 900; margin-bottom: 10px; color: var(--accent); }
-        
-        .nav-link { display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(255,255,255,0.08); color: white; padding: 16px; border-radius: 15px; margin-bottom: 12px; text-decoration: none; font-weight: 700; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; width: 100%; box-sizing: border-box; }
-        .nav-link:hover { background: white; color: var(--primary); transform: scale(1.02); }
-        .nav-link.admin-btn { background: var(--accent); color: var(--primary); border: none; }
+        .logo-img {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            background: white;
+            object-fit: cover;
+        }
 
-        /* نافذة تسجيل الدخول - توحيد التصميم */
-        .login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .login-card { background: #1e293b; padding: 30px; border-radius: 25px; width: 90%; max-width: 380px; border: 2px solid var(--accent); text-align: center; }
-        
-        /* هنا التعديل لضمان تطابق الخانتين تماماً */
-        select, input[type="password"] { 
-            width: 100%; 
-            height: 55px; /* تثبيت الارتفاع */
-            padding: 0 15px; 
-            margin-bottom: 15px; 
-            border-radius: 12px; 
-            border: 1px solid #334155; 
-            background: #0f172a; 
-            color: white; 
-            font-family: 'Cairo'; 
+        .header-text h1 {
+            font-size: 1.1rem;
+            margin: 0;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+
+        .header-text p {
+            font-size: 0.75rem;
+            margin: 0;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .portal-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 35px;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: floating 5s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .icon-circle {
+            width: 85px;
+            height: 85px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2.8rem;
+            color: var(--accent);
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        h2 { font-weight: 900; margin-bottom: 10px; font-size: 1.6rem; }
+        .description { color: #94a3b8; margin-bottom: 35px; font-size: 0.95rem; line-height: 1.6; }
+
+        /* الأزرار */
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            padding: 16px;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
             font-size: 1rem;
-            box-sizing: border-box; /* يضمن أن العرض يشمل الحواف والـ Padding */
-            outline: none;
-            transition: border-color 0.3s;
         }
-        select:focus, input[type="password"]:focus { border-color: var(--accent); }
 
-        .footer { background: #000; color: #fff; padding: 15px; text-align: center; font-size: 0.85rem; border-top: 2px solid var(--accent); }
+        .nav-link:hover {
+            background: white;
+            color: var(--primary);
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .nav-link.admin-btn {
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+        }
+
+        .nav-link.admin-btn:hover {
+            background: #f1c40f;
+            box-shadow: 0 0 25px var(--gold-glow);
+        }
+
+        /* نافذة تسجيل الدخول */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(8px);
+        }
+
+        .login-card {
+            background: #1e293b;
+            padding: 40px 30px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 380px;
+            border: 2px solid var(--accent);
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+        }
+
+        /* توحيد تصميم خانة الاختيار وكلمة المرور تماماً */
+        select, input[type="password"] {
+            width: 100%;
+            height: 55px; /* ارتفاع موحد */
+            padding: 0 15px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-family: 'Cairo';
+            font-size: 1rem;
+            box-sizing: border-box; /* لضمان تطابق العرض */
+            outline: none;
+            transition: 0.3s;
+            appearance: none; /* لإزالة سهم المتصفح الافتراضي في بعض المتصفحات */
+        }
+
+        select:focus, input[type="password"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .footer {
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            border-top: 2px solid var(--accent);
+        }
+
+        @media (max-width: 480px) {
+            .portal-card { padding: 30px 20px; }
+        }
     </style>
 </head>
 <body>
+
     <header class="official-header">
-        <div class="header-right">
-            <img src="logo.jpeg" class="logo-img" alt="Logo" onerror="this.src='https://via.placeholder.com/60'">
-            <div>
-                <div style="font-weight: 900; color: var(--accent); font-size: 1.1rem;">منظومة الشرقية الرقمية</div>
-                <div style="font-size: 0.7rem; opacity: 0.8;">بوابة الإدارة المدرسية</div>
-            </div>
+        <img src="logo.jpeg" class="logo-img" alt="Logo" onerror="this.src='https://via.placeholder.com/60'">
+        <div class="header-text">
+            <h1>منظومة الشرقية الرقمية</h1>
+            <p>بوابة الإدارة المدرسية والأنظمة الإشرافية</p>
         </div>
-        <a href="portal.html" class="back-link"><i class="fas fa-home"></i> الرئيسية</a>
     </header>
 
     <main class="main-content">
         <div class="portal-card">
-            <div class="icon-circle"><i class="fas fa-user-shield"></i></div>
+            <div class="icon-circle">
+                <i class="fas fa-user-shield"></i>
+            </div>
             <h2>بوابة الإدارة</h2>
-            <p style="color: #94a3b8; margin-bottom: 30px;">الوصول لأنظمة الرصد والتحليل الإحصائي</p>
-            <a href="index.html" class="nav-link"><i class="fas fa-pen-nib"></i> رصد الغياب اليومي</a>
-            <button onclick="openLogin()" class="nav-link admin-btn"><i class="fas fa-microscope"></i> منظومة التحليل الإشرافي</button>
+            <p class="description">مرحباً بك في لوحة التحكم الإدارية. يرجى اختيار النظام المطلوب للبدء.</p>
+            
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-pen-nib"></i> رصد الغياب اليومي
+            </a>
+            
+            <button onclick="openLogin()" class="nav-link admin-btn">
+                <i class="fas fa-microscope"></i> منظومة التحليل الإشرافي
+            </button>
         </div>
     </main>
 
     <div class="login-overlay" id="loginModal">
         <div class="login-card">
-            <h3 style="color: var(--accent); margin-bottom: 20px;">دخول منظومة التحليل</h3>
-            <select id="teacherSelect"><option value="">اختر الاسم...</option></select>
+            <h3 style="color: var(--accent); margin-bottom: 25px; font-weight: 700;">دخول منظومة التحليل</h3>
+            
+            <select id="teacherSelect">
+                <option value="">جاري تحميل قائمة المعلمين...</option>
+            </select>
+            
             <input type="password" id="passInput" placeholder="كلمة المرور">
             
-            <button onclick="executeLogin()" class="nav-link admin-btn" style="border:none;">دخول النظام</button>
-            <button onclick="closeModal()" style="background:none; border:none; color:#64748b; margin-top:15px; cursor:pointer;">إلغاء</button>
+            <button onclick="executeLogin()" class="nav-link admin-btn" style="border:none; margin-top: 10px;">
+                دخول النظام
+            </button>
+            
+            <button onclick="closeModal()" style="background:none; border:none; color:#94a3b8; margin-top:20px; cursor:pointer; font-weight:600;">
+                إلغاء الأمر
+            </button>
         </div>
     </div>
 
-    <footer class="footer">جميع الحقوق محفوظة &copy; 2026 | أ: <b>فيصل العريبي</b></footer>
+    <footer class="footer">
+        جميع الحقوق محفوظة لمدرسة صلالة الشرقية &copy; 2026 | تصميم أ: <b style="color:var(--accent)">فيصل العريبي</b>
+    </footer>
 
     <script>
         let teachers = [];
+
+        // تحميل قائمة المعلمين من السيرفر
         async function loadTeachers() {
             try {
-                const response = await fetch('/api/get-teachers', { headers: { 'x-app-secret': 'MySecret@2026!#' } });
+                const response = await fetch('/api/get-teachers', { 
+                    headers: { 'x-app-secret': 'MySecret@2026!#' } 
+                });
+                if (!response.ok) throw new Error();
                 teachers = await response.json();
+                
                 const select = document.getElementById('teacherSelect');
-                select.innerHTML = '<option value="">اختر الاسم...</option>';
-                teachers.forEach(t => select.innerHTML += `<option value="${t.name}">${t.name}</option>`);
-            } catch (err) { document.getElementById('teacherSelect').innerHTML = '<option>خطأ في التحميل</option>'; }
+                select.innerHTML = '<option value="">اختر اسم المعلم / المشرف...</option>';
+                teachers.forEach(t => {
+                    select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+                });
+            } catch (err) {
+                document.getElementById('teacherSelect').innerHTML = '<option>خطأ في تحميل البيانات</option>';
+            }
         }
-        function openLogin() { document.getElementById('loginModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+        // التحكم في ظهور النافذة
+        function openLogin() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('passInput').value = '';
+        }
+
+        // منطق تسجيل الدخول
         function executeLogin() {
             const name = document.getElementById('teacherSelect').value;
             const pass = document.getElementById('passInput').value;
             const user = teachers.find(t => t.name === name);
+            
             if (user && String(user.pass) === String(pass)) {
                 sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('teacherName', name);
                 window.location.href = 'supervisor.html';
-            } else { alert("البيانات غير صحيحة"); }
+            } else {
+                alert("خطأ: يرجى التأكد من اختيار الاسم الصحيح وإدخال كلمة المرور بدقة.");
+            }
         }
+
+        // إغلاق النافذة عند الضغط خارج الكارد
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target == modal) closeModal();
+        }
+
         window.onload = loadTeachers;
     </script>
 </body>
