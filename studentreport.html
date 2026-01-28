@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>استعلام ولي الأمر - مدرسة صلالة الشرقية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+    --primary:#0f172a; --accent:#d4af37; --bg:#f1f5f9;
+    --gold-gradient:linear-gradient(135deg,#d4af37 0%,#f5e0a3 50%,#b8860b 100%);
+    --dark-card:linear-gradient(135deg,#0f172a,#1e293b);
+}
+*{box-sizing:border-box}
+body{ font-family:'Cairo',sans-serif; background:var(--bg); margin:0; padding:10px; display:flex; justify-content:center; }
+
+.page-border{ max-width:650px; width:100%; padding:5px; background:var(--gold-gradient); border-radius:30px; }
+.parent-container{ background:var(--bg); border-radius:26px; padding:20px 15px; }
+
+/* تنسيق الواجهة */
+.official-header{ text-align:center; margin-bottom:20px; border-bottom:1px solid rgba(212,175,55,.2); padding-bottom:15px; }
+.official-header p{ margin:2px 0; font-size:.85rem; font-weight:700; }
+.header{ text-align:center; margin-bottom:25px; }
+.header i{ font-size:2.5rem; color:var(--accent); }
+
+.search-card{ background:#fff; padding:25px 20px; border-radius:24px; box-shadow:0 10px 25px rgba(0,0,0,0.05); }
+input{ width:100%; padding:16px; font-size:1.2rem; border-radius:16px; border:2px solid #e2e8f0; text-align:center; margin-bottom:20px; outline:none; }
+
+.btn{ width:100%; padding:16px; border:none; border-radius:16px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; }
+.btn-search{ background:var(--primary); color:var(--accent); }
+.btn-print{ background:#334155; color:#fff; margin-top:20px; display:none; }
+
+/* إحصائيات الغياب */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+.stat-card { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; }
+.stat-card span { display: block; font-size: 1.6rem; font-weight: 900; color: var(--primary); }
+.stat-card label { font-size: 0.75rem; color: #64748b; }
+
+/* نظام القوائم المنسدلة */
+.month-group { margin-bottom: 10px; border-radius: 12px; overflow: hidden; }
+.month-divider { 
+    background: var(--primary); color: white; padding: 15px; 
+    display: flex; justify-content: space-between; align-items: center; 
+    cursor: pointer; transition: 0.3s;
+}
+.month-divider:hover { background: #1e293b; }
+.table-content { 
+    max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0, 1, 0, 1); 
+    background: #fff; border: 1px solid #e2e8f0; border-top: none; 
+}
+.month-group.active .table-content { max-height: 1000px; transition: max-height 1s ease-in; }
+.month-group.active .month-divider { border-radius: 12px 12px 0 0; background: var(--accent); color: var(--primary); }
+.arrow { transition: 0.3s; }
+.month-group.active .arrow { transform: rotate(180deg); }
+
+.table-container { padding: 10px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f1f5f9; color: var(--primary); padding: 10px; font-size: 0.8rem; }
+td { padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+
+/* بطاقة المصمم المنسقة */
+.designer-card {
+    margin-top: 25px;
+    background: var(--dark-card);
+    padding: 15px 20px;
+    border-radius: 18px;
+    color: white;
+    text-align: center;
+    border: 1px solid rgba(212,175,55,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.designer-card b { color: var(--accent); text-shadow: 0 0 5px rgba(212,175,55,0.2); }
+
+/* تنسيق الطباعة المحسن */
+#printHeader, #printFooter, .warning-box { display: none; }
+
+@media print {
+    @page { margin: 1cm; }
+    .no-print { display: none !important; }
+    
+    #printHeader { display: block !important; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+    
+    /* منع كسر الصفحة بين الجدول والتوقيع */
+    .month-group, .warning-box, #printFooter { page-break-inside: avoid; }
+    
+    #printFooter { 
+        display: flex !important; 
+        justify-content: space-between; 
+        margin-top: 30px; 
+        padding-top: 10px;
+    }
+    
+    .table-content { max-height: none !important; display: block !important; }
+    .warning-box { 
+        display: block !important; 
+        text-align: center; 
+        color: #d11; 
+        padding: 10px; 
+        border: 1px dashed #000; 
+        margin: 20px 0; 
+        font-size: 0.75rem; 
+        font-weight: bold;
+    }
+    
+    .month-divider { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #000; margin-top: 15px; }
+    th, td { border: 1px solid #000; }
+    .page-border { background: none; padding: 0; border-radius: 0; }
+    .parent-container { background: white; padding: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-border" id="mainBorder">
+<div class="parent-container">
+
+    <div id="printHeader">
+        <p> سلطنة عمان | وزارة التعليم | مدرسة صلالة الشرقية (5-9)</p>
+        <p>المديرية العامة للتربية والتعليم بمحافظة ظفار</p>
+        <h2 style="margin:10px 0;">مدرسة صلالة الشرقية للتعليم الأساسي (5-9)</h2>
+        <p>تقرير سجل غياب الطالب التفصيلي</p>
+        <small id="reportDateLabel"></small>
+    </div>
+
+    <div class="official-header no-print">
+        <p style="color:var(--accent)">سلطنة عمان</p>
+        <p>وزارة التعليم</p>
+    </div>
+
+    <div class="header no-print">
+        <i class="fas fa-user-shield"></i>
+        <h1>بوابة ولي الأمر الرقمية</h1>
+    </div>
+
+    <div class="search-card">
+        <div class="no-print">
+            <label> رقم الهاتف المسجل بالمدرسة</label>
+            <input type="tel" id="phoneInput" placeholder="أدخل رقم الهاتف" maxlength="11">
+            <button class="btn btn-search" onclick="searchAttendance()">
+                <i class="fas fa-search"></i> استعلام عن التقرير
+            </button>
+        </div>
+
+        <div id="resultArea" style="display:none; margin-top:25px;">
+            <div id="studentData" class="student-info" style="background:#f8fafc; padding:15px; border-radius:15px; border-right:5px solid var(--accent); margin-bottom:15px;"></div>
+
+            <div class="stats-grid no-print">
+                <div class="stat-card"> <span id="totalAbsence">0</span> <label>إجمالي الغياب</label> </div>
+                <div class="stat-card"> <span id="monthAbsence">0</span> <label>غياب الشهر الحالي</label> </div>
+            </div>
+
+            <div id="attendanceTimeline"></div>
+
+            <div class="warning-box">
+                تنبيه: هذه نسخة إلكترونية مستخرجة من النظام الرقمي للمدرسة ولا تعتبر مستنداً رسمياً دون ختم وتوقيع الإدارة.
+            </div>
+
+            <div id="printFooter">
+                <div style="text-align: center;">
+                    <p>يعتمد / مدير المدرسة</p>
+                    <br>
+                    <p>................................</p>
+                </div>
+                <div style="text-align: center;">
+                    <p>ختم المدرسة الرسمي</p>
+                    <br>
+                    <div style="border: 1px solid #ccc; width: 80px; height: 80px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #eee;">الختم</div>
+                </div>
+            </div>
+
+            <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()">
+                <i class="fas fa-print"></i> طباعة التقرير / PDF
+            </button>
+        </div>
+
+        <div id="notFound" class="no-print" style="display:none; text-align:center; padding:30px; color:#64748b;">
+            <i class="fas fa-search-minus" style="font-size:2rem;"></i>
+            <p>لم يتم العثور على بيانات</p>
+        </div>
+    </div>
+
+    <div class="designer-card no-print">
+        <span style="font-size: 0.85rem; opacity: 0.9;">نظام إدارة الغياب الرقمي © 2026</span><br>
+        <span style="font-size: 1rem;">تصميم وتنفيذ: <b>الأستاذ فيصل العريبي</b></span>
+    </div>
+
+</div>
+</div>
+
+<script>
+function toggleMonth(element) {
+    element.parentElement.classList.toggle('active');
+}
+
+function preparePrint(){
+    document.getElementById('reportDateLabel').innerText = "تاريخ الاستخراج: " + new Date().toLocaleDateString('ar-OM');
+    window.print();
+}
+
+async function searchAttendance(){
+    let phone = document.getElementById('phoneInput').value.trim();
+    const resultArea = document.getElementById('resultArea');
+    const cleanInput = phone.replace(/\D/g,'').slice(-8);
+
+    try {
+        const studentsRes = await fetch('/api/students');
+        const attendanceRes = await fetch('/api/attendance');
+        const students = await studentsRes.json();
+        const history = await attendanceRes.json();
+
+        // التعديل الجوهري هنا: استخدام filter لجلب كل الأبناء
+        const matchedStudents = students.filter(s => String(s.phone).endsWith(cleanInput));
+
+        if(matchedStudents.length === 0){
+            resultArea.style.display='none';
+            document.getElementById('notFound').style.display='block';
+            return;
+        }
+
+        document.getElementById('notFound').style.display='none';
+        resultArea.style.display='block';
+        
+        // تفريغ المنطقة لعرض النتائج الجديدة
+        resultArea.innerHTML = ""; 
+
+        // تكرار لكل طالب تم العثور عليه
+        matchedStudents.forEach((student, index) => {
+            const records = history.filter(h => h.name === student.name).sort((a,b)=> new Date(b.date)-new Date(a.date));
+            const now = new Date();
+            const monthCount = records.filter(r => {
+                const d = new Date(r.date);
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            }).length;
+
+            // بناء واجهة لكل طالب
+            let studentHTML = `
+                <div class="student-block" style="border-bottom: 3px solid var(--accent); margin-bottom: 40px; padding-bottom: 20px;">
+                    <div class="student-info" style="background:#f8fafc; padding:15px; border-radius:15px; border-right:5px solid var(--accent); margin-bottom:15px;">
+                        <b>اسم الطالب: ${student.name}</b><br>
+                        <small>الصف الدراسي: ${student.grade} / ${student.section}</small>
+                    </div>
+
+                    <div class="stats-grid no-print">
+                        <div class="stat-card"> <span>${records.length}</span> <label>إجمالي الغياب</label> </div>
+                        <div class="stat-card"> <span>${monthCount}</span> <label>غياب الشهر الحالي</label> </div>
+                    </div>
+
+                    <div id="timeline-${index}"></div>
+                </div>
+            `;
+
+            resultArea.innerHTML += studentHTML;
+
+            // بناء جداول الغياب الخاصة بهذا الطالب
+            const timeline = document.getElementById(`timeline-${index}`);
+            const groups = records.reduce((acc, r) => {
+                const m = new Date(r.date).toLocaleDateString('ar-OM', { month: 'long', year: 'numeric' });
+                if (!acc[m]) acc[m] = [];
+                acc[m].push(r);
+                return acc;
+            }, {});
+
+            if(records.length === 0) {
+                timeline.innerHTML = "<p style='text-align:center;'>لا يوجد غياب مسجل لهذا الطالب</p>";
+            } else {
+                Object.keys(groups).forEach(month => {
+                    timeline.innerHTML += `
+                        <div class="month-group">
+                            <div class="month-divider" onclick="toggleMonth(this)">
+                                <span><i class="far fa-calendar-alt"></i> ${month}</span>
+                                <span><small>(${groups[month].length} أيام) </small><i class="fas fa-chevron-down arrow"></i></span>
+                            </div>
+                            <div class="table-content">
+                                <div class="table-container">
+                                    <table>
+                                        <thead><tr><th>م</th><th>اليوم</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+                                        <tbody>
+                                            ${groups[month].map((r, i) => `
+                                                <tr>
+                                                    <td>${i+1}</td>
+                                                    <td>${new Date(r.date).toLocaleDateString('ar-OM',{weekday:'long'})}</td>
+                                                    <td>${r.date}</td>
+                                                    <td style="color:#e11d48; font-weight:bold;">غياب</td>
+                                                </tr>`).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+        });
+
+        // إضافة زر الطباعة في النهاية
+        resultArea.innerHTML += `
+            <button class="btn btn-print no-print" id="printBtn" onclick="preparePrint()" style="display:flex;">
+                <i class="fas fa-print"></i> طباعة تقرير الأبناء / PDF
+            </button>
+        `;
+
+    } catch(err){ alert("خطأ في جلب البيانات"); console.error(err); }
+}
+</script>
+
+</body>
+</html>
