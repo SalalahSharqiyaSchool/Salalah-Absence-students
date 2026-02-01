@@ -162,7 +162,7 @@
         }
     }
 
-  function analyzeData() {
+ function analyzeData() {
     const g = document.getElementById('gradeFilter').value;
     const s = document.getElementById('sectionFilter').value;
     if(!g || !s) return;
@@ -179,26 +179,25 @@
         const maxC = getMaxConsecutive(dates);
         const maxW = getMaxWeekCount(dates);
 
-        const schoolHeader = "مدرسة صلالة الشرقية";
+        // 1. نص الرسالة بالعربية (سيظهر لولي الأمر في واتساب)
+        const schoolName = "مدرسة صلالة الشرقية";
+        const messageText = `السلام عليكم ورحمة الله،\nإفادة من ${schoolName}:\nابنكم الطالب/ ${st.name}\nمنقطع عن الدوام لمدة (${maxC}) أيام متتالية.`;
+        
+        // 2. تشفير الرسالة للرابط فقط
+        const encodedMsg = encodeURIComponent(messageText);
+        const waLink = `https://wa.me/${st.phone}?text=${encodedMsg}`;
+
+        // 3. إنشاء "زر" يظهر بنص عربي واضح في صفحتك
+        const actionButton = `<br><a href="${waLink}" target="_blank" style="background-color: #25D366; color: white; padding: 5px 12px; border-radius: 4px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;">إرسال رسالة واتساب 🟢</a>`;
 
         if(maxC >= 3) {
-            // تجهيز نص الرسالة
-            const message = `السلام عليكم، إفادة من ${schoolHeader}: ابنكم الطالب (${st.name}) غائب لمدة (${maxC}) أيام متتالية.`;
-            // تشفير الرسالة للرابط فقط
-            const waLink = `https://wa.me/${st.phone}?text=${encodeURIComponent(message)}`;
-            
-            // إنشاء زر أخضر بسيط وواضح
-            const btn = `<a href="${waLink}" target="_blank" style="background:#25D366; color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:12px; display:inline-block; margin-top:5px;">ارسل واتساب 📱</a>`;
-            
-            consH += createCardHTML(st, `${maxC} أيام`, `غائب منذ ${maxC} أيام متتالية. ${btn}`);
-
+            consH += createCardHTML(st, `${maxC} أيام`, `تنبيه: الطالب غائب منذ ${maxC} أيام. ${actionButton}`);
         } else if(maxW >= 3) {
-            const message = `تنبيه من ${schoolHeader}: الطالب (${st.name}) تكرر غيابه (${maxW}) أيام خلال هذا الأسبوع.`;
-            const waLink = `https://wa.me/${st.phone}?text=${encodeURIComponent(message)}`;
+            const weekMsg = `تنبيه من ${schoolName}: الطالب/ ${st.name} لديه غياب متكرر (${maxW} أيام) هذا الأسبوع.`;
+            const weekLink = `https://wa.me/${st.phone}?text=${encodeURIComponent(weekMsg)}`;
+            const actionButtonWeek = `<br><a href="${weekLink}" target="_blank" style="background-color: #25D366; color: white; padding: 5px 12px; border-radius: 4px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;">إرسال تنبيه الغياب 🟢</a>`;
             
-            const btn = `<a href="${waLink}" target="_blank" style="background:#25D366; color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:12px; display:inline-block; margin-top:5px;">ارسل واتساب 📱</a>`;
-            
-            weekH += createCardHTML(st, `متكرر: ${maxW}`, `غياب ${maxW} أيام/أسبوع. ${btn}`);
+            weekH += createCardHTML(st, `متكرر: ${maxW}`, `تنبيه: غياب متكرر في أسبوع. ${actionButtonWeek}`);
         }
     });
 
