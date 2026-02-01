@@ -163,59 +163,53 @@
     }
 
  function analyzeData() {
-    const g = document.getElementById('gradeFilter').value;
-    const s = document.getElementById('sectionFilter').value;
-    if(!g || !s) return;
+        const g = document.getElementById('gradeFilter').value;
+        const s = document.getElementById('sectionFilter').value;
+        if(!g || !s) return;
 
-    document.getElementById('pGrade').innerText = g; 
-    document.getElementById('pSection').innerText = s;
-    
-    let filtered = students.filter(st => String(st.grade) === g && String(st.section) === s);
-    let consH = ""; 
-    let weekH = "";
-
-    filtered.forEach(st => {
-        const dates = history.filter(h => h.name === st.name).map(h => new Date(h.date)).sort((a,b)=>a-b);
-        const maxC = getMaxConsecutive(dates);
-        const maxW = getMaxWeekCount(dates);
-
-        // 1. نص الرسالة بالعربية (سيظهر لولي الأمر في واتساب)
-        const schoolName = "مدرسة صلالة الشرقية";
-        const messageText = `السلام عليكم ورحمة الله،\nإفادة من ${schoolName}:\nابنكم الطالب/ ${st.name}\nمنقطع عن الدوام لمدة (${maxC}) أيام متتالية.`;
+        document.getElementById('pGrade').innerText = g; 
+        document.getElementById('pSection').innerText = s;
         
-        // 2. تشفير الرسالة للرابط فقط
-        const encodedMsg = encodeURIComponent(messageText);
-        const waLink = `https://wa.me/${st.phone}?text=${encodedMsg}`;
+        let filtered = students.filter(st => String(st.grade) === g && String(st.section) === s);
+        let consH = ""; let weekH = "";
 
-        // 3. إنشاء "زر" يظهر بنص عربي واضح في صفحتك
-        const actionButton = `<br><a href="${waLink}" target="_blank" style="background-color: #25D366; color: white; padding: 5px 12px; border-radius: 4px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;">إرسال رسالة واتساب 🟢</a>`;
+        filtered.forEach(st => {
+            const dates = history.filter(h => h.name === st.name).map(h => new Date(h.date)).sort((a,b)=>a-b);
+            const maxC = getMaxConsecutive(dates);
+            const maxW = getMaxWeekCount(dates);
 
-        if(maxC >= 3) {
-            consH += createCardHTML(st, `${maxC} أيام`, `تنبيه: الطالب غائب منذ ${maxC} أيام. ${actionButton}`);
-        } else if(maxW >= 3) {
-            const weekMsg = `تنبيه من ${schoolName}: الطالب/ ${st.name} لديه غياب متكرر (${maxW} أيام) هذا الأسبوع.`;
-            const weekLink = `https://wa.me/${st.phone}?text=${encodeURIComponent(weekMsg)}`;
-            const actionButtonWeek = `<br><a href="${weekLink}" target="_blank" style="background-color: #25D366; color: white; padding: 5px 12px; border-radius: 4px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;">إرسال تنبيه الغياب 🟢</a>`;
-            
-            weekH += createCardHTML(st, `متكرر: ${maxW}`, `تنبيه: غياب متكرر في أسبوع. ${actionButtonWeek}`);
-        }
-    });
+            // نص مدرسة صلالة الشرقية
+            const schoolHeader = "مدرسة صلالة الشرقية";
 
-    document.getElementById('consecutiveList').innerHTML = consH || '<div class="waiting-msg">لا توجد حالات</div>';
-    document.getElementById('weeklyLimitList').innerHTML = weekH || '<div class="waiting-msg">لا توجد حالات</div>';
-}
-    function createCardHTML(st, badge, msg) {
+            if(maxC >= 3) {
+                // رسالة الانقطاع المتتالي
+                const msg = `السلام عليكم ورحمة الله وبركاته.. إفادة من ${schoolHeader}: نود إحاطتكم علماً بأن ابنكم الطالب (${st.name}) قد انقطع عن الدوام المدرسي لمدة (${maxC}) أيام متتالية. يرجى التكرم بتوضيح سبب الانقطاع للإدارة. شاكرين تعاونكم.`;
+                consH += createCardHTML(st, `${maxC} أيام متتالية`, msg);
+            } else if(maxW >= 3) {
+                // رسالة الغياب المتكرر
+                const msg = `السلام عليكم ورحمة الله وبركاته.. تنبيه من ${schoolHeader}: نحيطكم علماً بأن الطالب (${st.name}) لديه غياب متكرر بواقع (${maxW}) أيام خلال هذا الأسبوع. يرجى توضيح أسباب الغياب للمدرسة. بارك الله فيكم.`;
+                weekH += createCardHTML(st, `متكرر: ${maxW} أيام/أسبوع`, msg);
+            }
+        });
+        document.getElementById('consecutiveList').innerHTML = consH || '<div class="waiting-msg">لا توجد حالات</div>';
+        document.getElementById('weeklyLimitList').innerHTML = weekH || '<div class="waiting-msg">لا توجد حالات</div>';
+    }
+   function createCardHTML(st, badge, msg) {
+        // تشفير الرسالة للرابط فقط لضمان عملها بشكل صحيح
+        const encodedMsg = encodeURIComponent(msg);
+        
         return `
         <div class="student-card">
             <span class="st-name-row">${st.name}</span>
-            <span class="st-phone-row"><i class="fas fa-phone-alt"></i> هاتف: ${st.phone}</span>
+            <span class="st-phone-row"><i class="fas fa-phone-alt"></i> هاتف ولي الأمر: ${st.phone}</span>
             <div class="st-info-row">
                 <span class="badge-status" style="color:${badge.includes('متتالية')?'var(--danger)':'var(--warning)'}">${badge}</span>
-                <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn no-print"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://wa.me/${st.phone}?text=${encodedMsg}" target="_blank" class="wa-btn no-print" title="إرسال رسالة توضيح">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
             </div>
         </div>`;
     }
-
     function getMaxConsecutive(dates) {
         if (!dates.length) return 0;
         let max = 1, curr = 1;
