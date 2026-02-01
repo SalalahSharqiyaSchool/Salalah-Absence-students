@@ -162,7 +162,7 @@
         }
     }
 
-   function analyzeData() {
+  function analyzeData() {
     const g = document.getElementById('gradeFilter').value;
     const s = document.getElementById('sectionFilter').value;
     if(!g || !s) return;
@@ -179,32 +179,32 @@
         const maxC = getMaxConsecutive(dates);
         const maxW = getMaxWeekCount(dates);
 
-        // صياغة نص الرسالة لمدرسة صلالة الشرقية
-        const schoolName = "مدرسة صلالة الشرقية";
-        
+        const schoolHeader = "مدرسة صلالة الشرقية";
+
         if(maxC >= 3) {
-            const msg = `السلام عليكم ورحمة الله،\nأفادة من ${schoolName}:\nنود إحاطتكم علماً بأن ابنكم الطالب/ ${st.name}\nمنقطع عن الدوام المدرسي لمدة (${maxC}) أيام متتالية. نرجو التواصل مع المدرسة بخصوص هذا الأمر.`;
-            const waLink = `https://wa.me/${st.phone || ''}?text=${encodeURIComponent(msg)}`;
+            // تجهيز نص الرسالة
+            const message = `السلام عليكم، إفادة من ${schoolHeader}: ابنكم الطالب (${st.name}) غائب لمدة (${maxC}) أيام متتالية.`;
+            // تشفير الرسالة للرابط فقط
+            const waLink = `https://wa.me/${st.phone}?text=${encodeURIComponent(message)}`;
             
-            // إضافة زر الواتساب داخل الوصف
-            const actionBtn = `<br><a href="${waLink}" target="_blank" style="display:inline-block; margin-top:8px; color:#25D366; text-decoration:none; font-weight:bold;">🟢 إرسال واتساب لولي الأمر</a>`;
+            // إنشاء زر أخضر بسيط وواضح
+            const btn = `<a href="${waLink}" target="_blank" style="background:#25D366; color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:12px; display:inline-block; margin-top:5px;">ارسل واتساب 📱</a>`;
             
-            consH += createCardHTML(st, `${maxC} أيام متتالية`, `انقطاع: الطالب غائب منذ ${maxC} أيام. ${actionBtn}`);
-            
+            consH += createCardHTML(st, `${maxC} أيام`, `غائب منذ ${maxC} أيام متتالية. ${btn}`);
+
         } else if(maxW >= 3) {
-            const msg = `السلام عليكم ورحمة الله،\nتنبيه من ${schoolName}:\nنحيطكم علماً بأن الطالب/ ${st.name}\nلديه غياب متكرر بواقع (${maxW}) أيام خلال أسبوع. نرجو المتابعة.`;
-            const waLink = `https://wa.me/${st.phone || ''}?text=${encodeURIComponent(msg)}`;
+            const message = `تنبيه من ${schoolHeader}: الطالب (${st.name}) تكرر غيابه (${maxW}) أيام خلال هذا الأسبوع.`;
+            const waLink = `https://wa.me/${st.phone}?text=${encodeURIComponent(message)}`;
             
-            const actionBtn = `<br><a href="${waLink}" target="_blank" style="display:inline-block; margin-top:8px; color:#25D366; text-decoration:none; font-weight:bold;">🟡 إرسال تنبيه غياب متكرر</a>`;
+            const btn = `<a href="${waLink}" target="_blank" style="background:#25D366; color:white; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:12px; display:inline-block; margin-top:5px;">ارسل واتساب 📱</a>`;
             
-            weekH += createCardHTML(st, `متكرر: ${maxW} أيام/أسبوع`, `تنبيه: غياب متكرر (${maxW} أيام) في أسبوع. ${actionBtn}`);
+            weekH += createCardHTML(st, `متكرر: ${maxW}`, `غياب ${maxW} أيام/أسبوع. ${btn}`);
         }
     });
 
     document.getElementById('consecutiveList').innerHTML = consH || '<div class="waiting-msg">لا توجد حالات</div>';
     document.getElementById('weeklyLimitList').innerHTML = weekH || '<div class="waiting-msg">لا توجد حالات</div>';
 }
-
     function createCardHTML(st, badge, msg) {
         return `
         <div class="student-card">
