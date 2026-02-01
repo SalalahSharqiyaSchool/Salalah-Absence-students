@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>منظومة فيصل العريبي للتحليل الإشرافي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #0f172a; 
+            --accent: #d4af37; 
+            --danger: #ef4444; 
+            --warning: #f59e0b; 
+            --bg: #f1f5f9; 
+        }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; color: var(--primary); }
+
+        .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); }
+        .app-header h1 { margin: 0; font-size: 1.2rem; color: var(--accent); font-weight: 900; }
+
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+
+        /* الرادار */
+        .radar-box { background: white; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid rgba(212,175,55,0.2); display: none; }
+        .radar-head { font-weight: 900; font-size: 0.9rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .tag-red { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; margin: 5px; display: inline-block; }
+        .tag-orange { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; margin: 5px; display: inline-block; }
+
+        /* الفلاتر */
+        .filters-card { background: white; padding: 20px; border-radius: 15px; display: flex; gap: 15px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-right: 5px solid var(--accent); }
+        select { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid #e2e8f0; font-family: 'Cairo'; font-weight: 700; }
+        .btn-print { background: var(--primary); color: var(--accent); border: none; padding: 10px 30px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+
+        /* النتائج */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .stat-grid { grid-template-columns: 1fr; } .filters-card { flex-direction: column; } }
+
+        .card { background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 180px; border: 1px solid #edf2f7; }
+        .card-header { padding: 15px; font-weight: 900; color: white; font-size: 1rem; text-align: center; }
+        .card.red .card-header { background: var(--danger); }
+        .card.orange .card-header { background: var(--warning); }
+
+        /* بطاقة الطالب */
+        .student-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin: 12px; padding: 15px; border-right: 5px solid transparent; }
+        .card.red .student-card { border-right-color: var(--danger); }
+        .card.orange .student-card { border-right-color: var(--warning); }
+
+        .st-name-row { display: block; font-weight: 900; font-size: 1.1rem; color: var(--primary); margin-bottom: 5px; }
+        .st-phone-row { display: block; font-size: 0.9rem; color: #64748b; font-weight: 700; margin-bottom: 10px; }
+        
+        .st-info-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+        .badge-status { font-size: 0.85rem; font-weight: 900; }
+        
+        .wa-btn { width: 38px; height: 38px; background: #25d366; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; }
+
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); color: white; text-align: center; padding: 15px; border-top: 3px solid var(--accent); font-size: 0.9rem; z-index: 2000; }
+        .footer-bar b { color: var(--accent); font-weight: 900; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            #printHeader, #printSignatures { display: block !important; }
+            .card { border: 1px solid #000 !important; page-break-inside: avoid; margin-bottom: 20px; }
+            .card-header { color: #000 !important; background: #eee !important; border-bottom: 1px solid #000; }
+            .footer-bar { position: static; color: black; background: white; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="printHeader" style="display:none; border-bottom:2px solid #000; padding:10px; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; font-weight:bold;">
+        <div>سلطنة عمان<br>وزارة التعليم<br>مدرسة صلالة الشرقية</div>
+        <div style="text-align:center;"><h2>تقرير تحليل الغياب الإشرافي</h2><p id="pDate"></p></div>
+        <div>الصف: <span id="pGrade"></span> / <span id="pSection"></span></div>
+    </div>
+</div>
+
+<header class="app-header no-print">
+    <h1><i class="fas fa-microscope"></i> <br>منظومة التحليل الإشرافي <br> مدرسة صلالة الشرقية</h1>
+</header>
+
+<div class="container">
+    <div id="radarSection" class="radar-box no-print">
+        <div class="radar-head"><i class="fas fa-satellite-dish"></i> رادار الفصول (تحليل تلقائي):</div>
+        <div id="radarTags"></div>
+    </div>
+
+    <div class="filters-card no-print">
+        <select id="gradeFilter" onchange="updateSections()"><option value="">-- اختر الصف --</option></select>
+        <select id="sectionFilter" onchange="analyzeData()"><option value="">-- اختر الشعبة --</option></select>
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
+    </div>
+
+    <div class="stat-grid">
+        <div class="card red">
+            <div class="card-header">طلاب منقطعون (3+ أيام متتالية)</div>
+            <div id="consecutiveList"></div>
+        </div>
+        <div class="card orange">
+            <div class="card-header">غياب متكرر (3+ أيام أسبوعية)</div>
+            <div id="weeklyLimitList"></div>
+        </div>
+    </div>
+
+    <div id="printSignatures" style="display:none; justify-content:space-around; margin-top:50px; font-weight:bold;">
+        <div style="text-align:center">المشرف الإداري<br><br>...........................</div>
+        <div style="text-align:center">اعتماد مدير المدرسة<br><br>...........................</div>
+    </div>
+</div>
+
+<div class="footer-bar no-print">
+    تصميم وتنفيذ الأستاذ: <b>فيصل العريبي</b> &copy; 2026
+</div>
+
+<script>
+    let students = []; let history = [];
+
+    async function loadData() {
+        try {
+            const [sR, hR] = await Promise.all([fetch('api/students.js'), fetch('api/attendance.js')]);
+            students = await sR.json(); history = await hR.json();
+            document.getElementById('pDate').innerText = new Date().toLocaleDateString('ar-OM');
+            
+            const grades = [...new Set(students.map(s => s.grade))].filter(g => g).sort((a,b)=>Number(a)-Number(b));
+            grades.forEach(g => document.getElementById('gradeFilter').innerHTML += `<option value="${g}">${g}</option>`);
+            buildRadar();
+        } catch (e) { console.error("Data error"); }
+    }
+
+    function buildRadar() {
+        const radar = document.getElementById('radarTags'); radar.innerHTML = "";
+        const classes = [...new Set(students.map(s => `${s.grade}|${s.section}`))].filter(c => !c.includes('undefined'));
+        classes.forEach(cls => {
+            const [g, s] = cls.split('|');
+            const classSt = students.filter(st => String(st.grade)===g && String(st.section)===s);
+            let state = 0;
+            classSt.forEach(st => {
+                const dates = history.filter(h => h.name === st.name).map(h => new Date(h.date)).sort((a,b)=>a-b);
+                if(getMaxConsecutive(dates) >= 3) state = 2;
+                else if(state < 2 && getMaxWeekCount(dates) >= 3) state = 1;
+            });
+            if(state > 0) {
+                const tag = document.createElement('div');
+                tag.className = state === 2 ? 'tag-red' : 'tag-orange';
+                tag.innerHTML = `<i class="fas fa-exclamation"></i> ${g}/${s}`;
+                tag.onclick = () => { document.getElementById('gradeFilter').value = g; updateSections(); document.getElementById('sectionFilter').value = s; analyzeData(); };
+                radar.appendChild(tag);
+            }
+        });
+        document.getElementById('radarSection').style.display = radar.innerHTML ? 'block' : 'none';
+    }
+
+    function updateSections() {
+        const g = document.getElementById('gradeFilter').value;
+        const sf = document.getElementById('sectionFilter');
+        sf.innerHTML = '<option value="">-- الشعبة --</option>';
+        if(g) {
+            const sections = [...new Set(students.filter(s => String(s.grade) === g).map(s => s.section))].filter(s=>s).sort();
+            sections.forEach(s => sf.innerHTML += `<option value="${s}">${s}</option>`);
+        }
+    }
+
+   function analyzeData() {
+    const g = document.getElementById('gradeFilter').value;
+    const s = document.getElementById('sectionFilter').value;
+    if(!g || !s) return;
+
+    document.getElementById('pGrade').innerText = g; 
+    document.getElementById('pSection').innerText = s;
+    
+    let filtered = students.filter(st => String(st.grade) === g && String(st.section) === s);
+    let consH = ""; 
+    let weekH = "";
+
+    filtered.forEach(st => {
+        const dates = history.filter(h => h.name === st.name).map(h => new Date(h.date)).sort((a,b)=>a-b);
+        const maxC = getMaxConsecutive(dates);
+        const maxW = getMaxWeekCount(dates);
+
+        // صياغة نص الرسالة لمدرسة صلالة الشرقية
+        const schoolName = "مدرسة صلالة الشرقية";
+        
+        if(maxC >= 3) {
+            const msg = `السلام عليكم ورحمة الله،\nأفادة من ${schoolName}:\nنود إحاطتكم علماً بأن ابنكم الطالب/ ${st.name}\nمنقطع عن الدوام المدرسي لمدة (${maxC}) أيام متتالية. نرجو التواصل مع المدرسة بخصوص هذا الأمر.`;
+            const waLink = `https://wa.me/${st.phone || ''}?text=${encodeURIComponent(msg)}`;
+            
+            // إضافة زر الواتساب داخل الوصف
+            const actionBtn = `<br><a href="${waLink}" target="_blank" style="display:inline-block; margin-top:8px; color:#25D366; text-decoration:none; font-weight:bold;">🟢 إرسال واتساب لولي الأمر</a>`;
+            
+            consH += createCardHTML(st, `${maxC} أيام متتالية`, `انقطاع: الطالب غائب منذ ${maxC} أيام. ${actionBtn}`);
+            
+        } else if(maxW >= 3) {
+            const msg = `السلام عليكم ورحمة الله،\nتنبيه من ${schoolName}:\nنحيطكم علماً بأن الطالب/ ${st.name}\nلديه غياب متكرر بواقع (${maxW}) أيام خلال أسبوع. نرجو المتابعة.`;
+            const waLink = `https://wa.me/${st.phone || ''}?text=${encodeURIComponent(msg)}`;
+            
+            const actionBtn = `<br><a href="${waLink}" target="_blank" style="display:inline-block; margin-top:8px; color:#25D366; text-decoration:none; font-weight:bold;">🟡 إرسال تنبيه غياب متكرر</a>`;
+            
+            weekH += createCardHTML(st, `متكرر: ${maxW} أيام/أسبوع`, `تنبيه: غياب متكرر (${maxW} أيام) في أسبوع. ${actionBtn}`);
+        }
+    });
+
+    document.getElementById('consecutiveList').innerHTML = consH || '<div class="waiting-msg">لا توجد حالات</div>';
+    document.getElementById('weeklyLimitList').innerHTML = weekH || '<div class="waiting-msg">لا توجد حالات</div>';
+}
+
+    function createCardHTML(st, badge, msg) {
+        return `
+        <div class="student-card">
+            <span class="st-name-row">${st.name}</span>
+            <span class="st-phone-row"><i class="fas fa-phone-alt"></i> هاتف: ${st.phone}</span>
+            <div class="st-info-row">
+                <span class="badge-status" style="color:${badge.includes('متتالية')?'var(--danger)':'var(--warning)'}">${badge}</span>
+                <a href="https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn no-print"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>`;
+    }
+
+    function getMaxConsecutive(dates) {
+        if (!dates.length) return 0;
+        let max = 1, curr = 1;
+        for (let i = 1; i < dates.length; i++) {
+            if ((dates[i] - dates[i-1]) / 86400000 === 1) curr++;
+            else { max = Math.max(max, curr); curr = 1; }
+        }
+        return Math.max(max, curr);
+    }
+
+    function getMaxWeekCount(dates) {
+        const counts = {};
+        dates.forEach(d => {
+            const oneJan = new Date(d.getFullYear(),0,1);
+            const w = Math.ceil((((d - oneJan) / 86400000) + oneJan.getDay() + 1) / 7);
+            const k = `${d.getFullYear()}-W${w}`;
+            counts[k] = (counts[k] || 0) + 1;
+        });
+        return Math.max(...Object.values(counts), 0);
+    }
+    window.onload = loadData;
+</script>
+</body>
+</html>
