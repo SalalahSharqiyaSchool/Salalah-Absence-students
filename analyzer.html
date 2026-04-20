@@ -247,7 +247,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
         </div>
     </div>
     <div class="ph-accent-bar">
-        <span>🔴 منقطع كلياً (3 أسابيع متتالية): <strong id="pCriticalCount">0</strong></span>
+        <span>🔴 منقطع كلياً (3 أسابيع كاملة): <strong id="pCriticalCount">0</strong></span>
         <span>🟠 منقطع جزئياً (15+ يوم تراكمي): <strong id="pPartialCount">0</strong></span>
         <span>🟡 كثير الغياب (أقل من 15 يوم): <strong id="pFrequentCount">0</strong></span>
         <span>✅ حضور منتظم: <strong id="pGoodCount">0</strong></span>
@@ -283,7 +283,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
             <div class="crit-dot red"></div>
             <div class="crit-text">
                 <strong style="color:var(--danger);">منقطع كلياً</strong>
-                <span>غياب متواصل لـ 3 أسابيع دراسية كاملة فأكثر<br>(أحد — خميس بدون انقطاع)</span>
+                <span>غائب في 3 أسابيع دراسية كاملة فأكثر (متواصلة أو غير متواصلة)<br>الأسبوع الكامل = الأحد إلى الخميس جميعهم غياب</span>
             </div>
         </div>
         <div class="crit-item">
@@ -304,7 +304,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 
     <!-- بطاقات الملخص -->
     <div class="summary-grid no-print" id="summarySection" style="display:none;">
-        <div class="sum-card danger"> <div class="sum-icon"><i class="fas fa-user-slash"></i></div>         <div class="sum-num" id="sumCritical">0</div>  <div class="sum-label">منقطع كلياً<br><small style="font-size:0.7rem;">(3 أسابيع متتالية)</small></div></div>
+        <div class="sum-card danger"> <div class="sum-icon"><i class="fas fa-user-slash"></i></div>         <div class="sum-num" id="sumCritical">0</div>  <div class="sum-label">منقطع كلياً<br><small style="font-size:0.7rem;">(3 أسابيع كاملة)</small></div></div>
         <div class="sum-card orange"> <div class="sum-icon"><i class="fas fa-user-clock"></i></div>         <div class="sum-num" id="sumPartial">0</div>   <div class="sum-label">منقطع جزئياً<br><small style="font-size:0.7rem;">(15+ يوم تراكمي)</small></div></div>
         <div class="sum-card warning"><div class="sum-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="sum-num" id="sumFrequent">0</div>  <div class="sum-label">كثير الغياب<br><small style="font-size:0.7rem;">(متكرر أقل من 15)</small></div></div>
         <div class="sum-card info">   <div class="sum-icon"><i class="fas fa-users"></i></div>              <div class="sum-num" id="sumTotal">0</div>    <div class="sum-label">إجمالي الطلاب</div></div>
@@ -376,7 +376,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
         <div class="card red">
             <div class="card-header">
                 <i class="fas fa-user-slash"></i> منقطع كلياً
-                <small style="font-size:0.75rem;opacity:0.85;">(3 أسابيع متتالية)</small>
+                <small style="font-size:0.75rem;opacity:0.85;">(3 أسابيع كاملة)</small>
                 <span class="card-count" id="countCritical">0</span>
             </div>
             <div id="criticalList"></div>
@@ -446,9 +446,9 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 
 const SCHOOL_DAYS = [0,1,2,3,4]; // أيام الدوام (0=أحد ... 4=خميس)
 
-// منقطع كلياً : غائب في 3 أسابيع دراسية كاملة متتالية فأكثر
-// = على الأقل 15 يوم دراسي متتالي (5 أيام × 3 أسابيع)
-const CRITICAL_WEEKS = 3;        // عدد الأسابيع الكاملة المتتالية
+// منقطع كلياً : غائب في 3 أسابيع دراسية كاملة فأكثر (متواصلة أو غير متواصلة)
+// الأسبوع الكامل = الأحد والاثنين والثلاثاء والأربعاء والخميس كلهم غياب
+const CRITICAL_WEEKS = 3;        // عدد الأسابيع الكاملة (مجموعاً طوال الفصل)
 const CRITICAL_SCHOOL_DAYS = CRITICAL_WEEKS * 5; // 15 يوم دراسي
 
 // منقطع جزئياً : أكثر من 15 يوم غياب تراكمي خلال الفصل (ولم يبلغ حد الانقطاع الكلي)
@@ -486,9 +486,8 @@ async function loadData(){
     } catch(e){ console.error("Data error",e); }
 }
 
-// ===== حساب عدد الأسابيع الدراسية الكاملة المتتالية في الغياب =====
-// منطق: نبحث عن أطول سلسلة من الأسابيع الكاملة (أحد→خميس) غائب فيها الطالب طوال الأسبوع
-function getMaxConsecutiveFullWeeks(sortedDates){
+// ===== حساب إجمالي الأسابيع الدراسية الكاملة (متواصلة أو غير متواصلة) =====
+function getTotalFullWeeks(sortedDates){
     if(!sortedDates.length) return 0;
     // نحوّل التواريخ إلى مجموعة strings للبحث السريع
     const dateSet = new Set(sortedDates.map(d=>d.toISOString().split('T')[0]));
@@ -500,46 +499,12 @@ function getMaxConsecutiveFullWeeks(sortedDates){
         weekSundays.add(sun.toISOString().split('T')[0]);
     });
 
-    const sundaysSorted = [...weekSundays].sort();
-    let maxFullWeeks=0, currFullWeeks=0;
-
-    sundaysSorted.forEach(sunStr=>{
-        const sun = new Date(sunStr);
-        // هل الأسبوع كامل؟ (الأحد→الخميس الخمسة كلهم غائب)
-        const isFull = isFullWeekAbsent(sun, dateSet);
-        if(isFull){
-            currFullWeeks++;
-            // هل هذا الأسبوع متتالٍ مع السابق؟ (نتحقق لاحقاً)
-            maxFullWeeks = Math.max(maxFullWeeks, currFullWeeks);
-        } else {
-            currFullWeeks=0;
-        }
+    // نعدّ كم أسبوع كان كاملاً — بغض النظر عن التوالي
+    let fullWeeksCount = 0;
+    weekSundays.forEach(sunStr=>{
+        if(isFullWeekAbsent(new Date(sunStr), dateSet)) fullWeeksCount++;
     });
-
-    // تصحيح: نتأكد أن الأسابيع متتالية فعلاً (لا فجوات بينها)
-    return getMaxConsecutiveFullWeeksStrict(sundaysSorted, dateSet);
-}
-
-function getMaxConsecutiveFullWeeksStrict(sundaysSorted, dateSet){
-    if(!sundaysSorted.length) return 0;
-    let max=0, curr=0, prevSun=null;
-    sundaysSorted.forEach(sunStr=>{
-        const sun = new Date(sunStr);
-        const isFull = isFullWeekAbsent(sun, dateSet);
-        if(isFull){
-            // هل هو متتالٍ مع الأسبوع السابق؟
-            if(prevSun!==null){
-                const diff = (sun - prevSun)/(86400000*7);
-                if(Math.round(diff)===1) curr++;
-                else curr=1;
-            } else curr=1;
-            max = Math.max(max, curr);
-            prevSun = sun;
-        } else {
-            curr=0; prevSun=null;
-        }
-    });
-    return max;
+    return fullWeeksCount;
 }
 
 function isFullWeekAbsent(sundayDate, dateSet){
@@ -586,8 +551,8 @@ function classifyStudent(dates){
     const total = dates.length;
     if(total===0) return 'normal';
 
-    const maxFullWeeks = getMaxConsecutiveFullWeeks(dates);
-    // 1. منقطع كلياً: 3 أسابيع دراسية كاملة متتالية فأكثر
+    const maxFullWeeks = getTotalFullWeeks(dates);
+    // 1. منقطع كلياً: 3 أسابيع دراسية كاملة فأكثر (متواصلة أو غير متواصلة)
     if(maxFullWeeks >= CRITICAL_WEEKS) return 'critical';
     // 2. منقطع جزئياً: أكثر من 15 يوم تراكمي
     if(total > PARTIAL_TOTAL) return 'partial';
@@ -651,7 +616,7 @@ function analyzeData(){
         const dates = history.filter(h=>h.name===st.name).map(h=>new Date(h.date)).sort((a,b)=>a-b);
         const total = dates.length;
         const maxC  = getMaxConsecutiveDays(dates);
-        const maxFullWeeks = getMaxConsecutiveFullWeeks(dates);
+        const maxFullWeeks = getTotalFullWeeks(dates);
         const type  = classifyStudent(dates);
 
         if(type==='critical')  criticalArr.push({st,total,maxC,maxFullWeeks,dates,type});
@@ -765,7 +730,7 @@ function buildCard(item, maxDays){
 
     const cfg = {
         critical:{
-            badge:`${maxFullWeeks} أسبوع كامل متتالي`,
+            badge:`${maxFullWeeks} أسبوع كامل في الفصل`,
             fill:'fill-danger', badgeClass:'risk-critical',
             color:'var(--danger)', icon:'user-slash', label:'منقطع كلياً'
         },
@@ -808,7 +773,7 @@ function buildCard(item, maxDays){
 
 function buildMsg(name,total,maxC,maxFullWeeks,type){
     if(type==='critical')
-        return `السلام عليكم ورحمة الله وبركاته.. إفادة عاجلة من مدرسة صلالة الشرقية: نود إحاطتكم علماً بأن ابنكم الطالب (${name}) قد انقطع عن الدوام المدرسي لمدة (${maxFullWeeks}) أسابيع دراسية كاملة متتالية (${total} يوم) مما يستوجب التدخل الفوري. يرجى التواصل مع إدارة المدرسة في أقرب وقت. شاكرين تعاونكم.`;
+        return `السلام عليكم ورحمة الله وبركاته.. إفادة عاجلة من مدرسة صلالة الشرقية: نود إحاطتكم علماً بأن ابنكم الطالب (${name}) قد انقطع عن الدوام المدرسي لمدة (${maxFullWeeks}) أسابيع دراسية كاملة خلال الفصل (${total} يوم) مما يستوجب التدخل الفوري. يرجى التواصل مع إدارة المدرسة في أقرب وقت. شاكرين تعاونكم.`;
     if(type==='partial')
         return `السلام عليكم ورحمة الله وبركاته.. إفادة من مدرسة صلالة الشرقية: نود إعلامكم بأن ابنكم الطالب (${name}) قد تجاوز غيابه التراكمي (${total}) يوماً دراسياً خلال هذا الفصل. هذا المعدل يُصنّف ضمن الانقطاع الجزئي. يرجى المتابعة والتواصل مع إدارة المدرسة. شاكرين تعاونكم.`;
     return `السلام عليكم ورحمة الله وبركاته.. تنبيه من مدرسة صلالة الشرقية: سُجّل على ابنكم الطالب (${name}) غيابات متكررة بلغت (${total}) أيام خلال هذا الفصل. نأمل متابعة الحضور المنتظم والتواصل مع الإدارة عند الحاجة. شاكرين تعاونكم.`;
@@ -863,7 +828,7 @@ function printClassReport(){
         const dates = history.filter(h=>h.name===st.name).map(h=>new Date(h.date)).sort((a,b)=>a-b);
         const total = dates.length;
         const maxC  = getMaxConsecutiveDays(dates);
-        const maxFW = getMaxConsecutiveFullWeeks(dates);
+        const maxFW = getTotalFullWeeks(dates);
         const type  = classifyStudent(dates);
         const cfg = {
             critical:{label:'منقطع كلياً',  style:'background:#fef2f2;color:#ef4444;border:1px solid #fecaca;'},
@@ -937,7 +902,7 @@ function buildPrintContent(criticalArr, partialArr, frequentArr, filtered, g, s)
     document.getElementById('pGoodCount').textContent     = Math.max(filtered.length-flagged,0);
 
     const sections=[
-        {arr:criticalArr, label:'أولاً: المنقطعون كلياً (3 أسابيع دراسية كاملة متتالية فأكثر)', cls:'red-bg',    badge:'red',    getVal:x=>`${x.maxFullWeeks} أسبوع — ${x.total} يوم`},
+        {arr:criticalArr, label:'أولاً: المنقطعون كلياً (3 أسابيع دراسية كاملة فأكثر خلال الفصل)', cls:'red-bg',    badge:'red',    getVal:x=>`${x.maxFullWeeks} أسبوع — ${x.total} يوم`},
         {arr:partialArr,  label:'ثانياً: المنقطعون جزئياً (أكثر من 15 يوم تراكمي)',              cls:'orange-bg', badge:'orange', getVal:x=>`${x.total} يوم تراكمي`},
         {arr:frequentArr, label:'ثالثاً: كثيرو الغياب (غيابات متكررة أقل من 15 يوم)',            cls:'yellow-bg', badge:'yellow', getVal:x=>`${x.total} يوم متكرر`}
     ];
@@ -1018,7 +983,7 @@ function exportCSV(){
 // ===== توليد PDF الطالب =====
 function generateStudentPDF(d){
     const typeColors={
-        critical:{bg:'#fef2f2',border:'#ef4444',text:'#ef4444',label:'منقطع كلياً',    note:`انقطع عن الدوام لـ ${d.maxFullWeeks} أسابيع دراسية كاملة متتالية`},
+        critical:{bg:'#fef2f2',border:'#ef4444',text:'#ef4444',label:'منقطع كلياً',    note:`غائب طوال ${d.maxFullWeeks} أسابيع دراسية كاملة خلال الفصل`},
         partial :{bg:'#fff7ed',border:'#f97316',text:'#ea580c',label:'منقطع جزئياً',   note:`تجاوز غيابه التراكمي ${d.total} يوماً (أكثر من 15 يوم)`},
         frequent:{bg:'#fffbeb',border:'#f59e0b',text:'#d97706',label:'كثير الغياب',    note:`سُجّلت عليه غيابات متكررة بلغت ${d.total} أيام`}
     };
