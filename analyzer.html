@@ -247,7 +247,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
         </div>
     </div>
     <div class="ph-accent-bar">
-        <span>🔴 منقطع كلياً (3 أسابيع كاملة): <strong id="pCriticalCount">0</strong></span>
+        <span>🔴 منقطع كلياً (3+ أسابيع ولا يزال غائباً): <strong id="pCriticalCount">0</strong></span>
         <span>🟠 منقطع جزئياً (15+ يوم تراكمي): <strong id="pPartialCount">0</strong></span>
         <span>🟡 كثير الغياب (أقل من 15 يوم): <strong id="pFrequentCount">0</strong></span>
         <span>✅ حضور منتظم: <strong id="pGoodCount">0</strong></span>
@@ -283,7 +283,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
             <div class="crit-dot red"></div>
             <div class="crit-text">
                 <strong style="color:var(--danger);">منقطع كلياً</strong>
-                <span>غائب في 3 أسابيع دراسية كاملة فأكثر (متواصلة أو غير متواصلة)<br>الأسبوع الكامل = الأحد إلى الخميس جميعهم غياب</span>
+                <span>3 أسابيع دراسية كاملة فأكثر ولا يزال غائباً حتى الآن<br>(إذا انتظم بعدها يُصنَّف كثير الغياب)</span>
             </div>
         </div>
         <div class="crit-item">
@@ -304,7 +304,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 
     <!-- بطاقات الملخص -->
     <div class="summary-grid no-print" id="summarySection" style="display:none;">
-        <div class="sum-card danger"> <div class="sum-icon"><i class="fas fa-user-slash"></i></div>         <div class="sum-num" id="sumCritical">0</div>  <div class="sum-label">منقطع كلياً<br><small style="font-size:0.7rem;">(3 أسابيع كاملة)</small></div></div>
+        <div class="sum-card danger"> <div class="sum-icon"><i class="fas fa-user-slash"></i></div>         <div class="sum-num" id="sumCritical">0</div>  <div class="sum-label">منقطع كلياً<br><small style="font-size:0.7rem;">(3+ أسابيع، لا يزال غائباً)</small></div></div>
         <div class="sum-card orange"> <div class="sum-icon"><i class="fas fa-user-clock"></i></div>         <div class="sum-num" id="sumPartial">0</div>   <div class="sum-label">منقطع جزئياً<br><small style="font-size:0.7rem;">(15+ يوم تراكمي)</small></div></div>
         <div class="sum-card warning"><div class="sum-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="sum-num" id="sumFrequent">0</div>  <div class="sum-label">كثير الغياب<br><small style="font-size:0.7rem;">(متكرر أقل من 15)</small></div></div>
         <div class="sum-card info">   <div class="sum-icon"><i class="fas fa-users"></i></div>              <div class="sum-num" id="sumTotal">0</div>    <div class="sum-label">إجمالي الطلاب</div></div>
@@ -376,7 +376,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
         <div class="card red">
             <div class="card-header">
                 <i class="fas fa-user-slash"></i> منقطع كلياً
-                <small style="font-size:0.75rem;opacity:0.85;">(3 أسابيع كاملة)</small>
+                <small style="font-size:0.75rem;opacity:0.85;">(3+ أسابيع، لا يزال غائباً)</small>
                 <span class="card-count" id="countCritical">0</span>
             </div>
             <div id="criticalList"></div>
@@ -446,18 +446,16 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 
 const SCHOOL_DAYS = [0,1,2,3,4]; // أيام الدوام (0=أحد ... 4=خميس)
 
-// منقطع كلياً : غائب في 3 أسابيع دراسية كاملة فأكثر (متواصلة أو غير متواصلة)
-// الأسبوع الكامل = الأحد والاثنين والثلاثاء والأربعاء والخميس كلهم غياب
-const CRITICAL_WEEKS = 3;        // عدد الأسابيع الكاملة (مجموعاً طوال الفصل)
-const CRITICAL_SCHOOL_DAYS = CRITICAL_WEEKS * 5; // 15 يوم دراسي
+// منقطع كلياً : 3 أسابيع دراسية كاملة فأكثر ولا يزال غائباً (لم ينتظم)
+//   إذا سجّل 3 أسابيع كاملة أو أكثر ثم انتظم → يُصنَّف كثير الغياب فقط
+// الأسبوع الكامل = الأحد→الخميس كلهم غياب (متواصلة أو غير متواصلة)
+const CRITICAL_WEEKS = 3;   // الحد الأدنى لعدد الأسابيع الكاملة
 
-// منقطع جزئياً : أكثر من 15 يوم غياب تراكمي خلال الفصل (ولم يبلغ حد الانقطاع الكلي)
+// منقطع جزئياً : أكثر من 15 يوم غياب تراكمي
 const PARTIAL_TOTAL = 15;
 
-// كثير الغياب : غيابات متكررة أقل من 15 يوم تراكمياً (لكن يُسجَّل غيابات)
-// سنعتبر "متكرر" = سجّل غياباً في أكثر من أسبوع مختلف (أسبوعان فأكثر)
-const FREQUENT_MIN_DAYS = 1;     // يكفي يوم واحد ليُعدّ غائباً
-const FREQUENT_MIN_WEEKS = 2;    // لكن في أسبوعين مختلفين على الأقل
+// كثير الغياب : غيابات في أسبوعين مختلفين فأكثر
+const FREQUENT_MIN_WEEKS = 2;
 
 // ===================================================
 
@@ -545,20 +543,39 @@ function getAbsentWeeksCount(dates){
     return weeks.size;
 }
 
+// ===== هل الطالب لا يزال غائباً؟ =====
+// نعتبره "لا يزال غائباً" إذا كان آخر غياب مسجّل في الأسبوع الحالي أو الأسبوع الماضي
+function isStillAbsent(sortedDates){
+    if(!sortedDates.length) return false;
+    const lastDate = sortedDates[sortedDates.length - 1];
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    // بداية الأسبوع الماضي (أحد الأسبوع السابق)
+    const thisWeekSun = getSundayOfWeek(today);
+    const lastWeekSun = new Date(thisWeekSun);
+    lastWeekSun.setDate(thisWeekSun.getDate() - 7);
+    // إذا كان آخر غياب >= بداية الأسبوع الماضي → لا يزال غائباً
+    return lastDate >= lastWeekSun;
+}
+
 // ===== تصنيف الطالب =====
 // إرجاع: 'critical' | 'partial' | 'frequent' | 'normal'
 function classifyStudent(dates){
     const total = dates.length;
     if(total===0) return 'normal';
 
-    const maxFullWeeks = getTotalFullWeeks(dates);
-    // 1. منقطع كلياً: 3 أسابيع دراسية كاملة فأكثر (متواصلة أو غير متواصلة)
-    if(maxFullWeeks >= CRITICAL_WEEKS) return 'critical';
-    // 2. منقطع جزئياً: أكثر من 15 يوم تراكمي
+    const fullWeeks = getTotalFullWeeks(dates);
+
+    // 1. منقطع كلياً: 3 أسابيع كاملة فأكثر ولا يزال غائباً (لم ينتظم)
+    if(fullWeeks >= CRITICAL_WEEKS && isStillAbsent(dates)) return 'critical';
+
+    // 2. منقطع جزئياً: أكثر من 15 يوم تراكمي (بما فيهم من كان منقطعاً ثم انتظم)
     if(total > PARTIAL_TOTAL) return 'partial';
-    // 3. كثير الغياب: أيام أقل من 15 لكن في أسبوعين مختلفين فأكثر
+
+    // 3. كثير الغياب: غيابات في أسبوعين مختلفين فأكثر
     const weeksCount = getAbsentWeeksCount(dates);
-    if(total >= FREQUENT_MIN_DAYS && weeksCount >= FREQUENT_MIN_WEEKS) return 'frequent';
+    if(weeksCount >= FREQUENT_MIN_WEEKS) return 'frequent';
+
     return 'normal';
 }
 
@@ -902,7 +919,7 @@ function buildPrintContent(criticalArr, partialArr, frequentArr, filtered, g, s)
     document.getElementById('pGoodCount').textContent     = Math.max(filtered.length-flagged,0);
 
     const sections=[
-        {arr:criticalArr, label:'أولاً: المنقطعون كلياً (3 أسابيع دراسية كاملة فأكثر خلال الفصل)', cls:'red-bg',    badge:'red',    getVal:x=>`${x.maxFullWeeks} أسبوع — ${x.total} يوم`},
+        {arr:criticalArr, label:'أولاً: المنقطعون كلياً (3+ أسابيع كاملة ولا يزالون غائبين)', cls:'red-bg',    badge:'red',    getVal:x=>`${x.maxFullWeeks} أسبوع — ${x.total} يوم`},
         {arr:partialArr,  label:'ثانياً: المنقطعون جزئياً (أكثر من 15 يوم تراكمي)',              cls:'orange-bg', badge:'orange', getVal:x=>`${x.total} يوم تراكمي`},
         {arr:frequentArr, label:'ثالثاً: كثيرو الغياب (غيابات متكررة أقل من 15 يوم)',            cls:'yellow-bg', badge:'yellow', getVal:x=>`${x.total} يوم متكرر`}
     ];
