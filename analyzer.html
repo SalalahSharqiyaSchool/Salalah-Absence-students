@@ -10,11 +10,11 @@
 <style>
 :root {
     --primary:#0f172a; --primary-light:#1e293b; --accent:#d4af37;
-    --danger:#ef4444; --danger-bg:#fef2f2; --danger-border:#fecaca;
-    --caution:#f97316; --caution-bg:#fff7ed; --caution-border:#fed7aa;
-    --warning:#f59e0b; --warning-bg:#fffbeb; --warning-border:#fde68a;
-    --success:#10b981; --success-bg:#f0fdf4;
-    --info:#3b82f6; --info-bg:#eff6ff;
+    --danger:#ef4444;   --danger-bg:#fef2f2;   --danger-border:#fecaca;
+    --orange:#f97316;   --orange-bg:#fff7ed;   --orange-border:#fed7aa;
+    --warning:#f59e0b;  --warning-bg:#fffbeb;  --warning-border:#fde68a;
+    --success:#10b981;  --success-bg:#f0fdf4;
+    --info:#3b82f6;     --info-bg:#eff6ff;
     --bg:#f1f5f9; --card-bg:#ffffff; --text-muted:#64748b;
     --border:#e2e8f0; --radius:14px; --shadow:0 2px 12px rgba(0,0,0,0.07);
 }
@@ -34,32 +34,48 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);margin:0;padding-bottom
 .legend-bar{background:var(--card-bg);border-radius:var(--radius);padding:12px 20px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-wrap:wrap;gap:16px;align-items:center;}
 .legend-item{display:flex;align-items:center;gap:8px;font-size:0.82rem;font-weight:700;}
 .legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-.legend-dot.red{background:var(--danger);} .legend-dot.yellow{background:var(--warning);}
+.legend-dot.red   {background:var(--danger);}
+.legend-dot.orange{background:var(--orange);}
+.legend-dot.yellow{background:var(--warning);}
 .legend-title{font-size:0.8rem;font-weight:900;color:var(--text-muted);}
 
 /* SUMMARY */
-.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
-@media(max-width:768px){.summary-grid{grid-template-columns:repeat(2,1fr);}}
+.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:900px){.summary-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.summary-grid{grid-template-columns:repeat(2,1fr);}}
 .sum-card{background:var(--card-bg);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;transition:transform 0.2s;}
 .sum-card:hover{transform:translateY(-2px);}
 .sum-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:4px;}
-.sum-card.danger .sum-icon{background:var(--danger-bg);color:var(--danger);}
+.sum-card.danger .sum-icon {background:var(--danger-bg); color:var(--danger);}
+.sum-card.orange .sum-icon {background:var(--orange-bg); color:var(--orange);}
 .sum-card.warning .sum-icon{background:var(--warning-bg);color:var(--warning);}
-.sum-card.info .sum-icon{background:var(--info-bg);color:var(--info);}
+.sum-card.info    .sum-icon{background:var(--info-bg);   color:var(--info);}
 .sum-card.success .sum-icon{background:var(--success-bg);color:var(--success);}
 .sum-num{font-size:2rem;font-weight:900;line-height:1;}
-.sum-card.danger .sum-num{color:var(--danger);}
+.sum-card.danger .sum-num {color:var(--danger);}
+.sum-card.orange .sum-num {color:var(--orange);}
 .sum-card.warning .sum-num{color:var(--warning);}
-.sum-card.info .sum-num{color:var(--info);}
+.sum-card.info    .sum-num{color:var(--info);}
 .sum-card.success .sum-num{color:var(--success);}
 .sum-label{font-size:0.78rem;color:var(--text-muted);font-weight:700;text-align:center;}
 
 /* RADAR */
 .radar-box{background:var(--card-bg);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid rgba(212,175,55,0.25);border-right:5px solid var(--accent);}
 .radar-head{font-weight:900;font-size:0.9rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-.tag-red{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;margin:4px;display:inline-block;font-size:0.85rem;transition:all 0.15s;}
-.tag-yellow{background:var(--warning-bg);color:#b45309;border:1px solid var(--warning-border);padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;margin:4px;display:inline-block;font-size:0.85rem;transition:all 0.15s;}
-.tag-red:hover,.tag-yellow:hover{transform:scale(1.04);}
+.tag-red   {background:var(--danger-bg); color:var(--danger); border:1px solid var(--danger-border); padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;margin:4px;display:inline-block;font-size:0.85rem;transition:all 0.15s;}
+.tag-orange{background:var(--orange-bg); color:#c2410c;       border:1px solid var(--orange-border); padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;margin:4px;display:inline-block;font-size:0.85rem;transition:all 0.15s;}
+.tag-yellow{background:var(--warning-bg);color:#b45309;       border:1px solid var(--warning-border);padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;margin:4px;display:inline-block;font-size:0.85rem;transition:all 0.15s;}
+.tag-red:hover,.tag-orange:hover,.tag-yellow:hover{transform:scale(1.04);}
+
+/* CRITERIA BOX */
+.criteria-box{background:var(--card-bg);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-wrap:wrap;gap:12px;}
+.crit-item{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:220px;background:var(--bg);border-radius:10px;padding:12px 14px;border:1px solid var(--border);}
+.crit-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.crit-dot.red   {background:var(--danger);}
+.crit-dot.orange{background:var(--orange);}
+.crit-dot.yellow{background:var(--warning);}
+.crit-text strong{display:block;font-size:0.88rem;font-weight:900;margin-bottom:2px;}
+.crit-text span{font-size:0.78rem;color:var(--text-muted);font-weight:600;}
 
 /* FILTERS */
 .filters-card{background:var(--card-bg);padding:18px 20px;border-radius:var(--radius);display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid var(--border);align-items:center;}
@@ -86,8 +102,8 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 .wstat-box{background:var(--bg);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--border);}
 .wstat-num{font-size:1.8rem;font-weight:900;line-height:1;}
 .wstat-label{font-size:0.75rem;color:var(--text-muted);font-weight:700;margin-top:4px;}
-.wstat-box.red .wstat-num{color:var(--danger);}
-.wstat-box.blue .wstat-num{color:var(--info);}
+.wstat-box.red   .wstat-num{color:var(--danger);}
+.wstat-box.blue  .wstat-num{color:var(--info);}
 .wstat-box.green .wstat-num{color:var(--success);}
 .weekly-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
 .weekly-table th{padding:9px 12px;text-align:right;font-weight:900;color:var(--primary);background:var(--bg);border-bottom:2px solid var(--border);}
@@ -95,8 +111,8 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 .weekly-table tr:last-child td{border-bottom:none;}
 .weekly-table tr:hover td{background:#f8fafc;}
 .day-chip{display:inline-block;background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);border-radius:5px;padding:2px 8px;font-size:0.72rem;font-weight:700;margin:2px;}
-.absent-badge{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;}
-.present-badge{background:var(--success-bg);color:var(--success);border:1px solid #bbf7d0;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;}
+.absent-badge {background:var(--danger-bg); color:var(--danger); border:1px solid var(--danger-border); padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;}
+.present-badge{background:var(--success-bg);color:var(--success);border:1px solid #bbf7d0;       padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;}
 
 /* CHARTS */
 .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
@@ -105,31 +121,36 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 .chart-card h3{margin:0 0 14px;font-size:0.88rem;font-weight:900;display:flex;align-items:center;gap:7px;}
 .chart-wrap{height:180px;position:relative;}
 
-/* RESULTS */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-@media(max-width:640px){.stat-grid{grid-template-columns:1fr;}.filters-card{flex-direction:column;}}
+/* RESULTS — 3 columns */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+@media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:580px){.stat-grid{grid-template-columns:1fr;}}
 .card{background:var(--card-bg);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);min-height:180px;border:1px solid var(--border);}
-.card-header{padding:14px 18px;font-weight:900;color:white;font-size:0.9rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;}
-.card.red .card-header{background:linear-gradient(135deg,#ef4444,#dc2626);}
-.card.yellow .card-header{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.card-header{padding:14px 18px;font-weight:900;color:white;font-size:0.88rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;}
+.card.red   .card-header{background:linear-gradient(135deg,#ef4444,#dc2626);}
+.card.orange.card-header,.card.orange .card-header{background:linear-gradient(135deg,#f97316,#ea580c);}
+.card.yellow.card-header,.card.yellow .card-header{background:linear-gradient(135deg,#f59e0b,#d97706);color:#1c1917;}
 .card-count{background:rgba(255,255,255,0.25);border-radius:6px;padding:1px 9px;font-size:0.85rem;font-weight:900;}
 
 /* STUDENT CARD */
 .student-card{background:#f8fafc;border:1px solid var(--border);border-radius:12px;margin:10px;padding:13px 15px;border-right:5px solid transparent;transition:all 0.2s;cursor:pointer;}
 .student-card:hover{background:white;box-shadow:0 2px 10px rgba(0,0,0,0.08);transform:translateX(-2px);}
-.card.red .student-card{border-right-color:var(--danger);}
+.card.red    .student-card{border-right-color:var(--danger);}
+.card.orange .student-card{border-right-color:var(--orange);}
 .card.yellow .student-card{border-right-color:var(--warning);}
 .st-top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;gap:6px;}
 .st-name{font-weight:900;font-size:0.95rem;color:var(--primary);}
 .risk-badge{font-size:0.7rem;font-weight:900;padding:3px 9px;border-radius:20px;white-space:nowrap;}
-.risk-critical{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);}
-.risk-frequent{background:var(--warning-bg);color:#b45309;border:1px solid var(--warning-border);}
+.risk-critical {background:var(--danger-bg); color:var(--danger); border:1px solid var(--danger-border);}
+.risk-partial  {background:var(--orange-bg); color:#c2410c;       border:1px solid var(--orange-border);}
+.risk-frequent {background:var(--warning-bg);color:#b45309;       border:1px solid var(--warning-border);}
 .st-phone-row{display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--text-muted);font-weight:700;margin-bottom:9px;}
 .absence-bar-wrap{margin-bottom:9px;}
 .absence-bar-label{display:flex;justify-content:space-between;font-size:0.73rem;color:var(--text-muted);font-weight:600;margin-bottom:4px;}
 .absence-bar{height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
 .absence-fill{height:100%;border-radius:99px;transition:width 0.6s ease;}
-.fill-danger{background:linear-gradient(90deg,#ef4444,#f87171);}
+.fill-danger {background:linear-gradient(90deg,#ef4444,#f87171);}
+.fill-orange {background:linear-gradient(90deg,#f97316,#fb923c);}
 .fill-warning{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
 .st-info-row{display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #cbd5e1;padding-top:9px;}
 .badge-status{font-size:0.8rem;font-weight:900;display:flex;align-items:center;gap:5px;}
@@ -163,7 +184,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 .dates-grid{display:flex;flex-wrap:wrap;gap:6px;}
 .d-chip{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);border-radius:7px;padding:5px 11px;font-size:0.78rem;font-weight:700;display:flex;align-items:center;gap:4px;}
 .modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;}
-.btn-wa{flex:1;padding:11px;background:#25d366;color:white;border:none;border-radius:11px;font-family:'Cairo';font-weight:900;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.2s;}
+.btn-wa {flex:1;padding:11px;background:#25d366;color:white;border:none;border-radius:11px;font-family:'Cairo';font-weight:900;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.2s;}
 .btn-wa:hover{background:#20b858;}
 .btn-pdf{flex:1;padding:11px;background:#1e40af;color:white;border:none;border-radius:11px;font-family:'Cairo';font-weight:900;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.2s;}
 .btn-pdf:hover{background:#1e3a8a;}
@@ -182,7 +203,8 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
     .ph-accent-bar{background:#0f172a!important;color:#d4af37!important;padding:6px 16px;border-radius:8px;font-size:0.82rem;font-weight:700;display:flex!important;justify-content:space-around;flex-wrap:wrap;gap:12px;margin-top:8px;}
     .print-section{margin-bottom:28px;page-break-inside:avoid;}
     .print-section-title{display:flex!important;align-items:center;gap:10px;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:0.95rem;font-weight:900;color:white!important;}
-    .print-section-title.red-bg{background:#ef4444!important;}
+    .print-section-title.red-bg   {background:#ef4444!important;}
+    .print-section-title.orange-bg{background:#f97316!important;}
     .print-section-title.yellow-bg{background:#f59e0b!important;color:#1c1917!important;}
     .count-badge{background:rgba(255,255,255,0.25);padding:2px 10px;border-radius:12px;font-size:0.82rem;}
     .print-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
@@ -192,11 +214,12 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
     .print-table tr:nth-child(even) td{background:#f8fafc!important;}
     .pt-name{font-weight:900;color:#0f172a;font-size:0.88rem;}
     .pt-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:900;}
-    .pt-badge.red{background:#fef2f2!important;color:#ef4444!important;border:1px solid #fecaca;}
+    .pt-badge.red   {background:#fef2f2!important;color:#ef4444!important;border:1px solid #fecaca;}
+    .pt-badge.orange{background:#fff7ed!important;color:#ea580c!important;border:1px solid #fed7aa;}
     .pt-badge.yellow{background:#fffbeb!important;color:#d97706!important;border:1px solid #fde68a;}
     .pt-dates{font-size:0.72rem;color:#6b7280;line-height:1.8;}
     #printSignatures{display:flex!important;}
-    .app-header,.legend-bar,.summary-grid,.radar-box,.filters-card,.charts-row,.stat-grid,.footer-bar,.modal-overlay,.weekly-section{display:none!important;}
+    .app-header,.legend-bar,.criteria-box,.summary-grid,.radar-box,.filters-card,.charts-row,.stat-grid,.footer-bar,.modal-overlay,.weekly-section{display:none!important;}
     tr{page-break-inside:avoid;}
 }
 </style>
@@ -224,9 +247,10 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
         </div>
     </div>
     <div class="ph-accent-bar">
-        <span>● منقطع كلياً (15 يوم متتالية): <strong id="pCriticalCount">0</strong></span>
-        <span>● كثير الغياب (30+ يوم تراكمي): <strong id="pFrequentCount">0</strong></span>
-        <span>● حضور منتظم: <strong id="pGoodCount">0</strong></span>
+        <span>🔴 منقطع كلياً (3 أسابيع متتالية): <strong id="pCriticalCount">0</strong></span>
+        <span>🟠 منقطع جزئياً (15+ يوم تراكمي): <strong id="pPartialCount">0</strong></span>
+        <span>🟡 كثير الغياب (أقل من 15 يوم): <strong id="pFrequentCount">0</strong></span>
+        <span>✅ حضور منتظم: <strong id="pGoodCount">0</strong></span>
     </div>
 </div>
 <div id="printContent" style="display:none;"></div>
@@ -253,19 +277,38 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 
 <div class="container">
 
-    <!-- دليل التصنيف -->
-    <div class="legend-bar no-print">
-        <span class="legend-title"><i class="fas fa-info-circle"></i> معايير التصنيف:</span>
-        <div class="legend-item"><div class="legend-dot red"></div><span>منقطع كلياً — 15 يوم متتالية فأكثر دون انقطاع</span></div>
-        <div class="legend-item"><div class="legend-dot yellow"></div><span>كثير الغياب — 30 يوم تراكمي فأكثر خلال الفصل</span></div>
+    <!-- معايير التصنيف -->
+    <div class="criteria-box no-print">
+        <div class="crit-item">
+            <div class="crit-dot red"></div>
+            <div class="crit-text">
+                <strong style="color:var(--danger);">منقطع كلياً</strong>
+                <span>غياب متواصل لـ 3 أسابيع دراسية كاملة فأكثر<br>(أحد — خميس بدون انقطاع)</span>
+            </div>
+        </div>
+        <div class="crit-item">
+            <div class="crit-dot orange"></div>
+            <div class="crit-text">
+                <strong style="color:var(--orange);">منقطع جزئياً</strong>
+                <span>تجاوز 15 يوم غياب تراكمي خلال الفصل<br>(دون أن يبلغ حد الانقطاع الكلي)</span>
+            </div>
+        </div>
+        <div class="crit-item">
+            <div class="crit-dot yellow"></div>
+            <div class="crit-text">
+                <strong style="color:var(--warning);">كثير الغياب</strong>
+                <span>غيابات متكررة أقل من 15 يوم تراكمياً<br>(لكن يُسجَّل غيابات بصفة متكررة)</span>
+            </div>
+        </div>
     </div>
 
     <!-- بطاقات الملخص -->
     <div class="summary-grid no-print" id="summarySection" style="display:none;">
-        <div class="sum-card danger"><div class="sum-icon"><i class="fas fa-user-slash"></i></div><div class="sum-num" id="sumCritical">0</div><div class="sum-label">منقطع كلياً<br><small style="font-size:0.7rem;">(15+ متتالية)</small></div></div>
-        <div class="sum-card warning"><div class="sum-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="sum-num" id="sumFrequent">0</div><div class="sum-label">كثير الغياب<br><small style="font-size:0.7rem;">(30+ تراكمي)</small></div></div>
-        <div class="sum-card info"><div class="sum-icon"><i class="fas fa-users"></i></div><div class="sum-num" id="sumTotal">0</div><div class="sum-label">إجمالي الطلاب</div></div>
-        <div class="sum-card success"><div class="sum-icon"><i class="fas fa-check-circle"></i></div><div class="sum-num" id="sumGood">0</div><div class="sum-label">حضور منتظم</div></div>
+        <div class="sum-card danger"> <div class="sum-icon"><i class="fas fa-user-slash"></i></div>         <div class="sum-num" id="sumCritical">0</div>  <div class="sum-label">منقطع كلياً<br><small style="font-size:0.7rem;">(3 أسابيع متتالية)</small></div></div>
+        <div class="sum-card orange"> <div class="sum-icon"><i class="fas fa-user-clock"></i></div>         <div class="sum-num" id="sumPartial">0</div>   <div class="sum-label">منقطع جزئياً<br><small style="font-size:0.7rem;">(15+ يوم تراكمي)</small></div></div>
+        <div class="sum-card warning"><div class="sum-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="sum-num" id="sumFrequent">0</div>  <div class="sum-label">كثير الغياب<br><small style="font-size:0.7rem;">(متكرر أقل من 15)</small></div></div>
+        <div class="sum-card info">   <div class="sum-icon"><i class="fas fa-users"></i></div>              <div class="sum-num" id="sumTotal">0</div>    <div class="sum-label">إجمالي الطلاب</div></div>
+        <div class="sum-card success"><div class="sum-icon"><i class="fas fa-check-circle"></i></div>       <div class="sum-num" id="sumGood">0</div>     <div class="sum-label">حضور منتظم</div></div>
     </div>
 
     <!-- رادار -->
@@ -289,9 +332,9 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
             <input type="text" class="search-input" id="searchInput" placeholder="اسم الطالب..." oninput="filterBySearch()">
         </div>
         <div class="btn-group">
-            <button class="btn-export" onclick="exportCSV()"><i class="fas fa-file-excel"></i> تصدير CSV</button>
-            <button class="btn-class-print" onclick="printClassReport()"><i class="fas fa-print"></i> طباعة الفصل</button>
-            <button class="btn-print" onclick="window.print()"><i class="fas fa-file-alt"></i> طباعة التقرير</button>
+            <button class="btn-export"      onclick="exportCSV()">          <i class="fas fa-file-excel"></i> تصدير CSV</button>
+            <button class="btn-class-print" onclick="printClassReport()">   <i class="fas fa-print"></i> طباعة الفصل</button>
+            <button class="btn-print"       onclick="window.print()">       <i class="fas fa-file-alt"></i> طباعة التقرير</button>
         </div>
     </div>
 
@@ -305,28 +348,15 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
             <span class="week-range" id="weekRangeLabel"></span>
         </div>
         <div class="weekly-stats">
-            <div class="wstat-box red">
-                <div class="wstat-num" id="wkAbsentCount">0</div>
-                <div class="wstat-label">طالب غائب هذا الأسبوع</div>
-            </div>
-            <div class="wstat-box blue">
-                <div class="wstat-num" id="wkTotalDays">0</div>
-                <div class="wstat-label">إجمالي أيام الغياب المسجّلة</div>
-            </div>
-            <div class="wstat-box green">
-                <div class="wstat-num" id="wkPresentCount">0</div>
-                <div class="wstat-label">طالب لم يتغيب هذا الأسبوع</div>
-            </div>
+            <div class="wstat-box red">  <div class="wstat-num" id="wkAbsentCount">0</div><div class="wstat-label">طالب غائب هذا الأسبوع</div></div>
+            <div class="wstat-box blue"> <div class="wstat-num" id="wkTotalDays">0</div>  <div class="wstat-label">إجمالي أيام الغياب المسجّلة</div></div>
+            <div class="wstat-box green"><div class="wstat-num" id="wkPresentCount">0</div><div class="wstat-label">طالب لم يتغيب هذا الأسبوع</div></div>
         </div>
         <div style="overflow-x:auto;">
             <table class="weekly-table">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>اسم الطالب</th>
-                        <th>أيام الغياب هذا الأسبوع</th>
-                        <th>التواريخ</th>
-                        <th>الحالة</th>
+                        <th>#</th><th>اسم الطالب</th><th>أيام الغياب هذا الأسبوع</th><th>التواريخ</th><th>الحالة</th>
                     </tr>
                 </thead>
                 <tbody id="weeklyTableBody"></tbody>
@@ -340,14 +370,33 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
         <div class="chart-card"><h3><i class="fas fa-chart-pie" style="color:var(--info)"></i> توزيع الحالات</h3><div class="chart-wrap"><canvas id="ratioChart"></canvas></div></div>
     </div>
 
-    <!-- النتائج — عمودان -->
+    <!-- النتائج — ثلاثة أعمدة -->
     <div class="stat-grid" id="resultsGrid" style="display:none;">
+        <!-- منقطع كلياً -->
         <div class="card red">
-            <div class="card-header"><i class="fas fa-user-slash"></i> منقطع كلياً (15+ يوم متتالية) <span class="card-count" id="countCritical">0</span></div>
+            <div class="card-header">
+                <i class="fas fa-user-slash"></i> منقطع كلياً
+                <small style="font-size:0.75rem;opacity:0.85;">(3 أسابيع متتالية)</small>
+                <span class="card-count" id="countCritical">0</span>
+            </div>
             <div id="criticalList"></div>
         </div>
+        <!-- منقطع جزئياً -->
+        <div class="card orange">
+            <div class="card-header">
+                <i class="fas fa-user-clock"></i> منقطع جزئياً
+                <small style="font-size:0.75rem;opacity:0.85;">(15+ يوم تراكمي)</small>
+                <span class="card-count" id="countPartial">0</span>
+            </div>
+            <div id="partialList"></div>
+        </div>
+        <!-- كثير الغياب -->
         <div class="card yellow">
-            <div class="card-header"><i class="fas fa-exclamation-triangle"></i> كثير الغياب (30+ يوم تراكمي) <span class="card-count" id="countFrequent">0</span></div>
+            <div class="card-header" style="color:#1c1917;">
+                <i class="fas fa-exclamation-triangle"></i> كثير الغياب
+                <small style="font-size:0.75rem;opacity:0.85;">(متكرر أقل من 15)</small>
+                <span class="card-count" id="countFrequent">0</span>
+            </div>
             <div id="frequentList"></div>
         </div>
     </div>
@@ -378,7 +427,7 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-wa" id="mWaBtn"><i class="fab fa-whatsapp"></i> إرسال واتساب</button>
+            <button class="btn-wa"  id="mWaBtn"><i class="fab fa-whatsapp"></i> إرسال واتساب</button>
             <button class="btn-pdf" id="mPdfBtn"><i class="fas fa-file-pdf"></i> تحميل PDF</button>
         </div>
     </div>
@@ -389,12 +438,31 @@ select:focus,.search-input:focus{outline:none;border-color:var(--accent);backgro
 </div>
 
 <script>
-// ===== معايير التصنيف المحدّثة =====
-const CRITICAL_CONSEC = 15;   // منقطع كلياً: 15 يوم متتالية فأكثر
-const FREQUENT_TOTAL  = 30;   // كثير الغياب: 30 يوم تراكمي فأكثر
+// ===================================================
+//  معايير التصنيف الجديدة
+// ===================================================
+// أيام الدوام في الأسبوع: الأحد (0) → الخميس (4)  [getDay: 0=أحد، 1=اثنين ... 4=خميس]
+// لكن Date.getDay() يعطي: 0=أحد، 1=اثنين، 2=ثلاثاء، 3=أربعاء، 4=خميس، 5=جمعة، 6=سبت
+
+const SCHOOL_DAYS = [0,1,2,3,4]; // أيام الدوام (0=أحد ... 4=خميس)
+
+// منقطع كلياً : غائب في 3 أسابيع دراسية كاملة متتالية فأكثر
+// = على الأقل 15 يوم دراسي متتالي (5 أيام × 3 أسابيع)
+const CRITICAL_WEEKS = 3;        // عدد الأسابيع الكاملة المتتالية
+const CRITICAL_SCHOOL_DAYS = CRITICAL_WEEKS * 5; // 15 يوم دراسي
+
+// منقطع جزئياً : أكثر من 15 يوم غياب تراكمي خلال الفصل (ولم يبلغ حد الانقطاع الكلي)
+const PARTIAL_TOTAL = 15;
+
+// كثير الغياب : غيابات متكررة أقل من 15 يوم تراكمياً (لكن يُسجَّل غيابات)
+// سنعتبر "متكرر" = سجّل غياباً في أكثر من أسبوع مختلف (أسبوعان فأكثر)
+const FREQUENT_MIN_DAYS = 1;     // يكفي يوم واحد ليُعدّ غائباً
+const FREQUENT_MIN_WEEKS = 2;    // لكن في أسبوعين مختلفين على الأقل
+
+// ===================================================
 
 let students = [], history = [], absChart = null, ratioChart = null;
-let currentResults = {critical:[], frequent:[]};
+let currentResults = {critical:[], partial:[], frequent:[]};
 let studentDataMap = {};
 let currentGrade = '', currentSection = '', currentFiltered = [];
 
@@ -418,6 +486,117 @@ async function loadData(){
     } catch(e){ console.error("Data error",e); }
 }
 
+// ===== حساب عدد الأسابيع الدراسية الكاملة المتتالية في الغياب =====
+// منطق: نبحث عن أطول سلسلة من الأسابيع الكاملة (أحد→خميس) غائب فيها الطالب طوال الأسبوع
+function getMaxConsecutiveFullWeeks(sortedDates){
+    if(!sortedDates.length) return 0;
+    // نحوّل التواريخ إلى مجموعة strings للبحث السريع
+    const dateSet = new Set(sortedDates.map(d=>d.toISOString().split('T')[0]));
+
+    // نحصل على مجموعة الأسابيع (بتمييز كل أسبوع بتاريخ أحده)
+    const weekSundays = new Set();
+    sortedDates.forEach(d=>{
+        const sun = getSundayOfWeek(d);
+        weekSundays.add(sun.toISOString().split('T')[0]);
+    });
+
+    const sundaysSorted = [...weekSundays].sort();
+    let maxFullWeeks=0, currFullWeeks=0;
+
+    sundaysSorted.forEach(sunStr=>{
+        const sun = new Date(sunStr);
+        // هل الأسبوع كامل؟ (الأحد→الخميس الخمسة كلهم غائب)
+        const isFull = isFullWeekAbsent(sun, dateSet);
+        if(isFull){
+            currFullWeeks++;
+            // هل هذا الأسبوع متتالٍ مع السابق؟ (نتحقق لاحقاً)
+            maxFullWeeks = Math.max(maxFullWeeks, currFullWeeks);
+        } else {
+            currFullWeeks=0;
+        }
+    });
+
+    // تصحيح: نتأكد أن الأسابيع متتالية فعلاً (لا فجوات بينها)
+    return getMaxConsecutiveFullWeeksStrict(sundaysSorted, dateSet);
+}
+
+function getMaxConsecutiveFullWeeksStrict(sundaysSorted, dateSet){
+    if(!sundaysSorted.length) return 0;
+    let max=0, curr=0, prevSun=null;
+    sundaysSorted.forEach(sunStr=>{
+        const sun = new Date(sunStr);
+        const isFull = isFullWeekAbsent(sun, dateSet);
+        if(isFull){
+            // هل هو متتالٍ مع الأسبوع السابق؟
+            if(prevSun!==null){
+                const diff = (sun - prevSun)/(86400000*7);
+                if(Math.round(diff)===1) curr++;
+                else curr=1;
+            } else curr=1;
+            max = Math.max(max, curr);
+            prevSun = sun;
+        } else {
+            curr=0; prevSun=null;
+        }
+    });
+    return max;
+}
+
+function isFullWeekAbsent(sundayDate, dateSet){
+    for(let i=0;i<5;i++){
+        const d = new Date(sundayDate);
+        d.setDate(sundayDate.getDate()+i);
+        const str = d.toISOString().split('T')[0];
+        if(!dateSet.has(str)) return false;
+    }
+    return true;
+}
+
+function getSundayOfWeek(date){
+    const d = new Date(date);
+    const day = d.getDay(); // 0=أحد
+    if(day===0) return d;
+    // إذا كان يوم 6(سبت) أو 5(جمعة) → ليس يوم دراسي، ننسبه لأحد الأسبوع السابق
+    if(day===5){ d.setDate(d.getDate()-5); return d; }
+    if(day===6){ d.setDate(d.getDate()-6); return d; }
+    d.setDate(d.getDate()-day);
+    return d;
+}
+
+// أطول انقطاع متتالي بالأيام الفعلية (لعرضه في المعلومات)
+function getMaxConsecutiveDays(dates){
+    if(!dates.length) return 0;
+    let max=1,curr=1;
+    for(let i=1;i<dates.length;i++){
+        if((dates[i]-dates[i-1])/86400000===1) curr++;
+        else{max=Math.max(max,curr);curr=1;}
+    }
+    return Math.max(max,curr);
+}
+
+// عدد الأسابيع المختلفة التي سُجّل فيها غياب
+function getAbsentWeeksCount(dates){
+    const weeks = new Set(dates.map(d=>getSundayOfWeek(d).toISOString().split('T')[0]));
+    return weeks.size;
+}
+
+// ===== تصنيف الطالب =====
+// إرجاع: 'critical' | 'partial' | 'frequent' | 'normal'
+function classifyStudent(dates){
+    const total = dates.length;
+    if(total===0) return 'normal';
+
+    const maxFullWeeks = getMaxConsecutiveFullWeeks(dates);
+    // 1. منقطع كلياً: 3 أسابيع دراسية كاملة متتالية فأكثر
+    if(maxFullWeeks >= CRITICAL_WEEKS) return 'critical';
+    // 2. منقطع جزئياً: أكثر من 15 يوم تراكمي
+    if(total > PARTIAL_TOTAL) return 'partial';
+    // 3. كثير الغياب: أيام أقل من 15 لكن في أسبوعين مختلفين فأكثر
+    const weeksCount = getAbsentWeeksCount(dates);
+    if(total >= FREQUENT_MIN_DAYS && weeksCount >= FREQUENT_MIN_WEEKS) return 'frequent';
+    return 'normal';
+}
+
 // ===== رادار الفصول =====
 function buildRadar(){
     const radar = document.getElementById('radarTags'); radar.innerHTML='';
@@ -425,16 +604,17 @@ function buildRadar(){
     classes.forEach(cls=>{
         const [g,s] = cls.split('|');
         const classSt = students.filter(st=>String(st.grade)===g&&String(st.section)===s);
-        let state = 0;
+        let maxState = 0;
         classSt.forEach(st=>{
             const dates = history.filter(h=>h.name===st.name).map(h=>new Date(h.date)).sort((a,b)=>a-b);
-            const maxC = getMaxConsecutive(dates);
-            if(maxC >= CRITICAL_CONSEC) state = Math.max(state,2);
-            else if(dates.length >= FREQUENT_TOTAL) state = Math.max(state,1);
+            const cls = classifyStudent(dates);
+            if(cls==='critical') maxState=Math.max(maxState,3);
+            else if(cls==='partial')  maxState=Math.max(maxState,2);
+            else if(cls==='frequent') maxState=Math.max(maxState,1);
         });
-        if(state>0){
+        if(maxState>0){
             const tag = document.createElement('span');
-            tag.className = state===2 ? 'tag-red' : 'tag-yellow';
+            tag.className = maxState===3 ? 'tag-red' : maxState===2 ? 'tag-orange' : 'tag-yellow';
             tag.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${g}/${s}`;
             tag.onclick = ()=>{document.getElementById('gradeFilter').value=g;updateSections();setTimeout(()=>{document.getElementById('sectionFilter').value=s;analyzeData();},50);};
             radar.appendChild(tag);
@@ -465,31 +645,29 @@ function analyzeData(){
 
     const filtered = students.filter(st=>String(st.grade)===g&&String(st.section)===s);
     currentFiltered = filtered;
-    const criticalArr=[], frequentArr=[];
+    const criticalArr=[], partialArr=[], frequentArr=[];
 
     filtered.forEach(st=>{
         const dates = history.filter(h=>h.name===st.name).map(h=>new Date(h.date)).sort((a,b)=>a-b);
         const total = dates.length;
-        const maxC  = getMaxConsecutive(dates);
+        const maxC  = getMaxConsecutiveDays(dates);
+        const maxFullWeeks = getMaxConsecutiveFullWeeks(dates);
+        const type  = classifyStudent(dates);
 
-        // المستوى الأول: منقطع كلياً — 15 يوم متتالية فأكثر
-        if(maxC >= CRITICAL_CONSEC){
-            criticalArr.push({st,total,maxC,dates});
-        }
-        // المستوى الثاني: كثير الغياب — 30 يوم تراكمي فأكثر (ولم يُصنّف منقطعاً كلياً)
-        else if(total >= FREQUENT_TOTAL){
-            frequentArr.push({st,total,maxC,dates});
-        }
+        if(type==='critical')  criticalArr.push({st,total,maxC,maxFullWeeks,dates,type});
+        else if(type==='partial')   partialArr.push({st,total,maxC,maxFullWeeks,dates,type});
+        else if(type==='frequent')  frequentArr.push({st,total,maxC,maxFullWeeks,dates,type});
     });
 
-    criticalArr.sort((a,b)=>b.maxC-a.maxC);
+    criticalArr.sort((a,b)=>b.maxFullWeeks-a.maxFullWeeks || b.total-a.total);
+    partialArr.sort((a,b)=>b.total-a.total);
     frequentArr.sort((a,b)=>b.total-a.total);
-    currentResults={critical:criticalArr,frequent:frequentArr};
+    currentResults={critical:criticalArr,partial:partialArr,frequent:frequentArr};
 
-    renderCards(criticalArr,frequentArr);
-    updateSummary(filtered,criticalArr,frequentArr);
-    updateCharts(criticalArr,frequentArr,filtered.length);
-    buildPrintContent(criticalArr,frequentArr,filtered,g,s);
+    renderCards(criticalArr, partialArr, frequentArr);
+    updateSummary(filtered, criticalArr, partialArr, frequentArr);
+    updateCharts(criticalArr, partialArr, frequentArr, filtered.length);
+    buildPrintContent(criticalArr, partialArr, frequentArr, filtered, g, s);
     buildWeeklySection(filtered);
 
     document.getElementById('resultsGrid').style.display='grid';
@@ -500,62 +678,51 @@ function analyzeData(){
 }
 
 // ===== قسم غياب الأسبوع الحالي =====
-function buildWeeklySection(filtered){
-    // الأسبوع يبدأ الأحد وينتهي الخميس
-    const today = new Date();
-    const day   = today.getDay(); // 0=أحد، 4=خميس، 5=جمعة، 6=سبت
-    // إيجاد أحد هذا الأسبوع
-    let daysFromSunday = day === 0 ? 0 : day;
-    // إذا كان يوم جمعة أو سبت، ننقل لأحد الأسبوع القادم
-    if(day===5) daysFromSunday=-1; // السبت = يوم قبل الأحد القادم... نرجع لأحد هذا الأسبوع
-    if(day===6) daysFromSunday=-2;
-
-    const sunday = new Date(today);
-    sunday.setDate(today.getDate() - (day===0?0:day===6?1:day===5?0:day));
-    // تبسيط: أحد هذا الأسبوع
-    const sun = new Date(today);
+function getWeekBounds(today){
     const d = today.getDay();
+    const sun = new Date(today);
     if(d===0)      sun.setDate(today.getDate());
-    else if(d<=4)  sun.setDate(today.getDate()-d);
-    else if(d===5) sun.setDate(today.getDate()+2); // الجمعة → الأحد القادم ← لا، نريد الأحد الماضي
-    else           sun.setDate(today.getDate()-6); // السبت
-    // إعادة حساب مبسط
+    else if(d===5) sun.setDate(today.getDate()-5);
+    else if(d===6) sun.setDate(today.getDate()-6);
+    else           sun.setDate(today.getDate()-d);
+    sun.setHours(0,0,0,0);
+    const thu = new Date(sun);
+    thu.setDate(sun.getDate()+4);
+    thu.setHours(23,59,59,999);
+    return {sun,thu};
+}
+
+function buildWeeklySection(filtered){
+    const today = new Date();
     const w = getWeekBounds(today);
-    const sunDate = w.sun;
-    const thuDate = w.thu;
 
     document.getElementById('weekRangeLabel').textContent =
-        `الأحد ${sunDate.toLocaleDateString('ar-OM')} — الخميس ${thuDate.toLocaleDateString('ar-OM')}`;
+        `الأحد ${w.sun.toLocaleDateString('ar-OM')} — الخميس ${w.thu.toLocaleDateString('ar-OM')}`;
 
-    // حساب الطلاب الغائبين هذا الأسبوع (كل طالب يُحتسب مرة واحدة)
     let absentStudents = [], totalDaysThisWeek = 0;
-
     filtered.forEach(st=>{
         const weekDates = history.filter(h=>{
             if(h.name!==st.name) return false;
             const d = new Date(h.date);
-            return d>=sunDate && d<=thuDate;
+            return d>=w.sun && d<=w.thu;
         }).map(h=>new Date(h.date));
-
         if(weekDates.length>0){
             absentStudents.push({st, days:weekDates.length, dates:weekDates});
             totalDaysThisWeek += weekDates.length;
         }
     });
-
     absentStudents.sort((a,b)=>b.days-a.days);
     const presentCount = filtered.length - absentStudents.length;
 
-    document.getElementById('wkAbsentCount').textContent = absentStudents.length;
-    document.getElementById('wkTotalDays').textContent   = totalDaysThisWeek;
-    document.getElementById('wkPresentCount').textContent= Math.max(presentCount,0);
+    document.getElementById('wkAbsentCount').textContent  = absentStudents.length;
+    document.getElementById('wkTotalDays').textContent    = totalDaysThisWeek;
+    document.getElementById('wkPresentCount').textContent = Math.max(presentCount,0);
 
     const tbody = document.getElementById('weeklyTableBody');
     if(absentStudents.length===0){
         tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);font-weight:700;"><i class="fas fa-check-circle" style="color:var(--success);margin-left:8px;"></i>لا يوجد غياب مسجّل هذا الأسبوع</td></tr>`;
         return;
     }
-
     tbody.innerHTML = absentStudents.map((item,i)=>{
         const datesHtml = item.dates.map(d=>`<span class="day-chip">${d.toLocaleDateString('ar-OM',{weekday:'short',month:'numeric',day:'numeric'})}</span>`).join('');
         return `<tr>
@@ -568,68 +735,69 @@ function buildWeeklySection(filtered){
     }).join('');
 }
 
-// حساب حدود الأسبوع (الأحد - الخميس)
-function getWeekBounds(today){
-    const d = today.getDay(); // 0=أحد
-    const sun = new Date(today);
-    // إيجاد أحد هذا الأسبوع
-    if(d===0) sun.setDate(today.getDate());
-    else if(d===6) sun.setDate(today.getDate()-6); // السبت → أحد الأسبوع الحالي
-    else if(d===5) sun.setDate(today.getDate()-5); // الجمعة → أحد الأسبوع الحالي
-    else sun.setDate(today.getDate()-d);
-    sun.setHours(0,0,0,0);
-    const thu = new Date(sun);
-    thu.setDate(sun.getDate()+4);
-    thu.setHours(23,59,59,999);
-    return {sun,thu};
-}
-
 // ===== رسم بطاقات النتائج =====
-function renderCards(criticalArr,frequentArr){
-    const maxDays = Math.max(...[...criticalArr.map(x=>x.maxC),...frequentArr.map(x=>x.total),1]);
+function renderCards(criticalArr, partialArr, frequentArr){
+    const allDays = [...criticalArr.map(x=>x.total),...partialArr.map(x=>x.total),...frequentArr.map(x=>x.total),1];
+    const maxDays = Math.max(...allDays);
 
     document.getElementById('criticalList').innerHTML = criticalArr.length
-        ? criticalArr.map(item=>buildCard(item,'critical',maxDays)).join('')
+        ? criticalArr.map(item=>buildCard(item,maxDays)).join('')
         : emptyState('لا توجد حالات انقطاع كلي');
 
+    document.getElementById('partialList').innerHTML = partialArr.length
+        ? partialArr.map(item=>buildCard(item,maxDays)).join('')
+        : emptyState('لا توجد حالات انقطاع جزئي');
+
     document.getElementById('frequentList').innerHTML = frequentArr.length
-        ? frequentArr.map(item=>buildCard(item,'frequent',maxDays)).join('')
+        ? frequentArr.map(item=>buildCard(item,maxDays)).join('')
         : emptyState('لا توجد حالات كثيرة الغياب');
 
     document.getElementById('countCritical').textContent = criticalArr.length;
+    document.getElementById('countPartial').textContent  = partialArr.length;
     document.getElementById('countFrequent').textContent = frequentArr.length;
     bindCardEvents();
 }
 
 function emptyState(msg){return `<div class="empty-state"><i class="fas fa-check-circle"></i><p>${msg}</p></div>`;}
 
-function buildCard(item,type,maxDays){
-    const {st,total,maxC,dates}=item;
-    const isCrit = type==='critical';
-    const dayVal = isCrit ? maxC : total;
-    const pct    = Math.min(Math.round((dayVal/(maxDays||1))*100),100);
-    const badgeText  = isCrit ? `${maxC} يوم متتالية` : `${total} يوم تراكمي`;
-    const fillClass  = isCrit ? 'fill-danger' : 'fill-warning';
-    const badgeClass = isCrit ? 'risk-critical' : 'risk-frequent';
-    const statusColor= isCrit ? 'var(--danger)' : 'var(--warning)';
-    const iconName   = isCrit ? 'user-slash' : 'exclamation-triangle';
-    const typeLabel  = isCrit ? 'منقطع كلياً' : 'كثير الغياب';
-    const msgType    = type;
-    const msg = buildMsg(st.name,total,maxC,msgType);
+function buildCard(item, maxDays){
+    const {st,total,maxC,maxFullWeeks,dates,type}=item;
+
+    const cfg = {
+        critical:{
+            badge:`${maxFullWeeks} أسبوع كامل متتالي`,
+            fill:'fill-danger', badgeClass:'risk-critical',
+            color:'var(--danger)', icon:'user-slash', label:'منقطع كلياً'
+        },
+        partial:{
+            badge:`${total} يوم تراكمي`,
+            fill:'fill-orange', badgeClass:'risk-partial',
+            color:'var(--orange)', icon:'user-clock', label:'منقطع جزئياً'
+        },
+        frequent:{
+            badge:`${total} يوم متكرر`,
+            fill:'fill-warning', badgeClass:'risk-frequent',
+            color:'var(--warning)', icon:'exclamation-triangle', label:'كثير الغياب'
+        }
+    }[type];
+
+    const pct    = Math.min(Math.round((total/(maxDays||1))*100),100);
+    const barLbl = type==='critical' ? `أسابيع انقطاع كاملة: ${maxFullWeeks}` : `إجمالي الغياب: ${total} يوم`;
+    const msg = buildMsg(st.name,total,maxC,maxFullWeeks,type);
     const encodedMsg = encodeURIComponent(msg);
     const cardId = 'st_'+Math.random().toString(36).substr(2,9);
-    studentDataMap[cardId]={name:st.name,grade:st.grade,section:st.section,phone:st.phone,total,maxC,dates:dates.map(d=>d.toISOString().split('T')[0]),badgeText,typeLabel,msgType,encodedMsg};
+    studentDataMap[cardId]={name:st.name,grade:st.grade,section:st.section,phone:st.phone,total,maxC,maxFullWeeks,dates:dates.map(d=>d.toISOString().split('T')[0]),badgeText:cfg.badge,typeLabel:cfg.label,msgType:type,encodedMsg};
 
     return `
     <div class="student-card" data-id="${cardId}">
-        <div class="st-top-row"><span class="st-name">${st.name}</span><span class="risk-badge ${badgeClass}">${badgeText}</span></div>
+        <div class="st-top-row"><span class="st-name">${st.name}</span><span class="risk-badge ${cfg.badgeClass}">${cfg.badge}</span></div>
         <div class="st-phone-row"><i class="fas fa-phone-alt"></i> ${st.phone}</div>
         <div class="absence-bar-wrap">
-            <div class="absence-bar-label"><span>${isCrit?'أطول انقطاع متتالي':'إجمالي الغياب'}</span><span>${dayVal} يوم</span></div>
-            <div class="absence-bar"><div class="absence-fill ${fillClass}" style="width:${pct}%"></div></div>
+            <div class="absence-bar-label"><span>${barLbl}</span><span>${total} يوم</span></div>
+            <div class="absence-bar"><div class="absence-fill ${cfg.fill}" style="width:${pct}%"></div></div>
         </div>
         <div class="st-info-row">
-            <span class="badge-status" style="color:${statusColor}"><i class="fas fa-${iconName}"></i> ${badgeText}</span>
+            <span class="badge-status" style="color:${cfg.color}"><i class="fas fa-${cfg.icon}"></i> ${cfg.badge}</span>
             <div class="action-btns">
                 <button class="detail-btn" data-id="${cardId}"><i class="fas fa-eye"></i></button>
                 <a href="https://wa.me/${st.phone}?text=${encodedMsg}" target="_blank" class="wa-btn no-print"><i class="fab fa-whatsapp"></i></a>
@@ -638,9 +806,12 @@ function buildCard(item,type,maxDays){
     </div>`;
 }
 
-function buildMsg(name,total,maxC,type){
-    if(type==='critical') return `السلام عليكم ورحمة الله وبركاته.. إفادة عاجلة من مدرسة صلالة الشرقية: نود إحاطتكم علماً بأن ابنكم الطالب (${name}) قد انقطع عن الدوام المدرسي لمدة (${maxC}) أياماً متتالية مما يستوجب التدخل الفوري. يرجى التواصل مع إدارة المدرسة في أقرب وقت. شاكرين تعاونكم.`;
-    return `السلام عليكم ورحمة الله وبركاته.. إفادة من مدرسة صلالة الشرقية: نود إعلامكم بأن ابنكم الطالب (${name}) قد بلغ إجمالي غيابه (${total}) يوماً دراسياً خلال هذا الفصل. يرجى المتابعة والحرص على انتظام الحضور والتواصل مع الإدارة. شاكرين تعاونكم.`;
+function buildMsg(name,total,maxC,maxFullWeeks,type){
+    if(type==='critical')
+        return `السلام عليكم ورحمة الله وبركاته.. إفادة عاجلة من مدرسة صلالة الشرقية: نود إحاطتكم علماً بأن ابنكم الطالب (${name}) قد انقطع عن الدوام المدرسي لمدة (${maxFullWeeks}) أسابيع دراسية كاملة متتالية (${total} يوم) مما يستوجب التدخل الفوري. يرجى التواصل مع إدارة المدرسة في أقرب وقت. شاكرين تعاونكم.`;
+    if(type==='partial')
+        return `السلام عليكم ورحمة الله وبركاته.. إفادة من مدرسة صلالة الشرقية: نود إعلامكم بأن ابنكم الطالب (${name}) قد تجاوز غيابه التراكمي (${total}) يوماً دراسياً خلال هذا الفصل. هذا المعدل يُصنّف ضمن الانقطاع الجزئي. يرجى المتابعة والتواصل مع إدارة المدرسة. شاكرين تعاونكم.`;
+    return `السلام عليكم ورحمة الله وبركاته.. تنبيه من مدرسة صلالة الشرقية: سُجّل على ابنكم الطالب (${name}) غيابات متكررة بلغت (${total}) أيام خلال هذا الفصل. نأمل متابعة الحضور المنتظم والتواصل مع الإدارة عند الحاجة. شاكرين تعاونكم.`;
 }
 
 function bindCardEvents(){
@@ -659,10 +830,14 @@ function openModalById(id){
     document.getElementById('mClass').textContent  = `${d.grade} / ${d.section}`;
     document.getElementById('mPhone').textContent  = d.phone;
     document.getElementById('mTotal').textContent  = `${d.total} يوم`;
-    document.getElementById('mConsec').textContent = `${d.maxC} يوم`;
+    document.getElementById('mConsec').textContent = `${d.maxC} يوم (${d.maxFullWeeks} أسبوع كامل)`;
     document.getElementById('modalTitle').textContent = d.name;
     const pill=document.getElementById('modalTypePill');
-    const pc={critical:'background:#fef2f2;color:#ef4444;border:1px solid #fecaca',frequent:'background:#fffbeb;color:#d97706;border:1px solid #fde68a'};
+    const pc={
+        critical:'background:#fef2f2;color:#ef4444;border:1px solid #fecaca',
+        partial :'background:#fff7ed;color:#ea580c;border:1px solid #fed7aa',
+        frequent:'background:#fffbeb;color:#d97706;border:1px solid #fde68a'
+    };
     pill.textContent=d.typeLabel; pill.style.cssText=`font-size:0.75rem;font-weight:900;padding:4px 12px;border-radius:20px;${pc[d.msgType]||''}`;
     document.getElementById('mDates').innerHTML = d.dates.length
         ? d.dates.map(dt=>`<span class="d-chip"><i class="fas fa-calendar-day"></i>${dt}</span>`).join('')
@@ -684,95 +859,58 @@ function printClassReport(){
     const filtered = currentFiltered;
     const dateNow = new Date().toLocaleDateString('ar-OM',{year:'numeric',month:'long',day:'numeric'});
 
-    // بناء جدول كل طلاب الفصل
     const rows = filtered.map((st,i)=>{
         const dates = history.filter(h=>h.name===st.name).map(h=>new Date(h.date)).sort((a,b)=>a-b);
         const total = dates.length;
-        const maxC  = getMaxConsecutive(dates);
-        let status='', badgeStyle='';
-        if(maxC>=CRITICAL_CONSEC){
-            status='منقطع كلياً'; badgeStyle='background:#fef2f2;color:#ef4444;border:1px solid #fecaca;';
-        } else if(total>=FREQUENT_TOTAL){
-            status='كثير الغياب'; badgeStyle='background:#fffbeb;color:#d97706;border:1px solid #fde68a;';
-        } else if(total>0){
-            status='غياب عادي'; badgeStyle='background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;';
-        } else {
-            status='منتظم'; badgeStyle='background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;';
-        }
+        const maxC  = getMaxConsecutiveDays(dates);
+        const maxFW = getMaxConsecutiveFullWeeks(dates);
+        const type  = classifyStudent(dates);
+        const cfg = {
+            critical:{label:'منقطع كلياً',  style:'background:#fef2f2;color:#ef4444;border:1px solid #fecaca;'},
+            partial :{label:'منقطع جزئياً', style:'background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;'},
+            frequent:{label:'كثير الغياب',  style:'background:#fffbeb;color:#d97706;border:1px solid #fde68a;'},
+            normal  :{label:'منتظم',         style:'background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;'}
+        }[type];
         const datesStr = dates.map(d=>d.toISOString().split('T')[0]).join('،  ');
         return `<tr style="${i%2===0?'background:#f8fafc;':'background:white;'}">
             <td style="padding:10px 12px;color:#9ca3af;font-size:0.8rem;border-bottom:1px solid #f1f5f9;">${i+1}</td>
             <td style="padding:10px 12px;font-weight:900;color:#0f172a;border-bottom:1px solid #f1f5f9;">${st.name}</td>
             <td style="padding:10px 12px;direction:ltr;text-align:right;border-bottom:1px solid #f1f5f9;">${st.phone}</td>
             <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #f1f5f9;font-weight:900;font-size:1.1rem;color:${total>0?'#ef4444':'#10b981'};">${total}</td>
-            <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #f1f5f9;">${maxC>0?maxC:'-'}</td>
-            <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;"><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;${badgeStyle}">${status}</span></td>
+            <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #f1f5f9;">${maxFW>0?maxFW+' أسبوع':'-'}</td>
+            <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;"><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;${cfg.style}">${cfg.label}</span></td>
             <td style="padding:10px 12px;font-size:0.75rem;color:#6b7280;line-height:1.8;border-bottom:1px solid #f1f5f9;">${datesStr||'—'}</td>
         </tr>`;
     }).join('');
 
-    const totalAbsent  = filtered.filter(st=>history.some(h=>h.name===st.name)).length;
-    const totalPresent = filtered.length - totalAbsent;
-    const totalCritical= currentResults.critical.length;
-    const totalFrequent= currentResults.frequent.length;
-
     const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
     <title>تقرير غياب الفصل ${g}/${s}</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        *{box-sizing:border-box;margin:0;padding:0;}
-        body{font-family:'Cairo',sans-serif;background:white;color:#0f172a;direction:rtl;}
-        @page{size:A4 landscape;margin:12mm;}
-        @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
-    </style></head><body>
-    <!-- هيدر -->
+    <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Cairo',sans-serif;background:white;color:#0f172a;direction:rtl;}@page{size:A4 landscape;margin:12mm;}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
+    </head><body>
     <div style="background:#0f172a;padding:18px 24px;border-bottom:5px solid #d4af37;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-radius:8px;">
-        <div>
-            <div style="color:#d4af37;font-size:15px;font-weight:900;">مدرسة صلالة الشرقية (5-9)</div>
-            <div style="color:#94a3b8;font-size:11px;margin-top:3px;">سلطنة عمان — وزارة التعليم</div>
-        </div>
-        <div style="text-align:center;">
-            <div style="color:white;font-size:17px;font-weight:900;">تقرير غياب الفصل الدراسي</div>
-            <div style="color:#94a3b8;font-size:11px;margin-top:4px;">كشف شامل بجميع طلاب الفصل وغياباتهم</div>
-        </div>
-        <div style="text-align:left;color:#94a3b8;font-size:11px;line-height:1.9;">
-            الصف: <span style="color:#d4af37;font-weight:900;">${g}</span> / الشعبة: <span style="color:#d4af37;font-weight:900;">${s}</span><br>
-            التاريخ: <span style="color:#d4af37;font-weight:900;">${dateNow}</span><br>
-            عدد الطلاب: <span style="color:#d4af37;font-weight:900;">${filtered.length}</span>
-        </div>
+        <div><div style="color:#d4af37;font-size:15px;font-weight:900;">مدرسة صلالة الشرقية (5-9)</div><div style="color:#94a3b8;font-size:11px;margin-top:3px;">سلطنة عمان — وزارة التعليم</div></div>
+        <div style="text-align:center;"><div style="color:white;font-size:17px;font-weight:900;">تقرير غياب الفصل الدراسي</div><div style="color:#94a3b8;font-size:11px;margin-top:4px;">كشف شامل بجميع طلاب الفصل</div></div>
+        <div style="text-align:left;color:#94a3b8;font-size:11px;line-height:1.9;">الصف: <span style="color:#d4af37;font-weight:900;">${g}</span> / الشعبة: <span style="color:#d4af37;font-weight:900;">${s}</span><br>التاريخ: <span style="color:#d4af37;font-weight:900;">${dateNow}</span><br>عدد الطلاب: <span style="color:#d4af37;font-weight:900;">${filtered.length}</span></div>
     </div>
     <!-- ملخص -->
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
-        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;text-align:center;">
-            <div style="font-size:1.8rem;font-weight:900;color:#ef4444;">${totalCritical}</div>
-            <div style="font-size:0.75rem;color:#64748b;font-weight:700;">منقطع كلياً (15+ متتالية)</div>
-        </div>
-        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;text-align:center;">
-            <div style="font-size:1.8rem;font-weight:900;color:#d97706;">${totalFrequent}</div>
-            <div style="font-size:0.75rem;color:#64748b;font-weight:700;">كثير الغياب (30+ تراكمي)</div>
-        </div>
-        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;text-align:center;">
-            <div style="font-size:1.8rem;font-weight:900;color:#1e40af;">${totalAbsent}</div>
-            <div style="font-size:0.75rem;color:#64748b;font-weight:700;">طلاب لديهم غياب</div>
-        </div>
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;text-align:center;">
-            <div style="font-size:1.8rem;font-weight:900;color:#16a34a;">${totalPresent}</div>
-            <div style="font-size:0.75rem;color:#64748b;font-weight:700;">طلاب منتظمون</div>
-        </div>
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:1.8rem;font-weight:900;color:#ef4444;">${currentResults.critical.length}</div><div style="font-size:0.75rem;color:#64748b;font-weight:700;">منقطع كلياً (3+ أسابيع)</div></div>
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:1.8rem;font-weight:900;color:#ea580c;">${currentResults.partial.length}</div><div style="font-size:0.75rem;color:#64748b;font-weight:700;">منقطع جزئياً (15+ يوم)</div></div>
+        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:1.8rem;font-weight:900;color:#d97706;">${currentResults.frequent.length}</div><div style="font-size:0.75rem;color:#64748b;font-weight:700;">كثير الغياب (متكرر)</div></div>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:1.8rem;font-weight:900;color:#16a34a;">${Math.max(filtered.length-currentResults.critical.length-currentResults.partial.length-currentResults.frequent.length,0)}</div><div style="font-size:0.75rem;color:#64748b;font-weight:700;">طلاب منتظمون</div></div>
     </div>
     <!-- الجدول -->
     <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
-        <thead>
-            <tr style="background:#0f172a;">
-                <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;width:30px;">#</th>
-                <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;">اسم الطالب</th>
-                <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;width:110px;">هاتف ولي الأمر</th>
-                <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:70px;">إجمالي الغياب</th>
-                <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:80px;">أطول انقطاع</th>
-                <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:100px;">التصنيف</th>
-                <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;">تواريخ الغياب</th>
-            </tr>
-        </thead>
+        <thead><tr style="background:#0f172a;">
+            <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;width:30px;">#</th>
+            <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;">اسم الطالب</th>
+            <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;width:110px;">هاتف ولي الأمر</th>
+            <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:70px;">إجمالي الغياب</th>
+            <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:90px;">أسابيع انقطاع</th>
+            <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:100px;">التصنيف</th>
+            <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;">تواريخ الغياب</th>
+        </tr></thead>
         <tbody>${rows}</tbody>
     </table>
     <!-- توقيعات -->
@@ -781,28 +919,27 @@ function printClassReport(){
         <div style="text-align:center;font-size:12px;font-weight:900;">اعتماد مدير المدرسة<br><br><br>...........................</div>
         <div style="text-align:center;font-size:12px;font-weight:900;">ختم المدرسة<br><div style="width:70px;height:70px;border-radius:50%;border:2px dashed #ccc;margin:8px auto;"></div></div>
     </div>
-    <!-- فوتر -->
-    <div style="background:#0f172a;padding:8px 24px;margin-top:16px;border-radius:6px;text-align:center;">
-        <span style="color:#d4af37;font-size:10px;font-weight:700;">تصميم وتنفيذ: فيصل العريبي © 2026 | منظومة التحليل الإشرافي | مدرسة صلالة الشرقية</span>
-    </div>
+    <div style="background:#0f172a;padding:8px 24px;margin-top:16px;border-radius:6px;text-align:center;"><span style="color:#d4af37;font-size:10px;font-weight:700;">تصميم وتنفيذ: فيصل العريبي © 2026 | منظومة التحليل الإشرافي | مدرسة صلالة الشرقية</span></div>
     </body></html>`;
 
     const win = window.open('','_blank','width=1100,height=700');
-    win.document.write(html);
-    win.document.close();
+    win.document.write(html); win.document.close();
     win.onload=()=>setTimeout(()=>{win.focus();win.print();},800);
 }
 
 // ===== بناء محتوى طباعة التقرير الإشرافي =====
-function buildPrintContent(criticalArr,frequentArr,filtered,g,s){
-    document.getElementById('pTotal').textContent    = filtered.length;
+function buildPrintContent(criticalArr, partialArr, frequentArr, filtered, g, s){
+    const flagged = criticalArr.length+partialArr.length+frequentArr.length;
+    document.getElementById('pTotal').textContent         = filtered.length;
     document.getElementById('pCriticalCount').textContent = criticalArr.length;
+    document.getElementById('pPartialCount').textContent  = partialArr.length;
     document.getElementById('pFrequentCount').textContent = frequentArr.length;
-    document.getElementById('pGoodCount').textContent= Math.max(filtered.length-criticalArr.length-frequentArr.length,0);
+    document.getElementById('pGoodCount').textContent     = Math.max(filtered.length-flagged,0);
 
     const sections=[
-        {arr:criticalArr, label:'أولاً: الطلاب المنقطعون كلياً (15 يوم متتالية فأكثر)', cls:'red-bg', badge:'red', getVal:x=>`${x.maxC} يوم متتالية`},
-        {arr:frequentArr, label:'ثانياً: كثيرو الغياب (30 يوم تراكمي فأكثر)',          cls:'yellow-bg',badge:'yellow',getVal:x=>`${x.total} يوم تراكمي`}
+        {arr:criticalArr, label:'أولاً: المنقطعون كلياً (3 أسابيع دراسية كاملة متتالية فأكثر)', cls:'red-bg',    badge:'red',    getVal:x=>`${x.maxFullWeeks} أسبوع — ${x.total} يوم`},
+        {arr:partialArr,  label:'ثانياً: المنقطعون جزئياً (أكثر من 15 يوم تراكمي)',              cls:'orange-bg', badge:'orange', getVal:x=>`${x.total} يوم تراكمي`},
+        {arr:frequentArr, label:'ثالثاً: كثيرو الغياب (غيابات متكررة أقل من 15 يوم)',            cls:'yellow-bg', badge:'yellow', getVal:x=>`${x.total} يوم متكرر`}
     ];
 
     let html='';
@@ -813,9 +950,9 @@ function buildPrintContent(criticalArr,frequentArr,filtered,g,s){
             <table class="print-table"><thead><tr>
                 <th style="width:28px">#</th><th>اسم الطالب</th>
                 <th style="width:110px">هاتف ولي الأمر</th>
-                <th style="width:100px">الحالة</th>
-                <th style="width:80px">إجمالي الغياب</th>
-                <th style="width:90px">أطول انقطاع</th>
+                <th style="width:120px">الحالة</th>
+                <th style="width:70px">إجمالي الغياب</th>
+                <th style="width:80px">أسابيع الانقطاع</th>
                 <th>تواريخ الغياب</th>
             </tr></thead><tbody>
             ${sec.arr.map((item,i)=>`<tr>
@@ -824,7 +961,7 @@ function buildPrintContent(criticalArr,frequentArr,filtered,g,s){
                 <td style="direction:ltr;text-align:right;">${item.st.phone}</td>
                 <td><span class="pt-badge ${sec.badge}">${sec.getVal(item)}</span></td>
                 <td style="text-align:center;font-weight:900;">${item.total}</td>
-                <td style="text-align:center;font-weight:700;">${item.maxC}</td>
+                <td style="text-align:center;font-weight:700;">${item.maxFullWeeks}</td>
                 <td><div class="pt-dates">${item.dates.map(d=>d.toISOString().split('T')[0]).join(' — ')}</div></td>
             </tr>`).join('')}
             </tbody></table>
@@ -833,22 +970,29 @@ function buildPrintContent(criticalArr,frequentArr,filtered,g,s){
     document.getElementById('printContent').innerHTML=html;
 }
 
-function updateSummary(filtered,criticalArr,frequentArr){
-    const flagged=criticalArr.length+frequentArr.length;
-    document.getElementById('sumCritical').textContent  = criticalArr.length;
-    document.getElementById('sumFrequent').textContent  = frequentArr.length;
-    document.getElementById('sumTotal').textContent     = filtered.length;
-    document.getElementById('sumGood').textContent      = Math.max(filtered.length-flagged,0);
+function updateSummary(filtered, criticalArr, partialArr, frequentArr){
+    const flagged = criticalArr.length+partialArr.length+frequentArr.length;
+    document.getElementById('sumCritical').textContent = criticalArr.length;
+    document.getElementById('sumPartial').textContent  = partialArr.length;
+    document.getElementById('sumFrequent').textContent = frequentArr.length;
+    document.getElementById('sumTotal').textContent    = filtered.length;
+    document.getElementById('sumGood').textContent     = Math.max(filtered.length-flagged,0);
 }
 
-function updateCharts(criticalArr,frequentArr,totalStudents){
+function updateCharts(criticalArr, partialArr, frequentArr, totalStudents){
     if(absChart) absChart.destroy(); if(ratioChart) ratioChart.destroy();
-    const allItems=[...criticalArr.map(x=>({n:x.st.name,d:x.maxC,c:'#fecaca',b:'#ef4444'})),...frequentArr.map(x=>({n:x.st.name,d:x.total,c:'#fde68a',b:'#f59e0b'}))].slice(0,8);
+    const allItems=[
+        ...criticalArr.map(x=>({n:x.st.name,d:x.total,c:'#fecaca',b:'#ef4444'})),
+        ...partialArr.map(x=>({n:x.st.name,d:x.total,c:'#fed7aa',b:'#f97316'})),
+        ...frequentArr.map(x=>({n:x.st.name,d:x.total,c:'#fde68a',b:'#f59e0b'}))
+    ].slice(0,8);
+
     const ctx1=document.getElementById('absenceChart').getContext('2d');
     absChart=new Chart(ctx1,{type:'bar',data:{labels:allItems.map(x=>x.n.split(' ').slice(0,2).join(' ')),datasets:[{label:'أيام',data:allItems.map(x=>x.d),backgroundColor:allItems.map(x=>x.c),borderColor:allItems.map(x=>x.b),borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{font:{family:'Cairo',size:11}},grid:{color:'#f1f5f9'}},x:{ticks:{font:{family:'Cairo',size:10},maxRotation:30}}}}});
-    const flagged=criticalArr.length+frequentArr.length;
+
+    const flagged=criticalArr.length+partialArr.length+frequentArr.length;
     const ctx2=document.getElementById('ratioChart').getContext('2d');
-    ratioChart=new Chart(ctx2,{type:'doughnut',data:{labels:['منقطع كلياً','كثير الغياب','منتظم'],datasets:[{data:[criticalArr.length,frequentArr.length,Math.max(totalStudents-flagged,0)],backgroundColor:['#fee2e2','#fffbeb','#f0fdf4'],borderColor:['#ef4444','#f59e0b','#10b981'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Cairo',size:10},padding:10}}},cutout:'60%'}});
+    ratioChart=new Chart(ctx2,{type:'doughnut',data:{labels:['منقطع كلياً','منقطع جزئياً','كثير الغياب','منتظم'],datasets:[{data:[criticalArr.length,partialArr.length,frequentArr.length,Math.max(totalStudents-flagged,0)],backgroundColor:['#fee2e2','#ffedd5','#fffbeb','#f0fdf4'],borderColor:['#ef4444','#f97316','#f59e0b','#10b981'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Cairo',size:10},padding:8}}},cutout:'55%'}});
 }
 
 function filterBySearch(){
@@ -862,9 +1006,10 @@ function filterBySearch(){
 function exportCSV(){
     const g=currentGrade, s=currentSection;
     if(!g||!s){alert('يرجى اختيار الصف والشعبة أولاً');return;}
-    let csv='\uFEFF'+'اسم الطالب,هاتف ولي الأمر,التصنيف,إجمالي أيام الغياب,أطول انقطاع متتالي\n';
-    currentResults.critical.forEach(({st,total,maxC})=>csv+=`${st.name},${st.phone},منقطع كلياً,${total},${maxC}\n`);
-    currentResults.frequent.forEach(({st,total,maxC})=>csv+=`${st.name},${st.phone},كثير الغياب,${total},${maxC}\n`);
+    let csv='\uFEFF'+'اسم الطالب,هاتف ولي الأمر,التصنيف,إجمالي أيام الغياب,أسابيع الانقطاع الكاملة\n';
+    currentResults.critical.forEach(({st,total,maxFullWeeks})=>csv+=`${st.name},${st.phone},منقطع كلياً,${total},${maxFullWeeks}\n`);
+    currentResults.partial.forEach( ({st,total,maxFullWeeks})=>csv+=`${st.name},${st.phone},منقطع جزئياً,${total},${maxFullWeeks}\n`);
+    currentResults.frequent.forEach(({st,total,maxFullWeeks})=>csv+=`${st.name},${st.phone},كثير الغياب,${total},${maxFullWeeks}\n`);
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
     a.download=`تقرير_غياب_${g}-${s}_${new Date().toLocaleDateString('ar-OM').replace(/\//g,'-')}.csv`; a.click();
@@ -873,23 +1018,19 @@ function exportCSV(){
 // ===== توليد PDF الطالب =====
 function generateStudentPDF(d){
     const typeColors={
-        critical:{bg:'#fef2f2',border:'#ef4444',text:'#ef4444',label:'منقطع كلياً',note:'انقطاع متتالي عن الدوام 15 يوماً فأكثر'},
-        frequent:{bg:'#fffbeb',border:'#f59e0b',text:'#d97706',label:'كثير الغياب', note:'غياب تراكمي 30 يوماً فأكثر خلال الفصل'}
+        critical:{bg:'#fef2f2',border:'#ef4444',text:'#ef4444',label:'منقطع كلياً',    note:`انقطع عن الدوام لـ ${d.maxFullWeeks} أسابيع دراسية كاملة متتالية`},
+        partial :{bg:'#fff7ed',border:'#f97316',text:'#ea580c',label:'منقطع جزئياً',   note:`تجاوز غيابه التراكمي ${d.total} يوماً (أكثر من 15 يوم)`},
+        frequent:{bg:'#fffbeb',border:'#f59e0b',text:'#d97706',label:'كثير الغياب',    note:`سُجّلت عليه غيابات متكررة بلغت ${d.total} أيام`}
     };
     const tc=typeColors[d.msgType]||typeColors.frequent;
     const rawMsg=decodeURIComponent(d.encodedMsg);
     const dateNow=new Date().toLocaleDateString('ar-OM',{year:'numeric',month:'long',day:'numeric'});
     const datesHTML=d.dates.map((dt,i)=>`<span style="display:inline-block;background:${i%2===0?'#f1f5f9':'#e2e8f0'};color:#374151;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;margin:3px;">${dt}</span>`).join('');
 
-    const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
-    <title>تقرير غياب — ${d.name}</title>
+    const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير غياب — ${d.name}</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        *{box-sizing:border-box;margin:0;padding:0;}
-        body{font-family:'Cairo',sans-serif;background:white;color:#0f172a;direction:rtl;}
-        @page{size:A4;margin:0;}
-        @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
-    </style></head><body>
+    <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Cairo',sans-serif;background:white;color:#0f172a;direction:rtl;}@page{size:A4;margin:0;}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
+    </head><body>
     <div style="width:210mm;min-height:297mm;">
         <div style="background:#0f172a;padding:22px 28px 18px;border-bottom:5px solid #d4af37;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -912,26 +1053,14 @@ function generateStudentPDF(d){
                 <div style="margin-top:10px;font-size:11px;color:#64748b;background:${tc.bg};padding:6px 12px;border-radius:6px;">&#9888; ${tc.note}</div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;">
-                <div style="background:${tc.bg};border:1.5px solid ${tc.border};border-radius:10px;padding:14px;text-align:center;">
-                    <div style="font-size:26px;font-weight:900;color:${tc.text};line-height:1;">${d.total}</div>
-                    <div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">إجمالي أيام الغياب</div>
-                </div>
-                <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;">
-                    <div style="font-size:26px;font-weight:900;color:#374151;line-height:1;">${d.maxC}</div>
-                    <div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">أطول انقطاع متتالي (يوم)</div>
-                </div>
-                <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;">
-                    <div style="font-size:26px;font-weight:900;color:#374151;line-height:1;">${d.dates.length}</div>
-                    <div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">عدد التواريخ المسجّلة</div>
-                </div>
+                <div style="background:${tc.bg};border:1.5px solid ${tc.border};border-radius:10px;padding:14px;text-align:center;"><div style="font-size:26px;font-weight:900;color:${tc.text};line-height:1;">${d.total}</div><div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">إجمالي أيام الغياب</div></div>
+                <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:26px;font-weight:900;color:#374151;line-height:1;">${d.maxFullWeeks}</div><div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">أسابيع انقطاع كاملة</div></div>
+                <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:26px;font-weight:900;color:#374151;line-height:1;">${d.maxC}</div><div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">أطول انقطاع (يوم)</div></div>
             </div>
             <div style="background:#0f172a;color:#d4af37;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:900;margin-bottom:12px;">&#128197; سجل تواريخ الغياب الكامل (${d.dates.length} يوم)</div>
             <div style="margin-bottom:18px;line-height:2;">${datesHTML}</div>
             <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:18px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                    <span style="background:#25d366;color:white;border-radius:6px;padding:3px 12px;font-size:11px;font-weight:900;">&#128241; واتساب</span>
-                    <span style="font-size:12px;font-weight:900;color:#166534;">نص الرسالة الجاهزة لإرسالها لولي الأمر</span>
-                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="background:#25d366;color:white;border-radius:6px;padding:3px 12px;font-size:11px;font-weight:900;">&#128241; واتساب</span><span style="font-size:12px;font-weight:900;color:#166534;">نص الرسالة الجاهزة لإرسالها لولي الأمر</span></div>
                 <div style="font-size:11.5px;color:#374151;line-height:1.9;">${rawMsg}</div>
             </div>
             <div style="display:flex;justify-content:space-around;margin-top:30px;padding-top:16px;border-top:1px solid #e2e8f0;">
@@ -950,17 +1079,6 @@ function generateStudentPDF(d){
     const win=window.open('','_blank','width=900,height=700');
     win.document.write(html); win.document.close();
     win.onload=()=>setTimeout(()=>{win.focus();win.print();},800);
-}
-
-// ===== دوال الحساب =====
-function getMaxConsecutive(dates){
-    if(!dates.length) return 0;
-    let max=1,curr=1;
-    for(let i=1;i<dates.length;i++){
-        if((dates[i]-dates[i-1])/86400000===1) curr++;
-        else{max=Math.max(max,curr);curr=1;}
-    }
-    return Math.max(max,curr);
 }
 
 window.onload=loadData;
