@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>منظومة التحليل الإشرافي | مدرسة صلالة الشرقية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+    --primary:#0f172a; --primary-light:#1e293b; --accent:#d4af37;
+    --danger:#ef4444; --danger-bg:#fef2f2; --danger-border:#fecaca;
+    --caution:#f97316; --caution-bg:#fff7ed; --caution-border:#fed7aa;
+    --warning:#f59e0b; --warning-bg:#fffbeb; --warning-border:#fde68a;
+    --success:#10b981; --success-bg:#f0fdf4;
+    --info:#3b82f6; --info-bg:#eff6ff;
+    --bg:#f1f5f9; --card-bg:#ffffff; --text-muted:#64748b;
+    --border:#e2e8f0; --radius:14px; --shadow:0 2px 12px rgba(0,0,0,0.07);
+}
+*{box-sizing:border-box;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);margin:0;padding-bottom:90px;color:var(--primary);}
+
+.app-header{background:var(--primary);color:white;padding:18px 20px;border-bottom:4px solid var(--accent);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.header-logo{display:flex;align-items:center;gap:14px;}
+.header-logo img{width:52px;height:52px;border-radius:50%;border:2px solid var(--accent);object-fit:cover;}
+.header-titles h1{margin:0;font-size:1.05rem;color:var(--accent);font-weight:900;}
+.header-titles p{margin:2px 0 0;font-size:0.78rem;color:#94a3b8;}
+.header-date .date-val{font-size:0.82rem;color:var(--accent);font-weight:700;}
+.header-date .time-val{font-size:0.75rem;color:#94a3b8;}
+.container{max-width:1200px;margin:20px auto;padding:0 16px;}
+
+/* LEGEND */
+.legend-bar{background:var(--card-bg);border-radius:var(--radius);padding:12px 20px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-wrap:wrap;gap:16px;align-items:center;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:0.82rem;font-weight:700;}
+.legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.legend-dot.red{background:var(--danger);} .legend-dot.yellow{background:var(--warning);}
+.legend-title{font-size:0.8rem;font-weight:900;color:var(--text-muted);}
+
+/* SUMMARY */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:768px){.summary-grid{grid-template-columns:repeat(2,1fr);}}
+.sum-card{background:var(--card-bg);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;transition:transform 0.2s;}
+.sum-card:hover{transform:translateY(-2px);}
+.sum-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:4px;}
+.sum-card.danger .sum-icon{background:var(--danger-bg);color:var(--danger);}
+.sum-card.warning .sum-icon{background:var(--warning-bg);color:var(--warning);}
+.sum-card.info .sum-icon{background:var(--info-bg);color:var(--info);}
+.sum-card.success .sum-icon{background:var(--success-bg);color:var(--success);}
+.sum-num{font-size:2rem;font-weight:900;line-height:1;}
+.sum-card.danger .sum-num{color:var(--danger);}
+.sum-card.warning .sum-num{color:var(--warning);}
+.sum-card.info .sum-num{color:var(--info);}
+.sum-card.success .sum-num{color:var(--success);}
+.sum-label{font-size:0.78rem;color:var(--text-muted);font-weight:700;text-align:center;}
+
+/* RADAR */
+.radar-box{background:var(--card-bg);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid rgba(212,175,55,0.25);border-right:5px solid var(--accent);}
+.radar-head{font-weight:900;font-size:0.9rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.tag-red{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;margin:4px;display:inline-block;font-size:0.85rem;transition:all 0.15s;}
+.tag-yellow{background:var(--warning-bg);color:#b45309;border:1px solid var(--warning-border);padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;margin:4px;display:inline-block;font-size:0.85rem;transition:all 0.15s;}
+.tag-red:hover,.tag-yellow:hover{transform:scale(1.04);}
+
+/* FILTERS */
+.filters-card{background:var(--card-bg);padding:18px 20px;border-radius:var(--radius);display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid var(--border);align-items:center;}
+.filter-group{display:flex;align-items:center;gap:8px;flex:1;min-width:140px;}
+.filter-group label{font-size:0.82rem;font-weight:700;color:var(--text-muted);white-space:nowrap;}
+select,.search-input{flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);font-family:'Cairo';font-weight:700;font-size:0.88rem;background:var(--bg);color:var(--primary);transition:border 0.2s;}
+select:focus,.search-input:focus{outline:none;border-color:var(--accent);background:white;}
+.search-input{min-width:180px;}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-print{background:var(--primary);color:var(--accent);border:none;padding:10px 18px;border-radius:10px;font-weight:800;cursor:pointer;font-family:'Cairo';font-size:0.85rem;transition:background 0.2s;display:flex;align-items:center;gap:6px;}
+.btn-print:hover{background:var(--primary-light);}
+.btn-export{background:var(--success-bg);color:var(--success);border:1.5px solid #bbf7d0;padding:10px 16px;border-radius:10px;font-weight:800;cursor:pointer;font-family:'Cairo';font-size:0.85rem;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+.btn-export:hover{background:#dcfce7;}
+.btn-class-print{background:#eff6ff;color:#1e40af;border:1.5px solid #bfdbfe;padding:10px 16px;border-radius:10px;font-weight:800;cursor:pointer;font-family:'Cairo';font-size:0.85rem;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+.btn-class-print:hover{background:#dbeafe;}
+
+/* WEEKLY ABSENCE SECTION */
+.weekly-section{background:var(--card-bg);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px;box-shadow:var(--shadow);border:1px solid var(--border);}
+.weekly-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.weekly-title{font-size:1rem;font-weight:900;display:flex;align-items:center;gap:8px;}
+.week-range{font-size:0.8rem;color:var(--text-muted);font-weight:700;background:var(--bg);padding:5px 12px;border-radius:8px;}
+.weekly-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:600px){.weekly-stats{grid-template-columns:1fr 1fr;}}
+.wstat-box{background:var(--bg);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--border);}
+.wstat-num{font-size:1.8rem;font-weight:900;line-height:1;}
+.wstat-label{font-size:0.75rem;color:var(--text-muted);font-weight:700;margin-top:4px;}
+.wstat-box.red .wstat-num{color:var(--danger);}
+.wstat-box.blue .wstat-num{color:var(--info);}
+.wstat-box.green .wstat-num{color:var(--success);}
+.weekly-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.weekly-table th{padding:9px 12px;text-align:right;font-weight:900;color:var(--primary);background:var(--bg);border-bottom:2px solid var(--border);}
+.weekly-table td{padding:8px 12px;border-bottom:1px solid #f1f5f9;color:#374151;}
+.weekly-table tr:last-child td{border-bottom:none;}
+.weekly-table tr:hover td{background:#f8fafc;}
+.day-chip{display:inline-block;background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);border-radius:5px;padding:2px 8px;font-size:0.72rem;font-weight:700;margin:2px;}
+.absent-badge{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;}
+.present-badge{background:var(--success-bg);color:var(--success);border:1px solid #bbf7d0;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;}
+
+/* CHARTS */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+@media(max-width:768px){.charts-row{grid-template-columns:1fr;}}
+.chart-card{background:var(--card-bg);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);}
+.chart-card h3{margin:0 0 14px;font-size:0.88rem;font-weight:900;display:flex;align-items:center;gap:7px;}
+.chart-wrap{height:180px;position:relative;}
+
+/* RESULTS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:640px){.stat-grid{grid-template-columns:1fr;}.filters-card{flex-direction:column;}}
+.card{background:var(--card-bg);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);min-height:180px;border:1px solid var(--border);}
+.card-header{padding:14px 18px;font-weight:900;color:white;font-size:0.9rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;}
+.card.red .card-header{background:linear-gradient(135deg,#ef4444,#dc2626);}
+.card.yellow .card-header{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.card-count{background:rgba(255,255,255,0.25);border-radius:6px;padding:1px 9px;font-size:0.85rem;font-weight:900;}
+
+/* STUDENT CARD */
+.student-card{background:#f8fafc;border:1px solid var(--border);border-radius:12px;margin:10px;padding:13px 15px;border-right:5px solid transparent;transition:all 0.2s;cursor:pointer;}
+.student-card:hover{background:white;box-shadow:0 2px 10px rgba(0,0,0,0.08);transform:translateX(-2px);}
+.card.red .student-card{border-right-color:var(--danger);}
+.card.yellow .student-card{border-right-color:var(--warning);}
+.st-top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;gap:6px;}
+.st-name{font-weight:900;font-size:0.95rem;color:var(--primary);}
+.risk-badge{font-size:0.7rem;font-weight:900;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.risk-critical{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);}
+.risk-frequent{background:var(--warning-bg);color:#b45309;border:1px solid var(--warning-border);}
+.st-phone-row{display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--text-muted);font-weight:700;margin-bottom:9px;}
+.absence-bar-wrap{margin-bottom:9px;}
+.absence-bar-label{display:flex;justify-content:space-between;font-size:0.73rem;color:var(--text-muted);font-weight:600;margin-bottom:4px;}
+.absence-bar{height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.absence-fill{height:100%;border-radius:99px;transition:width 0.6s ease;}
+.fill-danger{background:linear-gradient(90deg,#ef4444,#f87171);}
+.fill-warning{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.st-info-row{display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #cbd5e1;padding-top:9px;}
+.badge-status{font-size:0.8rem;font-weight:900;display:flex;align-items:center;gap:5px;}
+.action-btns{display:flex;gap:6px;}
+.wa-btn{width:34px;height:34px;background:#25d366;color:white;border-radius:9px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:0.95rem;transition:transform 0.15s;}
+.wa-btn:hover{transform:scale(1.1);}
+.detail-btn{width:34px;height:34px;background:var(--info-bg);color:var(--info);border-radius:9px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:0.85rem;transition:transform 0.15s;}
+.detail-btn:hover{transform:scale(1.1);}
+.empty-state{text-align:center;padding:35px 20px;color:var(--text-muted);}
+.empty-state i{font-size:2rem;margin-bottom:8px;color:var(--success);display:block;}
+.empty-state p{font-size:0.88rem;font-weight:700;margin:0;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.65);z-index:3000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;padding:20px;}
+.modal-overlay.active{opacity:1;pointer-events:all;}
+.modal{background:white;border-radius:20px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;transform:translateY(20px);transition:transform 0.25s;border-top:5px solid var(--accent);}
+.modal-overlay.active .modal{transform:translateY(0);}
+.modal-header{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-header h3{margin:0;font-size:1.05rem;font-weight:900;}
+.modal-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-muted);padding:4px 8px;border-radius:6px;}
+.modal-close:hover{background:var(--bg);}
+.modal-body{padding:20px 22px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.info-box{background:var(--bg);border-radius:10px;padding:12px 14px;border:1px solid var(--border);}
+.info-box .lbl{font-size:0.75rem;color:var(--text-muted);font-weight:700;margin-bottom:4px;}
+.info-box .val{font-size:1rem;font-weight:900;color:var(--primary);}
+.info-box.accent-box{background:#fffbf0;border-color:rgba(212,175,55,0.3);}
+.info-box.accent-box .val{color:#92400e;}
+.dates-section{margin-top:4px;}
+.dates-section h4{font-size:0.85rem;font-weight:900;color:var(--text-muted);margin:0 0 10px;display:flex;align-items:center;gap:7px;}
+.dates-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.d-chip{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);border-radius:7px;padding:5px 11px;font-size:0.78rem;font-weight:700;display:flex;align-items:center;gap:4px;}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;}
+.btn-wa{flex:1;padding:11px;background:#25d366;color:white;border:none;border-radius:11px;font-family:'Cairo';font-weight:900;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.2s;}
+.btn-wa:hover{background:#20b858;}
+.btn-pdf{flex:1;padding:11px;background:#1e40af;color:white;border:none;border-radius:11px;font-family:'Cairo';font-weight:900;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.2s;}
+.btn-pdf:hover{background:#1e3a8a;}
+
+.footer-bar{position:fixed;bottom:0;left:0;right:0;background:var(--primary);color:white;text-align:center;padding:13px;border-top:3px solid var(--accent);font-size:0.85rem;z-index:2000;}
+.footer-bar b{color:var(--accent);font-weight:900;}
+
+@media print{
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+    .no-print{display:none!important;}
+    body{background:white!important;margin:0;padding:0;}
+    #printHeader{display:block!important;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #0f172a;}
+    .ph-top{display:flex!important;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .ph-logo{width:60px;height:60px;border-radius:50%;border:2px solid #d4af37;object-fit:cover;}
+    .ph-title{font-size:1.3rem;font-weight:900;color:#0f172a;margin-bottom:4px;}
+    .ph-accent-bar{background:#0f172a!important;color:#d4af37!important;padding:6px 16px;border-radius:8px;font-size:0.82rem;font-weight:700;display:flex!important;justify-content:space-around;flex-wrap:wrap;gap:12px;margin-top:8px;}
+    .print-section{margin-bottom:28px;page-break-inside:avoid;}
+    .print-section-title{display:flex!important;align-items:center;gap:10px;padding:10px 16px;border-radius:8px;margin-bottom:12px;font-size:0.95rem;font-weight:900;color:white!important;}
+    .print-section-title.red-bg{background:#ef4444!important;}
+    .print-section-title.yellow-bg{background:#f59e0b!important;color:#1c1917!important;}
+    .count-badge{background:rgba(255,255,255,0.25);padding:2px 10px;border-radius:12px;font-size:0.82rem;}
+    .print-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+    .print-table thead tr{background:#f1f5f9!important;}
+    .print-table th{padding:9px 12px;text-align:right;font-weight:900;color:#1e293b;border-bottom:2px solid #e2e8f0;font-size:0.8rem;}
+    .print-table td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:top;}
+    .print-table tr:nth-child(even) td{background:#f8fafc!important;}
+    .pt-name{font-weight:900;color:#0f172a;font-size:0.88rem;}
+    .pt-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:900;}
+    .pt-badge.red{background:#fef2f2!important;color:#ef4444!important;border:1px solid #fecaca;}
+    .pt-badge.yellow{background:#fffbeb!important;color:#d97706!important;border:1px solid #fde68a;}
+    .pt-dates{font-size:0.72rem;color:#6b7280;line-height:1.8;}
+    #printSignatures{display:flex!important;}
+    .app-header,.legend-bar,.summary-grid,.radar-box,.filters-card,.charts-row,.stat-grid,.footer-bar,.modal-overlay,.weekly-section{display:none!important;}
+    tr{page-break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+
+<!-- رأس الطباعة -->
+<div id="printHeader" style="display:none;">
+    <div class="ph-top">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <img src="logo.jpeg" class="ph-logo" alt="" onerror="this.style.display='none'">
+            <div>
+                <div style="font-size:1rem;font-weight:900;color:#0f172a;">مدرسة صلالة الشرقية (5-9)</div>
+                <div style="font-size:0.82rem;color:#6b7280;">سلطنة عمان — وزارة التعليم — المديرية العامة للتعليم بظفار</div>
+            </div>
+        </div>
+        <div style="text-align:center;flex:1;">
+            <div class="ph-title">تقرير تحليل الغياب الإشرافي</div>
+            <div style="font-size:0.85rem;color:#6b7280;">تقرير دوري لمتابعة انتظام الطلاب</div>
+        </div>
+        <div style="text-align:left;font-size:0.82rem;color:#374151;line-height:1.8;">
+            التاريخ: <strong id="pDate"></strong><br>
+            الصف: <strong id="pGrade"></strong> | الشعبة: <strong id="pSection"></strong><br>
+            عدد طلاب الفصل: <strong id="pTotal"></strong>
+        </div>
+    </div>
+    <div class="ph-accent-bar">
+        <span>● منقطع كلياً (15 يوم متتالية): <strong id="pCriticalCount">0</strong></span>
+        <span>● كثير الغياب (30+ يوم تراكمي): <strong id="pFrequentCount">0</strong></span>
+        <span>● حضور منتظم: <strong id="pGoodCount">0</strong></span>
+    </div>
+</div>
+<div id="printContent" style="display:none;"></div>
+<div id="printSignatures" style="display:none;justify-content:space-around;margin-top:60px;font-weight:bold;padding-top:20px;border-top:1px solid #e2e8f0;">
+    <div style="text-align:center;"><div style="font-size:0.9rem;font-weight:900;margin-bottom:40px;">المشرف الإداري</div><div>...........................</div></div>
+    <div style="text-align:center;"><div style="font-size:0.9rem;font-weight:900;margin-bottom:40px;">اعتماد مدير المدرسة</div><div>...........................</div></div>
+    <div style="text-align:center;"><div style="font-size:0.9rem;font-weight:900;margin-bottom:10px;">ختم المدرسة</div><div style="width:80px;height:80px;border-radius:50%;border:2px dashed #ccc;margin:0 auto;"></div></div>
+</div>
+
+<!-- HEADER -->
+<header class="app-header no-print">
+    <div class="header-logo">
+        <img src="logo.jpeg" alt="" onerror="this.style.display='none'">
+        <div class="header-titles">
+            <h1><i class="fas fa-chart-line"></i> منظومة التحليل الإشرافي</h1>
+            <p>مدرسة صلالة الشرقية (5-9) — سلطنة عمان</p>
+        </div>
+    </div>
+    <div class="header-date no-print">
+        <div class="date-val" id="liveDate"></div>
+        <div class="time-val" id="liveTime"></div>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- دليل التصنيف -->
+    <div class="legend-bar no-print">
+        <span class="legend-title"><i class="fas fa-info-circle"></i> معايير التصنيف:</span>
+        <div class="legend-item"><div class="legend-dot red"></div><span>منقطع كلياً — 15 يوم متتالية فأكثر دون انقطاع</span></div>
+        <div class="legend-item"><div class="legend-dot yellow"></div><span>كثير الغياب — 30 يوم تراكمي فأكثر خلال الفصل</span></div>
+    </div>
+
+    <!-- بطاقات الملخص -->
+    <div class="summary-grid no-print" id="summarySection" style="display:none;">
+        <div class="sum-card danger"><div class="sum-icon"><i class="fas fa-user-slash"></i></div><div class="sum-num" id="sumCritical">0</div><div class="sum-label">منقطع كلياً<br><small style="font-size:0.7rem;">(15+ متتالية)</small></div></div>
+        <div class="sum-card warning"><div class="sum-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="sum-num" id="sumFrequent">0</div><div class="sum-label">كثير الغياب<br><small style="font-size:0.7rem;">(30+ تراكمي)</small></div></div>
+        <div class="sum-card info"><div class="sum-icon"><i class="fas fa-users"></i></div><div class="sum-num" id="sumTotal">0</div><div class="sum-label">إجمالي الطلاب</div></div>
+        <div class="sum-card success"><div class="sum-icon"><i class="fas fa-check-circle"></i></div><div class="sum-num" id="sumGood">0</div><div class="sum-label">حضور منتظم</div></div>
+    </div>
+
+    <!-- رادار -->
+    <div id="radarSection" class="radar-box no-print" style="display:none;">
+        <div class="radar-head"><i class="fas fa-satellite-dish" style="color:var(--accent)"></i> رادار الفصول — الفصول التي تحتاج متابعة:</div>
+        <div id="radarTags"></div>
+    </div>
+
+    <!-- الفلاتر -->
+    <div class="filters-card no-print">
+        <div class="filter-group">
+            <label><i class="fas fa-layer-group"></i> الصف</label>
+            <select id="gradeFilter" onchange="updateSections()"><option value="">-- اختر --</option></select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fas fa-door-open"></i> الشعبة</label>
+            <select id="sectionFilter" onchange="analyzeData()"><option value="">-- اختر --</option></select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fas fa-search"></i> بحث</label>
+            <input type="text" class="search-input" id="searchInput" placeholder="اسم الطالب..." oninput="filterBySearch()">
+        </div>
+        <div class="btn-group">
+            <button class="btn-export" onclick="exportCSV()"><i class="fas fa-file-excel"></i> تصدير CSV</button>
+            <button class="btn-class-print" onclick="printClassReport()"><i class="fas fa-print"></i> طباعة الفصل</button>
+            <button class="btn-print" onclick="window.print()"><i class="fas fa-file-alt"></i> طباعة التقرير</button>
+        </div>
+    </div>
+
+    <!-- قسم غياب الأسبوع الحالي -->
+    <div class="weekly-section no-print" id="weeklySection" style="display:none;">
+        <div class="weekly-header">
+            <div class="weekly-title">
+                <i class="fas fa-calendar-week" style="color:var(--accent)"></i>
+                غياب الفصل في الأسبوع الحالي
+            </div>
+            <span class="week-range" id="weekRangeLabel"></span>
+        </div>
+        <div class="weekly-stats">
+            <div class="wstat-box red">
+                <div class="wstat-num" id="wkAbsentCount">0</div>
+                <div class="wstat-label">طالب غائب هذا الأسبوع</div>
+            </div>
+            <div class="wstat-box blue">
+                <div class="wstat-num" id="wkTotalDays">0</div>
+                <div class="wstat-label">إجمالي أيام الغياب المسجّلة</div>
+            </div>
+            <div class="wstat-box green">
+                <div class="wstat-num" id="wkPresentCount">0</div>
+                <div class="wstat-label">طالب لم يتغيب هذا الأسبوع</div>
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="weekly-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم الطالب</th>
+                        <th>أيام الغياب هذا الأسبوع</th>
+                        <th>التواريخ</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody id="weeklyTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- الرسوم البيانية -->
+    <div class="charts-row no-print" id="chartsSection" style="display:none;">
+        <div class="chart-card"><h3><i class="fas fa-chart-bar" style="color:var(--accent)"></i> أعلى الطلاب غياباً</h3><div class="chart-wrap"><canvas id="absenceChart"></canvas></div></div>
+        <div class="chart-card"><h3><i class="fas fa-chart-pie" style="color:var(--info)"></i> توزيع الحالات</h3><div class="chart-wrap"><canvas id="ratioChart"></canvas></div></div>
+    </div>
+
+    <!-- النتائج — عمودان -->
+    <div class="stat-grid" id="resultsGrid" style="display:none;">
+        <div class="card red">
+            <div class="card-header"><i class="fas fa-user-slash"></i> منقطع كلياً (15+ يوم متتالية) <span class="card-count" id="countCritical">0</span></div>
+            <div id="criticalList"></div>
+        </div>
+        <div class="card yellow">
+            <div class="card-header"><i class="fas fa-exclamation-triangle"></i> كثير الغياب (30+ يوم تراكمي) <span class="card-count" id="countFrequent">0</span></div>
+            <div id="frequentList"></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay no-print" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <h3 id="modalTitle">تفاصيل الطالب</h3>
+                <span id="modalTypePill"></span>
+            </div>
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="info-grid">
+                <div class="info-box" style="grid-column:span 2;"><div class="lbl"><i class="fas fa-user"></i> اسم الطالب</div><div class="val" id="mName" style="font-size:1.1rem;"></div></div>
+                <div class="info-box"><div class="lbl"><i class="fas fa-layer-group"></i> الصف / الشعبة</div><div class="val" id="mClass"></div></div>
+                <div class="info-box"><div class="lbl"><i class="fas fa-phone"></i> هاتف ولي الأمر</div><div class="val" id="mPhone"></div></div>
+                <div class="info-box accent-box"><div class="lbl"><i class="fas fa-calendar-times"></i> إجمالي أيام الغياب</div><div class="val" id="mTotal" style="font-size:1.4rem;"></div></div>
+                <div class="info-box accent-box"><div class="lbl"><i class="fas fa-link"></i> أطول انقطاع متتالي</div><div class="val" id="mConsec" style="font-size:1.4rem;"></div></div>
+            </div>
+            <div class="dates-section">
+                <h4><i class="fas fa-calendar-alt"></i> سجل تواريخ الغياب كاملاً:</h4>
+                <div class="dates-grid" id="mDates"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-wa" id="mWaBtn"><i class="fab fa-whatsapp"></i> إرسال واتساب</button>
+            <button class="btn-pdf" id="mPdfBtn"><i class="fas fa-file-pdf"></i> تحميل PDF</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-bar no-print">
+    تصميم وتنفيذ الأستاذ: <b>فيصل العريبي</b> &copy; 2026 &nbsp;|&nbsp; منظومة التحليل الإشرافي
+</div>
+
+<script>
+// ===== معايير التصنيف المحدّثة =====
+const CRITICAL_CONSEC = 15;   // منقطع كلياً: 15 يوم متتالية فأكثر
+const FREQUENT_TOTAL  = 30;   // كثير الغياب: 30 يوم تراكمي فأكثر
+
+let students = [], history = [], absChart = null, ratioChart = null;
+let currentResults = {critical:[], frequent:[]};
+let studentDataMap = {};
+let currentGrade = '', currentSection = '', currentFiltered = [];
+
+// ===== ساعة =====
+function updateClock(){
+    const now = new Date();
+    document.getElementById('liveDate').textContent = now.toLocaleDateString('ar-OM',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('liveTime').textContent = now.toLocaleTimeString('ar-OM');
+}
+setInterval(updateClock,1000); updateClock();
+
+// ===== تحميل البيانات =====
+async function loadData(){
+    try {
+        const [sR,hR] = await Promise.all([fetch('api/students.js'),fetch('api/attendance.js')]);
+        students = await sR.json(); history = await hR.json();
+        document.getElementById('pDate').innerText = new Date().toLocaleDateString('ar-OM');
+        const grades = [...new Set(students.map(s=>s.grade))].filter(g=>g).sort((a,b)=>Number(a)-Number(b));
+        grades.forEach(g => document.getElementById('gradeFilter').innerHTML += `<option value="${g}">${g}</option>`);
+        buildRadar();
+    } catch(e){ console.error("Data error",e); }
+}
+
+// ===== رادار الفصول =====
+function buildRadar(){
+    const radar = document.getElementById('radarTags'); radar.innerHTML='';
+    const classes = [...new Set(students.map(s=>`${s.grade}|${s.section}`))].filter(c=>!c.includes('undefined'));
+    classes.forEach(cls=>{
+        const [g,s] = cls.split('|');
+        const classSt = students.filter(st=>String(st.grade)===g&&String(st.section)===s);
+        let state = 0;
+        classSt.forEach(st=>{
+            const dates = history.filter(h=>h.name===st.name).map(h=>new Date(h.date)).sort((a,b)=>a-b);
+            const maxC = getMaxConsecutive(dates);
+            if(maxC >= CRITICAL_CONSEC) state = Math.max(state,2);
+            else if(dates.length >= FREQUENT_TOTAL) state = Math.max(state,1);
+        });
+        if(state>0){
+            const tag = document.createElement('span');
+            tag.className = state===2 ? 'tag-red' : 'tag-yellow';
+            tag.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${g}/${s}`;
+            tag.onclick = ()=>{document.getElementById('gradeFilter').value=g;updateSections();setTimeout(()=>{document.getElementById('sectionFilter').value=s;analyzeData();},50);};
+            radar.appendChild(tag);
+        }
+    });
+    document.getElementById('radarSection').style.display = radar.innerHTML?'block':'none';
+}
+
+function updateSections(){
+    const g = document.getElementById('gradeFilter').value;
+    const sf = document.getElementById('sectionFilter');
+    sf.innerHTML = '<option value="">-- الشعبة --</option>';
+    if(g){
+        const secs = [...new Set(students.filter(s=>String(s.grade)===g).map(s=>s.section))].filter(s=>s).sort();
+        secs.forEach(s=>sf.innerHTML+=`<option value="${s}">${s}</option>`);
+    }
+}
+
+// ===== التحليل الرئيسي =====
+function analyzeData(){
+    const g = document.getElementById('gradeFilter').value;
+    const s = document.getElementById('sectionFilter').value;
+    if(!g||!s) return;
+    currentGrade=g; currentSection=s;
+    document.getElementById('pGrade').innerText=g;
+    document.getElementById('pSection').innerText=s;
+    studentDataMap={};
+
+    const filtered = students.filter(st=>String(st.grade)===g&&String(st.section)===s);
+    currentFiltered = filtered;
+    const criticalArr=[], frequentArr=[];
+
+    filtered.forEach(st=>{
+        const dates = history.filter(h=>h.name===st.name).map(h=>new Date(h.date)).sort((a,b)=>a-b);
+        const total = dates.length;
+        const maxC  = getMaxConsecutive(dates);
+
+        // المستوى الأول: منقطع كلياً — 15 يوم متتالية فأكثر
+        if(maxC >= CRITICAL_CONSEC){
+            criticalArr.push({st,total,maxC,dates});
+        }
+        // المستوى الثاني: كثير الغياب — 30 يوم تراكمي فأكثر (ولم يُصنّف منقطعاً كلياً)
+        else if(total >= FREQUENT_TOTAL){
+            frequentArr.push({st,total,maxC,dates});
+        }
+    });
+
+    criticalArr.sort((a,b)=>b.maxC-a.maxC);
+    frequentArr.sort((a,b)=>b.total-a.total);
+    currentResults={critical:criticalArr,frequent:frequentArr};
+
+    renderCards(criticalArr,frequentArr);
+    updateSummary(filtered,criticalArr,frequentArr);
+    updateCharts(criticalArr,frequentArr,filtered.length);
+    buildPrintContent(criticalArr,frequentArr,filtered,g,s);
+    buildWeeklySection(filtered);
+
+    document.getElementById('resultsGrid').style.display='grid';
+    document.getElementById('summarySection').style.display='grid';
+    document.getElementById('chartsSection').style.display='grid';
+    document.getElementById('weeklySection').style.display='block';
+    document.getElementById('searchInput').value='';
+}
+
+// ===== قسم غياب الأسبوع الحالي =====
+function buildWeeklySection(filtered){
+    // الأسبوع يبدأ الأحد وينتهي الخميس
+    const today = new Date();
+    const day   = today.getDay(); // 0=أحد، 4=خميس، 5=جمعة، 6=سبت
+    // إيجاد أحد هذا الأسبوع
+    let daysFromSunday = day === 0 ? 0 : day;
+    // إذا كان يوم جمعة أو سبت، ننقل لأحد الأسبوع القادم
+    if(day===5) daysFromSunday=-1; // السبت = يوم قبل الأحد القادم... نرجع لأحد هذا الأسبوع
+    if(day===6) daysFromSunday=-2;
+
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - (day===0?0:day===6?1:day===5?0:day));
+    // تبسيط: أحد هذا الأسبوع
+    const sun = new Date(today);
+    const d = today.getDay();
+    if(d===0)      sun.setDate(today.getDate());
+    else if(d<=4)  sun.setDate(today.getDate()-d);
+    else if(d===5) sun.setDate(today.getDate()+2); // الجمعة → الأحد القادم ← لا، نريد الأحد الماضي
+    else           sun.setDate(today.getDate()-6); // السبت
+    // إعادة حساب مبسط
+    const w = getWeekBounds(today);
+    const sunDate = w.sun;
+    const thuDate = w.thu;
+
+    document.getElementById('weekRangeLabel').textContent =
+        `الأحد ${sunDate.toLocaleDateString('ar-OM')} — الخميس ${thuDate.toLocaleDateString('ar-OM')}`;
+
+    // حساب الطلاب الغائبين هذا الأسبوع (كل طالب يُحتسب مرة واحدة)
+    let absentStudents = [], totalDaysThisWeek = 0;
+
+    filtered.forEach(st=>{
+        const weekDates = history.filter(h=>{
+            if(h.name!==st.name) return false;
+            const d = new Date(h.date);
+            return d>=sunDate && d<=thuDate;
+        }).map(h=>new Date(h.date));
+
+        if(weekDates.length>0){
+            absentStudents.push({st, days:weekDates.length, dates:weekDates});
+            totalDaysThisWeek += weekDates.length;
+        }
+    });
+
+    absentStudents.sort((a,b)=>b.days-a.days);
+    const presentCount = filtered.length - absentStudents.length;
+
+    document.getElementById('wkAbsentCount').textContent = absentStudents.length;
+    document.getElementById('wkTotalDays').textContent   = totalDaysThisWeek;
+    document.getElementById('wkPresentCount').textContent= Math.max(presentCount,0);
+
+    const tbody = document.getElementById('weeklyTableBody');
+    if(absentStudents.length===0){
+        tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);font-weight:700;"><i class="fas fa-check-circle" style="color:var(--success);margin-left:8px;"></i>لا يوجد غياب مسجّل هذا الأسبوع</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = absentStudents.map((item,i)=>{
+        const datesHtml = item.dates.map(d=>`<span class="day-chip">${d.toLocaleDateString('ar-OM',{weekday:'short',month:'numeric',day:'numeric'})}</span>`).join('');
+        return `<tr>
+            <td style="color:#9ca3af;font-size:0.8rem;">${i+1}</td>
+            <td style="font-weight:900;color:var(--primary);">${item.st.name}</td>
+            <td style="text-align:center;"><strong style="font-size:1.1rem;color:var(--danger);">${item.days}</strong> <span style="font-size:0.75rem;color:var(--text-muted);">يوم</span></td>
+            <td>${datesHtml}</td>
+            <td><span class="absent-badge"><i class="fas fa-times-circle"></i> غائب</span></td>
+        </tr>`;
+    }).join('');
+}
+
+// حساب حدود الأسبوع (الأحد - الخميس)
+function getWeekBounds(today){
+    const d = today.getDay(); // 0=أحد
+    const sun = new Date(today);
+    // إيجاد أحد هذا الأسبوع
+    if(d===0) sun.setDate(today.getDate());
+    else if(d===6) sun.setDate(today.getDate()-6); // السبت → أحد الأسبوع الحالي
+    else if(d===5) sun.setDate(today.getDate()-5); // الجمعة → أحد الأسبوع الحالي
+    else sun.setDate(today.getDate()-d);
+    sun.setHours(0,0,0,0);
+    const thu = new Date(sun);
+    thu.setDate(sun.getDate()+4);
+    thu.setHours(23,59,59,999);
+    return {sun,thu};
+}
+
+// ===== رسم بطاقات النتائج =====
+function renderCards(criticalArr,frequentArr){
+    const maxDays = Math.max(...[...criticalArr.map(x=>x.maxC),...frequentArr.map(x=>x.total),1]);
+
+    document.getElementById('criticalList').innerHTML = criticalArr.length
+        ? criticalArr.map(item=>buildCard(item,'critical',maxDays)).join('')
+        : emptyState('لا توجد حالات انقطاع كلي');
+
+    document.getElementById('frequentList').innerHTML = frequentArr.length
+        ? frequentArr.map(item=>buildCard(item,'frequent',maxDays)).join('')
+        : emptyState('لا توجد حالات كثيرة الغياب');
+
+    document.getElementById('countCritical').textContent = criticalArr.length;
+    document.getElementById('countFrequent').textContent = frequentArr.length;
+    bindCardEvents();
+}
+
+function emptyState(msg){return `<div class="empty-state"><i class="fas fa-check-circle"></i><p>${msg}</p></div>`;}
+
+function buildCard(item,type,maxDays){
+    const {st,total,maxC,dates}=item;
+    const isCrit = type==='critical';
+    const dayVal = isCrit ? maxC : total;
+    const pct    = Math.min(Math.round((dayVal/(maxDays||1))*100),100);
+    const badgeText  = isCrit ? `${maxC} يوم متتالية` : `${total} يوم تراكمي`;
+    const fillClass  = isCrit ? 'fill-danger' : 'fill-warning';
+    const badgeClass = isCrit ? 'risk-critical' : 'risk-frequent';
+    const statusColor= isCrit ? 'var(--danger)' : 'var(--warning)';
+    const iconName   = isCrit ? 'user-slash' : 'exclamation-triangle';
+    const typeLabel  = isCrit ? 'منقطع كلياً' : 'كثير الغياب';
+    const msgType    = type;
+    const msg = buildMsg(st.name,total,maxC,msgType);
+    const encodedMsg = encodeURIComponent(msg);
+    const cardId = 'st_'+Math.random().toString(36).substr(2,9);
+    studentDataMap[cardId]={name:st.name,grade:st.grade,section:st.section,phone:st.phone,total,maxC,dates:dates.map(d=>d.toISOString().split('T')[0]),badgeText,typeLabel,msgType,encodedMsg};
+
+    return `
+    <div class="student-card" data-id="${cardId}">
+        <div class="st-top-row"><span class="st-name">${st.name}</span><span class="risk-badge ${badgeClass}">${badgeText}</span></div>
+        <div class="st-phone-row"><i class="fas fa-phone-alt"></i> ${st.phone}</div>
+        <div class="absence-bar-wrap">
+            <div class="absence-bar-label"><span>${isCrit?'أطول انقطاع متتالي':'إجمالي الغياب'}</span><span>${dayVal} يوم</span></div>
+            <div class="absence-bar"><div class="absence-fill ${fillClass}" style="width:${pct}%"></div></div>
+        </div>
+        <div class="st-info-row">
+            <span class="badge-status" style="color:${statusColor}"><i class="fas fa-${iconName}"></i> ${badgeText}</span>
+            <div class="action-btns">
+                <button class="detail-btn" data-id="${cardId}"><i class="fas fa-eye"></i></button>
+                <a href="https://wa.me/${st.phone}?text=${encodedMsg}" target="_blank" class="wa-btn no-print"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </div>`;
+}
+
+function buildMsg(name,total,maxC,type){
+    if(type==='critical') return `السلام عليكم ورحمة الله وبركاته.. إفادة عاجلة من مدرسة صلالة الشرقية: نود إحاطتكم علماً بأن ابنكم الطالب (${name}) قد انقطع عن الدوام المدرسي لمدة (${maxC}) أياماً متتالية مما يستوجب التدخل الفوري. يرجى التواصل مع إدارة المدرسة في أقرب وقت. شاكرين تعاونكم.`;
+    return `السلام عليكم ورحمة الله وبركاته.. إفادة من مدرسة صلالة الشرقية: نود إعلامكم بأن ابنكم الطالب (${name}) قد بلغ إجمالي غيابه (${total}) يوماً دراسياً خلال هذا الفصل. يرجى المتابعة والحرص على انتظام الحضور والتواصل مع الإدارة. شاكرين تعاونكم.`;
+}
+
+function bindCardEvents(){
+    document.querySelectorAll('.student-card[data-id]').forEach(card=>{
+        card.addEventListener('click',function(e){if(e.target.closest('.wa-btn')||e.target.closest('.detail-btn')) return; openModalById(this.dataset.id);});
+    });
+    document.querySelectorAll('.detail-btn[data-id]').forEach(btn=>{
+        btn.addEventListener('click',function(e){e.stopPropagation();openModalById(this.dataset.id);});
+    });
+}
+
+// ===== المودال =====
+function openModalById(id){
+    const d=studentDataMap[id]; if(!d) return;
+    document.getElementById('mName').textContent   = d.name;
+    document.getElementById('mClass').textContent  = `${d.grade} / ${d.section}`;
+    document.getElementById('mPhone').textContent  = d.phone;
+    document.getElementById('mTotal').textContent  = `${d.total} يوم`;
+    document.getElementById('mConsec').textContent = `${d.maxC} يوم`;
+    document.getElementById('modalTitle').textContent = d.name;
+    const pill=document.getElementById('modalTypePill');
+    const pc={critical:'background:#fef2f2;color:#ef4444;border:1px solid #fecaca',frequent:'background:#fffbeb;color:#d97706;border:1px solid #fde68a'};
+    pill.textContent=d.typeLabel; pill.style.cssText=`font-size:0.75rem;font-weight:900;padding:4px 12px;border-radius:20px;${pc[d.msgType]||''}`;
+    document.getElementById('mDates').innerHTML = d.dates.length
+        ? d.dates.map(dt=>`<span class="d-chip"><i class="fas fa-calendar-day"></i>${dt}</span>`).join('')
+        : '<span style="color:var(--text-muted);font-size:0.82rem;">لا يوجد سجل</span>';
+    document.getElementById('mWaBtn').onclick = ()=>window.open(`https://wa.me/${d.phone}?text=${d.encodedMsg}`,'_blank');
+    document.getElementById('mPdfBtn').onclick = ()=>generateStudentPDF(d);
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal(e){
+    if(!e||e.target===document.getElementById('modalOverlay'))
+        document.getElementById('modalOverlay').classList.remove('active');
+}
+
+// ===== طباعة الفصل كاملاً =====
+function printClassReport(){
+    const g=currentGrade, s=currentSection;
+    if(!g||!s){alert('يرجى اختيار الصف والشعبة أولاً');return;}
+    const filtered = currentFiltered;
+    const dateNow = new Date().toLocaleDateString('ar-OM',{year:'numeric',month:'long',day:'numeric'});
+
+    // بناء جدول كل طلاب الفصل
+    const rows = filtered.map((st,i)=>{
+        const dates = history.filter(h=>h.name===st.name).map(h=>new Date(h.date)).sort((a,b)=>a-b);
+        const total = dates.length;
+        const maxC  = getMaxConsecutive(dates);
+        let status='', badgeStyle='';
+        if(maxC>=CRITICAL_CONSEC){
+            status='منقطع كلياً'; badgeStyle='background:#fef2f2;color:#ef4444;border:1px solid #fecaca;';
+        } else if(total>=FREQUENT_TOTAL){
+            status='كثير الغياب'; badgeStyle='background:#fffbeb;color:#d97706;border:1px solid #fde68a;';
+        } else if(total>0){
+            status='غياب عادي'; badgeStyle='background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;';
+        } else {
+            status='منتظم'; badgeStyle='background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;';
+        }
+        const datesStr = dates.map(d=>d.toISOString().split('T')[0]).join('،  ');
+        return `<tr style="${i%2===0?'background:#f8fafc;':'background:white;'}">
+            <td style="padding:10px 12px;color:#9ca3af;font-size:0.8rem;border-bottom:1px solid #f1f5f9;">${i+1}</td>
+            <td style="padding:10px 12px;font-weight:900;color:#0f172a;border-bottom:1px solid #f1f5f9;">${st.name}</td>
+            <td style="padding:10px 12px;direction:ltr;text-align:right;border-bottom:1px solid #f1f5f9;">${st.phone}</td>
+            <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #f1f5f9;font-weight:900;font-size:1.1rem;color:${total>0?'#ef4444':'#10b981'};">${total}</td>
+            <td style="padding:10px 12px;text-align:center;border-bottom:1px solid #f1f5f9;">${maxC>0?maxC:'-'}</td>
+            <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;"><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:900;${badgeStyle}">${status}</span></td>
+            <td style="padding:10px 12px;font-size:0.75rem;color:#6b7280;line-height:1.8;border-bottom:1px solid #f1f5f9;">${datesStr||'—'}</td>
+        </tr>`;
+    }).join('');
+
+    const totalAbsent  = filtered.filter(st=>history.some(h=>h.name===st.name)).length;
+    const totalPresent = filtered.length - totalAbsent;
+    const totalCritical= currentResults.critical.length;
+    const totalFrequent= currentResults.frequent.length;
+
+    const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+    <title>تقرير غياب الفصل ${g}/${s}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Cairo',sans-serif;background:white;color:#0f172a;direction:rtl;}
+        @page{size:A4 landscape;margin:12mm;}
+        @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+    </style></head><body>
+    <!-- هيدر -->
+    <div style="background:#0f172a;padding:18px 24px;border-bottom:5px solid #d4af37;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-radius:8px;">
+        <div>
+            <div style="color:#d4af37;font-size:15px;font-weight:900;">مدرسة صلالة الشرقية (5-9)</div>
+            <div style="color:#94a3b8;font-size:11px;margin-top:3px;">سلطنة عمان — وزارة التعليم</div>
+        </div>
+        <div style="text-align:center;">
+            <div style="color:white;font-size:17px;font-weight:900;">تقرير غياب الفصل الدراسي</div>
+            <div style="color:#94a3b8;font-size:11px;margin-top:4px;">كشف شامل بجميع طلاب الفصل وغياباتهم</div>
+        </div>
+        <div style="text-align:left;color:#94a3b8;font-size:11px;line-height:1.9;">
+            الصف: <span style="color:#d4af37;font-weight:900;">${g}</span> / الشعبة: <span style="color:#d4af37;font-weight:900;">${s}</span><br>
+            التاريخ: <span style="color:#d4af37;font-weight:900;">${dateNow}</span><br>
+            عدد الطلاب: <span style="color:#d4af37;font-weight:900;">${filtered.length}</span>
+        </div>
+    </div>
+    <!-- ملخص -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:1.8rem;font-weight:900;color:#ef4444;">${totalCritical}</div>
+            <div style="font-size:0.75rem;color:#64748b;font-weight:700;">منقطع كلياً (15+ متتالية)</div>
+        </div>
+        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:1.8rem;font-weight:900;color:#d97706;">${totalFrequent}</div>
+            <div style="font-size:0.75rem;color:#64748b;font-weight:700;">كثير الغياب (30+ تراكمي)</div>
+        </div>
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:1.8rem;font-weight:900;color:#1e40af;">${totalAbsent}</div>
+            <div style="font-size:0.75rem;color:#64748b;font-weight:700;">طلاب لديهم غياب</div>
+        </div>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;text-align:center;">
+            <div style="font-size:1.8rem;font-weight:900;color:#16a34a;">${totalPresent}</div>
+            <div style="font-size:0.75rem;color:#64748b;font-weight:700;">طلاب منتظمون</div>
+        </div>
+    </div>
+    <!-- الجدول -->
+    <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+        <thead>
+            <tr style="background:#0f172a;">
+                <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;width:30px;">#</th>
+                <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;">اسم الطالب</th>
+                <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;width:110px;">هاتف ولي الأمر</th>
+                <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:70px;">إجمالي الغياب</th>
+                <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:80px;">أطول انقطاع</th>
+                <th style="padding:10px 12px;text-align:center;color:#d4af37;font-weight:900;width:100px;">التصنيف</th>
+                <th style="padding:10px 12px;text-align:right;color:#d4af37;font-weight:900;">تواريخ الغياب</th>
+            </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+    </table>
+    <!-- توقيعات -->
+    <div style="display:flex;justify-content:space-around;margin-top:40px;padding-top:16px;border-top:1px solid #e2e8f0;">
+        <div style="text-align:center;font-size:12px;font-weight:900;">المشرف الإداري<br><br><br>...........................</div>
+        <div style="text-align:center;font-size:12px;font-weight:900;">اعتماد مدير المدرسة<br><br><br>...........................</div>
+        <div style="text-align:center;font-size:12px;font-weight:900;">ختم المدرسة<br><div style="width:70px;height:70px;border-radius:50%;border:2px dashed #ccc;margin:8px auto;"></div></div>
+    </div>
+    <!-- فوتر -->
+    <div style="background:#0f172a;padding:8px 24px;margin-top:16px;border-radius:6px;text-align:center;">
+        <span style="color:#d4af37;font-size:10px;font-weight:700;">تصميم وتنفيذ: فيصل العريبي © 2026 | منظومة التحليل الإشرافي | مدرسة صلالة الشرقية</span>
+    </div>
+    </body></html>`;
+
+    const win = window.open('','_blank','width=1100,height=700');
+    win.document.write(html);
+    win.document.close();
+    win.onload=()=>setTimeout(()=>{win.focus();win.print();},800);
+}
+
+// ===== بناء محتوى طباعة التقرير الإشرافي =====
+function buildPrintContent(criticalArr,frequentArr,filtered,g,s){
+    document.getElementById('pTotal').textContent    = filtered.length;
+    document.getElementById('pCriticalCount').textContent = criticalArr.length;
+    document.getElementById('pFrequentCount').textContent = frequentArr.length;
+    document.getElementById('pGoodCount').textContent= Math.max(filtered.length-criticalArr.length-frequentArr.length,0);
+
+    const sections=[
+        {arr:criticalArr, label:'أولاً: الطلاب المنقطعون كلياً (15 يوم متتالية فأكثر)', cls:'red-bg', badge:'red', getVal:x=>`${x.maxC} يوم متتالية`},
+        {arr:frequentArr, label:'ثانياً: كثيرو الغياب (30 يوم تراكمي فأكثر)',          cls:'yellow-bg',badge:'yellow',getVal:x=>`${x.total} يوم تراكمي`}
+    ];
+
+    let html='';
+    sections.forEach(sec=>{
+        if(!sec.arr.length) return;
+        html+=`<div class="print-section">
+            <div class="print-section-title ${sec.cls}">${sec.label}<span class="count-badge">${sec.arr.length} طالب</span></div>
+            <table class="print-table"><thead><tr>
+                <th style="width:28px">#</th><th>اسم الطالب</th>
+                <th style="width:110px">هاتف ولي الأمر</th>
+                <th style="width:100px">الحالة</th>
+                <th style="width:80px">إجمالي الغياب</th>
+                <th style="width:90px">أطول انقطاع</th>
+                <th>تواريخ الغياب</th>
+            </tr></thead><tbody>
+            ${sec.arr.map((item,i)=>`<tr>
+                <td style="color:#9ca3af;font-size:0.75rem;">${i+1}</td>
+                <td><span class="pt-name">${item.st.name}</span></td>
+                <td style="direction:ltr;text-align:right;">${item.st.phone}</td>
+                <td><span class="pt-badge ${sec.badge}">${sec.getVal(item)}</span></td>
+                <td style="text-align:center;font-weight:900;">${item.total}</td>
+                <td style="text-align:center;font-weight:700;">${item.maxC}</td>
+                <td><div class="pt-dates">${item.dates.map(d=>d.toISOString().split('T')[0]).join(' — ')}</div></td>
+            </tr>`).join('')}
+            </tbody></table>
+        </div>`;
+    });
+    document.getElementById('printContent').innerHTML=html;
+}
+
+function updateSummary(filtered,criticalArr,frequentArr){
+    const flagged=criticalArr.length+frequentArr.length;
+    document.getElementById('sumCritical').textContent  = criticalArr.length;
+    document.getElementById('sumFrequent').textContent  = frequentArr.length;
+    document.getElementById('sumTotal').textContent     = filtered.length;
+    document.getElementById('sumGood').textContent      = Math.max(filtered.length-flagged,0);
+}
+
+function updateCharts(criticalArr,frequentArr,totalStudents){
+    if(absChart) absChart.destroy(); if(ratioChart) ratioChart.destroy();
+    const allItems=[...criticalArr.map(x=>({n:x.st.name,d:x.maxC,c:'#fecaca',b:'#ef4444'})),...frequentArr.map(x=>({n:x.st.name,d:x.total,c:'#fde68a',b:'#f59e0b'}))].slice(0,8);
+    const ctx1=document.getElementById('absenceChart').getContext('2d');
+    absChart=new Chart(ctx1,{type:'bar',data:{labels:allItems.map(x=>x.n.split(' ').slice(0,2).join(' ')),datasets:[{label:'أيام',data:allItems.map(x=>x.d),backgroundColor:allItems.map(x=>x.c),borderColor:allItems.map(x=>x.b),borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{font:{family:'Cairo',size:11}},grid:{color:'#f1f5f9'}},x:{ticks:{font:{family:'Cairo',size:10},maxRotation:30}}}}});
+    const flagged=criticalArr.length+frequentArr.length;
+    const ctx2=document.getElementById('ratioChart').getContext('2d');
+    ratioChart=new Chart(ctx2,{type:'doughnut',data:{labels:['منقطع كلياً','كثير الغياب','منتظم'],datasets:[{data:[criticalArr.length,frequentArr.length,Math.max(totalStudents-flagged,0)],backgroundColor:['#fee2e2','#fffbeb','#f0fdf4'],borderColor:['#ef4444','#f59e0b','#10b981'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Cairo',size:10},padding:10}}},cutout:'60%'}});
+}
+
+function filterBySearch(){
+    const q=document.getElementById('searchInput').value.trim().toLowerCase();
+    document.querySelectorAll('.student-card').forEach(card=>{
+        const name=card.querySelector('.st-name')?.textContent.toLowerCase()||'';
+        card.style.display=name.includes(q)?'':'none';
+    });
+}
+
+function exportCSV(){
+    const g=currentGrade, s=currentSection;
+    if(!g||!s){alert('يرجى اختيار الصف والشعبة أولاً');return;}
+    let csv='\uFEFF'+'اسم الطالب,هاتف ولي الأمر,التصنيف,إجمالي أيام الغياب,أطول انقطاع متتالي\n';
+    currentResults.critical.forEach(({st,total,maxC})=>csv+=`${st.name},${st.phone},منقطع كلياً,${total},${maxC}\n`);
+    currentResults.frequent.forEach(({st,total,maxC})=>csv+=`${st.name},${st.phone},كثير الغياب,${total},${maxC}\n`);
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download=`تقرير_غياب_${g}-${s}_${new Date().toLocaleDateString('ar-OM').replace(/\//g,'-')}.csv`; a.click();
+}
+
+// ===== توليد PDF الطالب =====
+function generateStudentPDF(d){
+    const typeColors={
+        critical:{bg:'#fef2f2',border:'#ef4444',text:'#ef4444',label:'منقطع كلياً',note:'انقطاع متتالي عن الدوام 15 يوماً فأكثر'},
+        frequent:{bg:'#fffbeb',border:'#f59e0b',text:'#d97706',label:'كثير الغياب', note:'غياب تراكمي 30 يوماً فأكثر خلال الفصل'}
+    };
+    const tc=typeColors[d.msgType]||typeColors.frequent;
+    const rawMsg=decodeURIComponent(d.encodedMsg);
+    const dateNow=new Date().toLocaleDateString('ar-OM',{year:'numeric',month:'long',day:'numeric'});
+    const datesHTML=d.dates.map((dt,i)=>`<span style="display:inline-block;background:${i%2===0?'#f1f5f9':'#e2e8f0'};color:#374151;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;margin:3px;">${dt}</span>`).join('');
+
+    const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+    <title>تقرير غياب — ${d.name}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Cairo',sans-serif;background:white;color:#0f172a;direction:rtl;}
+        @page{size:A4;margin:0;}
+        @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+    </style></head><body>
+    <div style="width:210mm;min-height:297mm;">
+        <div style="background:#0f172a;padding:22px 28px 18px;border-bottom:5px solid #d4af37;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <img src="logo.jpeg" style="width:54px;height:54px;border-radius:50%;border:2px solid #d4af37;object-fit:cover;" onerror="this.style.display='none'">
+                    <div><div style="color:#d4af37;font-size:15px;font-weight:900;">مدرسة صلالة الشرقية (5-9)</div><div style="color:#94a3b8;font-size:11px;margin-top:3px;">سلطنة عمان — وزارة التعليم</div></div>
+                </div>
+                <div style="text-align:center;flex:1;"><div style="color:white;font-size:17px;font-weight:900;">تقرير غياب الطالب</div><div style="color:#94a3b8;font-size:11px;margin-top:4px;">منظومة التحليل الإشرافي</div></div>
+                <div style="text-align:left;color:#94a3b8;font-size:11px;line-height:1.8;">التاريخ: <strong style="color:#d4af37;">${dateNow}</strong><br>الصف: <strong style="color:#d4af37;">${d.grade}</strong> / الشعبة: <strong style="color:#d4af37;">${d.section}</strong></div>
+            </div>
+        </div>
+        <div style="padding:20px 28px;">
+            <div style="background:#f8fafc;border-radius:12px;padding:18px 20px;margin-bottom:18px;border:1px solid #e2e8f0;border-right:6px solid ${tc.border};position:relative;">
+                <span style="position:absolute;top:16px;left:20px;background:${tc.bg};color:${tc.text};border:1px solid ${tc.border};border-radius:20px;padding:5px 14px;font-size:12px;font-weight:900;">${tc.label}</span>
+                <div style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:10px;">&#9654; ${d.name}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div style="font-size:12px;"><span style="color:#64748b;font-weight:700;">الصف / الشعبة: </span><strong>${d.grade} / ${d.section}</strong></div>
+                    <div style="font-size:12px;direction:ltr;text-align:right;"><span style="color:#64748b;font-weight:700;">هاتف ولي الأمر: </span><strong>${d.phone}</strong></div>
+                </div>
+                <div style="margin-top:10px;font-size:11px;color:#64748b;background:${tc.bg};padding:6px 12px;border-radius:6px;">&#9888; ${tc.note}</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;">
+                <div style="background:${tc.bg};border:1.5px solid ${tc.border};border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:26px;font-weight:900;color:${tc.text};line-height:1;">${d.total}</div>
+                    <div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">إجمالي أيام الغياب</div>
+                </div>
+                <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:26px;font-weight:900;color:#374151;line-height:1;">${d.maxC}</div>
+                    <div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">أطول انقطاع متتالي (يوم)</div>
+                </div>
+                <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:26px;font-weight:900;color:#374151;line-height:1;">${d.dates.length}</div>
+                    <div style="font-size:11px;color:#64748b;font-weight:700;margin-top:5px;">عدد التواريخ المسجّلة</div>
+                </div>
+            </div>
+            <div style="background:#0f172a;color:#d4af37;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:900;margin-bottom:12px;">&#128197; سجل تواريخ الغياب الكامل (${d.dates.length} يوم)</div>
+            <div style="margin-bottom:18px;line-height:2;">${datesHTML}</div>
+            <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <span style="background:#25d366;color:white;border-radius:6px;padding:3px 12px;font-size:11px;font-weight:900;">&#128241; واتساب</span>
+                    <span style="font-size:12px;font-weight:900;color:#166534;">نص الرسالة الجاهزة لإرسالها لولي الأمر</span>
+                </div>
+                <div style="font-size:11.5px;color:#374151;line-height:1.9;">${rawMsg}</div>
+            </div>
+            <div style="display:flex;justify-content:space-around;margin-top:30px;padding-top:16px;border-top:1px solid #e2e8f0;">
+                <div style="text-align:center;font-size:12px;font-weight:900;">المشرف الإداري<br><br><br><span style="color:#64748b;">...........................</span></div>
+                <div style="text-align:center;font-size:12px;font-weight:900;">اعتماد مدير المدرسة<br><br><br><span style="color:#64748b;">...........................</span></div>
+                <div style="text-align:center;font-size:12px;font-weight:900;">ختم المدرسة<br><div style="width:70px;height:70px;border-radius:50%;border:2px dashed #cbd5e1;margin:8px auto;"></div></div>
+            </div>
+        </div>
+        <div style="background:#0f172a;padding:10px 28px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="color:#d4af37;font-size:10px;font-weight:700;">تصميم وتنفيذ: فيصل العريبي © 2026 | منظومة التحليل الإشرافي</span>
+            <span style="color:#64748b;font-size:10px;">${dateNow}</span>
+        </div>
+    </div>
+    </body></html>`;
+
+    const win=window.open('','_blank','width=900,height=700');
+    win.document.write(html); win.document.close();
+    win.onload=()=>setTimeout(()=>{win.focus();win.print();},800);
+}
+
+// ===== دوال الحساب =====
+function getMaxConsecutive(dates){
+    if(!dates.length) return 0;
+    let max=1,curr=1;
+    for(let i=1;i<dates.length;i++){
+        if((dates[i]-dates[i-1])/86400000===1) curr++;
+        else{max=Math.max(max,curr);curr=1;}
+    }
+    return Math.max(max,curr);
+}
+
+window.onload=loadData;
+</script>
+</body>
+</html>
