@@ -215,7 +215,7 @@
         .card-title { font-size: 0.95rem; font-weight: 800; color: var(--text-dark); }
         .card-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
 
-        /* ===== DATE STRIP (tap to change) ===== */
+        /* ===== DATE STRIP ===== */
         .date-strip {
             display: flex; align-items: center; gap: 12px;
             background: linear-gradient(135deg, var(--bg-surface), var(--bg-mid));
@@ -223,12 +223,7 @@
             border-radius: var(--radius-md);
             padding: 12px 14px;
             margin-bottom: 16px;
-            position: relative;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: var(--transition);
         }
-        .date-strip:active { opacity: 0.85; }
 
         .date-icon {
             width: 42px; height: 42px;
@@ -243,21 +238,29 @@
         .date-text { flex: 1; }
         .date-label { font-size: 0.65rem; color: var(--text-light); opacity: 0.7; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
         .date-value { font-size: 0.95rem; font-weight: 800; color: var(--gold-light); margin-top: 2px; }
-        .date-hint { font-size: 0.62rem; color: rgba(232,196,74,0.5); margin-top: 2px; }
 
-        /* مخفي — يُفتح بالضغط على الشريط */
+        /* حقل التاريخ — مرئي وقابل للضغط على الحاسوب والهاتف */
         #absentDate {
-            position: absolute;
-            inset: 0; opacity: 0;
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid var(--gold-border);
+            border-radius: 9px;
+            color: var(--gold-light);
+            font-family: 'Cairo'; font-size: 0.82rem; font-weight: 700;
+            padding: 7px 10px;
+            outline: none;
             cursor: pointer;
-            z-index: 2;
-            width: 100%; height: 100%;
-        }
-
-        .date-tap-icon {
-            color: rgba(232,196,74,0.55);
-            font-size: 0.85rem;
             flex-shrink: 0;
+            -webkit-appearance: none;
+            appearance: none;
+            min-width: 130px;
+        }
+        #absentDate::-webkit-calendar-picker-indicator {
+            filter: invert(0.8) sepia(1) saturate(3) hue-rotate(5deg);
+            cursor: pointer;
+        }
+        #absentDate:focus {
+            border-color: var(--gold-light);
+            background: rgba(255,255,255,0.14);
         }
 
         /* ===== FORM ===== */
@@ -389,28 +392,26 @@
 
         .student-row .row-num {
             font-size: 0.68rem; font-weight: 800;
-            color: #9aadcc; min-width: 20px; text-align: center;
+            color: #9aadcc; min-width: 22px; text-align: center;
             flex-shrink: 0;
         }
 
-        .row-avatar {
-            width: 38px; height: 38px; flex-shrink: 0;
-            border-radius: 11px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; font-weight: 800;
+        /* حالة الطالب — دائرة صغيرة بدون أحرف */
+        .row-status-dot {
+            width: 10px; height: 10px; flex-shrink: 0;
+            border-radius: 50%;
             transition: var(--transition);
         }
-        .row-avatar.present-av { background: var(--success-bg); color: var(--success); border: 1.5px solid rgba(18,163,90,0.25); }
-        .row-avatar.absent-av { background: var(--danger-bg); color: var(--danger); border: 1.5px solid rgba(220,53,69,0.35); }
+        .row-status-dot.dot-present { background: var(--success); box-shadow: 0 0 5px rgba(18,163,90,0.4); }
+        .row-status-dot.dot-absent  { background: var(--danger);  box-shadow: 0 0 5px rgba(220,53,69,0.4);  }
 
         .row-name {
             flex: 1;
-            font-size: 0.88rem; font-weight: 700; color: var(--text-dark);
+            font-size: 0.9rem; font-weight: 700; color: var(--text-dark);
             line-height: 1.3;
             min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            word-break: break-word;
+            white-space: normal;
         }
         .student-row.absent-row .row-name { color: #c0293b; }
 
@@ -679,11 +680,11 @@
         .toast.success { border-color: rgba(18,163,90,0.4); color: var(--success); }
         .toast.error { border-color: rgba(220,53,69,0.4); color: var(--danger); }
 
-        /* ===== PRINT (احترافي) ===== */
+        /* ===== PRINT — تنسيق احترافي نظيف ===== */
         #printHeader, .footer-stamp { display: none; }
 
         @media print {
-            /* إخفاء كل ما لا يُطبع */
+            /* إخفاء عناصر التطبيق */
             .no-print,
             .bottom-nav,
             .extra-bottom-bar,
@@ -700,18 +701,33 @@
             .attendance-controls,
             .absent-strip,
             .save-btn,
-            .page-header { display: none !important; }
+            .page-header,
+            .card-icon,
+            .card-header,
+            .card-sub,
+            body::before,
+            body::after { display: none !important; }
 
             #printHeader { display: block !important; }
-            .footer-stamp { display: block !important; }
+            .footer-stamp { display: flex !important; }
+
+            /* إعادة ضبط كامل لبيئة الطباعة */
+            *, *::before, *::after {
+                background: transparent !important;
+                color: #000 !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
 
             body {
                 background: white !important;
                 color: #000 !important;
                 padding: 0 !important;
+                margin: 0 !important;
                 font-family: 'Cairo', Arial, sans-serif !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                font-size: 12pt;
             }
 
             .container {
@@ -720,188 +736,174 @@
                 padding: 0 !important;
             }
 
+            .section { display: block !important; }
+
             .card {
                 border: none !important;
                 box-shadow: none !important;
                 padding: 0 !important;
-                background: white !important;
+                background: transparent !important;
                 margin: 0 !important;
                 animation: none !important;
+                border-radius: 0 !important;
             }
-
             .card::before { display: none !important; }
 
-            /* رأس التقرير */
+            /* ======= رأس الصفحة ======= */
             #printHeader {
-                padding: 0 0 14px;
-                margin-bottom: 18px;
-                border-bottom: 2.5px solid #1a2340;
+                border-bottom: 2px solid #222 !important;
+                padding-bottom: 12px !important;
+                margin-bottom: 16px !important;
             }
 
             .print-top-row {
                 display: flex !important;
-                justify-content: space-between;
                 align-items: center;
-                margin-bottom: 8px;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 10px;
             }
 
             .print-logo {
-                width: 64px; height: 64px;
+                width: 60px; height: 60px;
                 object-fit: contain;
             }
 
             .print-school-info {
                 text-align: center;
                 flex: 1;
-                padding: 0 12px;
             }
 
-            .print-school-info .print-country {
-                font-size: 0.75rem;
-                color: #555;
-                margin-bottom: 2px;
+            .print-country  { font-size: 9pt; color: #444 !important; margin-bottom: 2px; }
+            .print-ministry { font-size: 9pt; color: #333 !important; margin-bottom: 3px; }
+            .print-school-name {
+                font-size: 13pt; font-weight: 900;
+                color: #000 !important; margin-bottom: 4px;
             }
-
-            .print-school-info .print-ministry {
-                font-size: 0.78rem;
-                color: #333;
-                margin-bottom: 2px;
-            }
-
-            .print-school-info .print-school-name {
-                font-size: 1rem;
-                font-weight: 900;
-                color: #1a2340;
-                margin-bottom: 2px;
-            }
-
-            .print-school-info .print-report-title {
-                font-size: 0.85rem;
-                font-weight: 800;
-                color: #c9a227;
-                background: #fffbee;
+            .print-report-title {
+                font-size: 11pt; font-weight: 800;
+                color: #000 !important;
+                border: 1.5px solid #555 !important;
+                border-radius: 4px;
                 display: inline-block;
-                padding: 3px 18px;
-                border-radius: 40px;
-                border: 1px solid #e8c44a;
-                margin-top: 4px;
+                padding: 2px 16px;
+                margin-top: 3px;
+                background: transparent !important;
             }
 
+            /* شريط البيانات */
             .print-report-meta {
                 display: flex !important;
-                justify-content: space-between;
-                background: #f8faff;
-                border: 1px solid #dde4f0;
-                border-radius: 8px;
-                padding: 8px 14px;
-                margin-top: 10px;
+                gap: 0;
+                border: 1px solid #999 !important;
+                border-radius: 4px;
+                overflow: hidden;
+                margin-top: 8px;
             }
 
             .print-meta-item {
+                flex: 1;
+                padding: 5px 10px;
+                font-size: 9pt;
+                color: #000 !important;
+                border-left: 1px solid #bbb !important;
                 display: flex;
                 align-items: center;
-                gap: 5px;
-                font-size: 0.78rem;
-                color: #444;
+                gap: 4px;
             }
+            .print-meta-item:last-child { border-left: none !important; }
+            .print-meta-label { font-weight: 900; color: #000 !important; }
 
-            .print-meta-label {
-                font-weight: 900;
-                color: #1a2340;
-            }
-
-            /* جدول الطباعة */
+            /* ======= الجدول ======= */
             .report-table-wrap {
                 border: none !important;
                 border-radius: 0 !important;
-                margin-top: 10px !important;
+                margin-top: 8px !important;
                 overflow: visible !important;
             }
 
             table {
                 width: 100%;
-                border-collapse: collapse;
-                border: 2px solid #1a2340 !important;
+                border-collapse: collapse !important;
             }
 
-            thead tr {
-                background-color: #1a2340 !important;
-            }
+            thead tr { background: transparent !important; }
 
             th {
-                padding: 9px 12px !important;
-                font-size: 0.78rem !important;
+                padding: 8px 10px !important;
+                font-size: 10pt !important;
                 font-weight: 900 !important;
-                color: white !important;
-                border: 1px solid #1a2340 !important;
+                color: #000 !important;
+                border: 1.5px solid #222 !important;
                 text-align: right !important;
+                background: #e8e8e8 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
 
             td {
-                padding: 8px 12px !important;
-                font-size: 0.82rem !important;
+                padding: 6px 10px !important;
+                font-size: 10pt !important;
                 color: #000 !important;
-                border: 1px solid #bbc3d4 !important;
+                border: 1px solid #aaa !important;
             }
 
             tr:nth-child(even) td {
-                background-color: #f8faff !important;
+                background: #f4f4f4 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
 
             .td-count {
                 font-weight: 900 !important;
-                color: #c0293b !important;
+                color: #000 !important;
                 text-align: center !important;
             }
 
-            /* ذيل الصفحة */
+            /* ======= ذيل الصفحة ======= */
             .footer-stamp {
-                margin-top: 24px;
-                border-top: 1px solid #dde4f0;
-                padding-top: 12px;
-                display: flex !important;
+                margin-top: 28px !important;
+                border-top: 1px solid #aaa !important;
+                padding-top: 10px !important;
                 justify-content: space-between;
                 align-items: flex-end;
             }
 
-            .footer-stamp .stamp-sig {
-                font-size: 0.78rem;
-                color: #555;
-            }
-
-            .footer-stamp .stamp-sig strong {
-                display: block;
-                font-size: 0.82rem;
-                color: #1a2340;
-                margin-top: 16px;
-                border-top: 1px solid #aaa;
-                padding-top: 4px;
-                min-width: 120px;
+            .stamp-sig {
+                font-size: 9pt; color: #333 !important;
                 text-align: center;
             }
 
-            .footer-stamp .stamp-info {
-                font-size: 0.72rem;
-                color: #888;
-                text-align: left;
+            .stamp-sig strong {
+                display: block;
+                margin-top: 20px;
+                border-top: 1px solid #666 !important;
+                padding-top: 4px;
+                min-width: 130px;
+                color: #000 !important;
+                font-size: 9pt;
+            }
+
+            .stamp-info {
+                font-size: 8pt; color: #666 !important;
+                text-align: center;
             }
 
             @page {
-                margin: 1.5cm;
+                margin: 2cm 1.5cm;
                 size: A4;
             }
         }
 
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 400px) {
+        @media (max-width: 480px) {
             .form-row { grid-template-columns: 1fr; }
-            .toggle-option { padding: 4px 8px; font-size: 0.66rem; }
-            .row-name { font-size: 0.82rem; }
-            .row-avatar { width: 34px; height: 34px; font-size: 0.74rem; }
+            .toggle-option { padding: 4px 8px; font-size: 0.68rem; }
+            .row-name { font-size: 0.86rem; }
+            .student-row { gap: 8px; padding: 9px 10px; }
+            .row-num { min-width: 18px; font-size: 0.64rem; }
+            #absentDate { min-width: 110px; font-size: 0.76rem; }
+            .attendance-controls { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -963,16 +965,14 @@
             </div>
 
             <div class="card">
-                <!-- التاريخ: اضغط مباشرة للتغيير -->
+                <!-- التاريخ -->
                 <div class="date-strip">
-                    <input type="date" id="absentDate" onchange="updateDateDisplay()" title="اضغط لتغيير التاريخ">
                     <div class="date-icon"><i class="far fa-calendar-alt"></i></div>
                     <div class="date-text">
                         <div class="date-label">تاريخ الجلسة</div>
                         <div class="date-value" id="dateDisplayText">—</div>
-                        <div class="date-hint">اضغط لتغيير التاريخ</div>
                     </div>
-                    <i class="fas fa-chevron-left date-tap-icon"></i>
+                    <input type="date" id="absentDate" onchange="updateDateDisplay()" title="اختر التاريخ">
                 </div>
 
                 <div class="form-label" style="margin-bottom:8px;">الصف الدراسي</div>
@@ -1462,7 +1462,7 @@
                 return `
                 <div class="student-row ${isAbsent ? 'absent-row' : ''}" id="row_${CSS.escape(st.name)}">
                     <span class="row-num">${i + 1}</span>
-                    <div class="row-avatar ${isAbsent ? 'absent-av' : 'present-av'}" id="av_${CSS.escape(st.name)}">${getInitials(st.name)}</div>
+                    <div class="row-status-dot ${isAbsent ? 'dot-absent' : 'dot-present'}" id="av_${CSS.escape(st.name)}"></div>
                     <div class="row-name" id="nm_${CSS.escape(st.name)}">${st.name}</div>
                     <div class="attendance-toggle" onclick="toggleAbsent('${escAttr(st.name)}','${escAttr(st.phone)}')" title="تبديل الحالة">
                         <div class="toggle-option ${!isAbsent ? 'active-present' : ''}" id="tg_p_${CSS.escape(st.name)}">
@@ -1509,7 +1509,7 @@
             const tgA = document.getElementById('tg_a_' + CSS.escape(name));
 
             if (row) row.classList.toggle('absent-row', isAbsent);
-            if (av) av.className = `row-avatar ${isAbsent ? 'absent-av' : 'present-av'}`;
+            if (av) av.className = `row-status-dot ${isAbsent ? 'dot-absent' : 'dot-present'}`;
             if (tgP) tgP.classList.toggle('active-present', !isAbsent);
             if (tgA) tgA.classList.toggle('active-absent', isAbsent);
 
@@ -1523,8 +1523,8 @@
             resetSelectAllBtn();
             document.querySelectorAll('.student-row.absent-row').forEach(r => {
                 r.classList.remove('absent-row');
-                const av = r.querySelector('.row-avatar');
-                if (av) av.className = 'row-avatar present-av';
+                const av = r.querySelector('.row-status-dot');
+                if (av) av.className = 'row-status-dot dot-present';
                 r.querySelectorAll('.toggle-option').forEach(t => {
                     if (t.textContent.includes('حاضر')) t.classList.add('active-present');
                     else t.classList.remove('active-absent');
@@ -1562,7 +1562,7 @@
                 const tgP = document.getElementById('tg_p_' + CSS.escape(st.name));
                 const tgA = document.getElementById('tg_a_' + CSS.escape(st.name));
                 if (row) row.classList.add('absent-row');
-                if (av) av.className = 'row-avatar absent-av';
+                if (av) av.className = 'row-status-dot dot-absent';
                 if (tgP) tgP.classList.remove('active-present');
                 if (tgA) tgA.classList.add('active-absent');
             });
