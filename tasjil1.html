@@ -547,7 +547,8 @@ tr:hover td { background:var(--slate); }
 .modal-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-glow); }
 
 /* ============ PRINT HEADER ============ */
-#printHeader,.footer-stamp-print { display:none; }
+#printHeader { display:none; }
+.print-footer { display:none; }
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 520px) {
@@ -570,27 +571,201 @@ tr:hover td { background:var(--slate); }
 }
 
 /* ============ PRINT ============ */
-#printHeader,.footer-stamp { display:none; }
 @media print {
-  .bottom-nav,.extra-bar,.header,button,input,select,label,
-  .search-wrap,.panel-head .sel-all-btn,.save-area,
-  .st-actions,.wa-btn,.stats-row,
-  .page-title-wrap,.no-print { display:none !important; }
+  /* ── إخفاء كل عناصر التطبيق ── */
+  .bottom-nav, .extra-bar, .header, .no-print,
+  button, input, select,
+  .search-wrap, .save-area,
+  .st-actions, .wa-btn, .stats-row, .sel-all-btn,
+  .page-title-wrap, .panel-head,
+  body::before, body::after { display:none !important; }
+
+  /* ── إظهار الهيدر والتقرير فقط ── */
   #printHeader { display:block !important; }
   .section { display:none !important; }
   #reportSection { display:block !important; }
-  body { background:white !important; padding:0 !important; }
-  .panel { border:none !important; box-shadow:none !important; }
-  .st-card { border:none !important; border-bottom:1px solid #e0e0e0 !important; border-radius:0 !important; padding:8px 4px !important; }
-  .st-name { font-size:10pt !important; }
-  .st-num { background:#eee !important; }
-  @page { margin:2cm 1.5cm; size:A4; }
+  #reportSection .page-title-wrap { display:none !important; }
+
+  /* ── إعادة ضبط الجسم ── */
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body {
+    background: white !important;
+    color: #000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-family: 'IBM Plex Sans Arabic', Arial, sans-serif !important;
+    font-size: 11pt;
+  }
+  .main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* ── رأس الصفحة ── */
+  #printHeader {
+    margin-bottom: 18px !important;
+    padding-bottom: 14px !important;
+    border-bottom: 2.5px solid #0b1d3a !important;
+  }
+  .print-top-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* ── الجدول ── */
+  .report-table-wrap {
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    margin-top: 10px !important;
+  }
+  table { width:100%; border-collapse:collapse !important; }
+  thead tr {
+    background: #0b1d3a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  th {
+    padding: 9px 12px !important;
+    font-size: 10.5pt !important;
+    font-weight: 900 !important;
+    color: #fff !important;
+    border: 1.5px solid #0b1d3a !important;
+    text-align: right !important;
+    background: #0b1d3a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  td {
+    padding: 8px 12px !important;
+    font-size: 10pt !important;
+    color: #000 !important;
+    border: 1px solid #ccc !important;
+  }
+  tr:nth-child(even) td {
+    background: #f0f4f8 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .td-count {
+    font-weight: 900 !important;
+    color: #b00010 !important;
+    text-align: center !important;
+    font-size: 12pt !important;
+  }
+
+  /* ── بطاقات الإحصاء ── */
+  .panel {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  [style*="display:flex;gap"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* ── ذيل الصفحة ── */
+  .print-footer {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 32px !important;
+    padding-top: 14px !important;
+    border-top: 1.5px solid #555 !important;
+  }
+  .print-sig {
+    font-size: 9.5pt;
+    color: #333 !important;
+    text-align: center;
+  }
+  .print-sig strong {
+    display: block;
+    margin-top: 26px;
+    border-top: 1px solid #666 !important;
+    padding-top: 4px;
+    min-width: 140px;
+    color: #000 !important;
+    font-size: 9pt;
+  }
+  .print-center-info {
+    font-size: 8.5pt;
+    color: #555 !important;
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  @page {
+    margin: 1.8cm 1.5cm;
+    size: A4;
+  }
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ===== PRINT HEADER — أول عنصر في الصفحة يظهر فوق كل شيء عند الطباعة ===== -->
+<div id="printHeader">
+  <!-- الصف العلوي: شعار + معلومات المدرسة + شعار -->
+  <div class="print-top-row">
+    <img src="data/logo.jpeg" style="width:68px;height:68px;object-fit:contain;" alt="شعار" onerror="this.style.visibility='hidden'">
+    <div style="text-align:center;flex:1;">
+      <div style="font-size:9pt;color:#444;margin-bottom:2px;font-weight:600;">سلطنة عُمان &nbsp;—&nbsp; وزارة التعليم</div>
+      <div style="font-size:9pt;color:#333;margin-bottom:5px;font-weight:600;">المديرية العامة للتعليم بمحافظة ظفار</div>
+      <div style="font-size:15pt;font-weight:900;color:#0b1d3a;margin-bottom:8px;font-family:'Tajawal',sans-serif;">مدرسة صلالة الشرقية للتعليم الأساسي</div>
+      <div id="dynamicTitlePrint"
+           style="font-size:11.5pt;font-weight:900;color:#fff;background:#0b1d3a;
+                  border-radius:5px;display:inline-block;padding:5px 28px;
+                  -webkit-print-color-adjust:exact;print-color-adjust:exact;">
+        تقرير غياب
+      </div>
+    </div>
+    <img src="data/logo.jpeg" style="width:68px;height:68px;object-fit:contain;visibility:hidden;" alt="">
+  </div>
+
+  <!-- شريط بيانات التقرير -->
+  <div style="display:flex;border:2px solid #0b1d3a;border-radius:7px;overflow:hidden;margin-top:12px;
+              -webkit-print-color-adjust:exact;print-color-adjust:exact;">
+    <div id="printMetaClass"
+         style="flex:1;padding:8px 14px;font-size:10pt;font-weight:600;color:#000;
+                border-left:1.5px solid #aaa;background:#eef1f7;
+                -webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
+    <div id="printMetaPeriod"
+         style="flex:1;padding:8px 14px;font-size:10pt;font-weight:600;color:#000;
+                border-left:1.5px solid #aaa;background:#eef1f7;
+                -webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
+    <div style="flex:1;padding:8px 14px;font-size:10pt;font-weight:600;color:#000;
+                background:#eef1f7;
+                -webkit-print-color-adjust:exact;print-color-adjust:exact;">
+      <span style="font-weight:900;">تاريخ الطباعة:</span>&nbsp;<span id="printDateStamp"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRINT FOOTER ===== -->
+<div class="print-footer">
+  <div class="print-sig">
+    <span>توقيع المعلم / المشرف</span>
+    <strong>&nbsp;</strong>
+  </div>
+  <div class="print-center-info">
+    <div style="font-weight:700;font-size:9pt;margin-bottom:3px;">نظام رصد الغياب الذكي</div>
+    <div>مدرسة صلالة الشرقية للتعليم الأساسي</div>
+    <div>المديرية العامة للتعليم بمحافظة ظفار — سلطنة عُمان</div>
+    <div>2026</div>
+  </div>
+  <div class="print-sig">
+    <span>توقيع مدير المدرسة</span>
+    <strong>&nbsp;</strong>
+  </div>
+</div>
 <header class="header">
   <div class="header-inner">
     <div class="brand">
@@ -854,27 +1029,6 @@ tr:hover td { background:var(--slate); }
   </div>
 
 </div><!-- /main -->
-
-<!-- ===== PRINT HEADER ===== -->
-<div id="printHeader">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">
-    <img src="data/logo.jpeg" style="width:60px;height:60px;object-fit:contain;" alt="شعار" onerror="this.style.display='none'">
-    <div style="text-align:center;flex:1;">
-      <div style="font-size:9pt;color:#555;margin-bottom:2px;">سلطنة عُمان — وزارة التعليم</div>
-      <div style="font-size:9pt;color:#444;margin-bottom:4px;">المديرية العامة للتعليم بمحافظة ظفار</div>
-      <div style="font-size:14pt;font-weight:900;color:#000;margin-bottom:6px;">مدرسة صلالة الشرقية للتعليم الأساسي</div>
-      <div id="dynamicTitlePrint" style="font-size:11pt;font-weight:900;color:#fff;background:#0b1d3a;border-radius:4px;display:inline-block;padding:4px 20px;">تقرير غياب</div>
-    </div>
-    <img src="data/logo.jpeg" style="width:60px;height:60px;object-fit:contain;visibility:hidden;" alt="">
-  </div>
-  <div style="display:flex;border:1.5px solid #0b1d3a;border-radius:6px;overflow:hidden;margin-top:10px;">
-    <div id="printMetaClass" style="flex:1;padding:7px 12px;font-size:10pt;border-left:1.5px solid #aaa;background:#f5f5f5;"></div>
-    <div id="printMetaPeriod" style="flex:1;padding:7px 12px;font-size:10pt;border-left:1.5px solid #aaa;background:#f5f5f5;"></div>
-    <div style="flex:1;padding:7px 12px;font-size:10pt;background:#f5f5f5;">
-      <span style="font-weight:900;">تاريخ الطباعة:</span> <span id="printDateStamp"></span>
-    </div>
-  </div>
-</div>
 
 <!-- ===== MODALS ===== -->
 <div id="customAlertModal" class="modal-overlay" style="z-index:4000;">
