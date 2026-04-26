@@ -672,15 +672,30 @@ tr:hover td { background:var(--slate); }
     flex-wrap: wrap !important;
   }
 
-  /* ── ذيل الصفحة ── */
+  /* ══════════════════════════════════════
+     ✅ التعديل الرئيسي: تثبيت التوقيعات
+        في أسفل صفحة الطباعة دائماً
+     ══════════════════════════════════════ */
   .print-footer {
     display: flex !important;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-top: 32px !important;
-    padding-top: 14px !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    padding: 14px 1.5cm 10px !important;
     border-top: 1.5px solid #555 !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  /* ── هامش سفلي للمحتوى حتى لا يتداخل مع التوقيعات ── */
+  #reportSection {
+    padding-bottom: 130px !important;
+  }
+
   .print-sig {
     font-size: 9.5pt;
     color: #333 !important;
@@ -688,10 +703,10 @@ tr:hover td { background:var(--slate); }
   }
   .print-sig strong {
     display: block;
-    margin-top: 26px;
+    margin-top: 32px;
     border-top: 1px solid #666 !important;
     padding-top: 4px;
-    min-width: 140px;
+    min-width: 160px;
     color: #000 !important;
     font-size: 9pt;
   }
@@ -703,7 +718,7 @@ tr:hover td { background:var(--slate); }
   }
 
   @page {
-    margin: 1.8cm 1.5cm;
+    margin: 1.8cm 1.5cm 3.5cm;
     size: A4;
   }
 }
@@ -749,7 +764,7 @@ tr:hover td { background:var(--slate); }
   </div>
 </div>
 
-<!-- ===== PRINT FOOTER ===== -->
+<!-- ===== PRINT FOOTER — ثابت في أسفل كل صفحة مطبوعة ===== -->
 <div class="print-footer">
   <div class="print-sig">
     <span>توقيع المعلم / المشرف</span>
@@ -766,6 +781,7 @@ tr:hover td { background:var(--slate); }
     <strong>&nbsp;</strong>
   </div>
 </div>
+
 <header class="header">
   <div class="header-inner">
     <div class="brand">
@@ -1103,22 +1119,10 @@ let currentGrade = "", currentSection = "";
 let allSelected = false;
 let deleteTargetName = '';
 
-/* ══════════════════════════════════════════
-   ✅ الدوال الناقصة — تم إضافتها
-   ══════════════════════════════════════════ */
-
-/**
- * esc() — تحويل اسم الطالب إلى معرّف CSS آمن
- * تُستخدم داخل id="card_${esc(name)}"
- */
 function esc(str) {
   return CSS.escape(String(str));
 }
 
-/**
- * ea() — تهريب النص داخل onclick="" و HTML attributes
- * تُستخدم داخل onclick="setAtt('${ea(name)}', ...)"
- */
 function ea(str) {
   return String(str)
     .replace(/\\/g, '\\\\')
@@ -1182,7 +1186,6 @@ function initGrades() {
   if (role!=='admin') filtered = students.filter(s=>cls.includes(`${s.grade}-${s.section}`));
   const grades = [...new Set(filtered.map(s=>s.grade))];
 
-  /* رصد الغياب */
   const dd = document.getElementById('gradeDropdown');
   if (dd) {
     const prev = dd.value;
@@ -1190,7 +1193,6 @@ function initGrades() {
     grades.forEach(g=>dd.innerHTML+=`<option value="${g}" ${g===prev?'selected':''}>${g}</option>`);
   }
 
-  /* التقارير والإدارة */
   ['repGradeSelect','manageGradeSelect'].forEach(id=>{
     const el = document.getElementById(id);
     if (!el) return;
