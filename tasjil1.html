@@ -417,7 +417,6 @@ body {
   color:#9aa4b8; cursor:not-allowed; box-shadow:none;
 }
 
-
 /* ============ BOTTOM NAV ============ */
 .bottom-nav {
   position:fixed; bottom:28px; left:0; right:0;
@@ -562,7 +561,6 @@ tr:hover td { background:var(--slate); }
   .panel-head { padding:12px 14px; }
   .search-wrap { padding:10px 14px; }
   .save-area { padding:12px 14px; }
-  .absent-strip { margin:0 10px 10px; }
 }
 
 @media (max-width: 370px) {
@@ -574,13 +572,15 @@ tr:hover td { background:var(--slate); }
 /* ============ PRINT ============ */
 #printHeader,.footer-stamp { display:none; }
 @media print {
-  .bottom-nav,.extra-bar,.app-header,button,input,select,label,
-  .search-wrap,.panel-head .sel-all-btn,.absent-strip,.save-area,
-  .st-actions,.wa-btn,.stats-row,body::before,body::after,
-  #printHeader+*:not(#reportSection),
-  .page-title-wrap { display:none !important; }
+  .bottom-nav,.extra-bar,.header,button,input,select,label,
+  .search-wrap,.panel-head .sel-all-btn,.save-area,
+  .st-actions,.wa-btn,.stats-row,
+  .page-title-wrap,.no-print { display:none !important; }
   #printHeader { display:block !important; }
+  .section { display:none !important; }
+  #reportSection { display:block !important; }
   body { background:white !important; padding:0 !important; }
+  .panel { border:none !important; box-shadow:none !important; }
   .st-card { border:none !important; border-bottom:1px solid #e0e0e0 !important; border-radius:0 !important; padding:8px 4px !important; }
   .st-name { font-size:10pt !important; }
   .st-num { background:#eee !important; }
@@ -789,6 +789,7 @@ tr:hover td { background:var(--slate); }
       <i class="fas fa-sync-alt"></i> تحديث البيانات
     </button>
 
+    <!-- إضافة طالب -->
     <div class="panel" style="margin-bottom:14px;">
       <div class="panel-head">
         <div class="panel-title-group">
@@ -826,6 +827,7 @@ tr:hover td { background:var(--slate); }
       </div>
     </div>
 
+    <!-- تعديل وحذف -->
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title-group">
@@ -853,7 +855,28 @@ tr:hover td { background:var(--slate); }
 
 </div><!-- /main -->
 
-<!-- MODALS -->
+<!-- ===== PRINT HEADER ===== -->
+<div id="printHeader">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">
+    <img src="data/logo.jpeg" style="width:60px;height:60px;object-fit:contain;" alt="شعار" onerror="this.style.display='none'">
+    <div style="text-align:center;flex:1;">
+      <div style="font-size:9pt;color:#555;margin-bottom:2px;">سلطنة عُمان — وزارة التعليم</div>
+      <div style="font-size:9pt;color:#444;margin-bottom:4px;">المديرية العامة للتعليم بمحافظة ظفار</div>
+      <div style="font-size:14pt;font-weight:900;color:#000;margin-bottom:6px;">مدرسة صلالة الشرقية للتعليم الأساسي</div>
+      <div id="dynamicTitlePrint" style="font-size:11pt;font-weight:900;color:#fff;background:#0b1d3a;border-radius:4px;display:inline-block;padding:4px 20px;">تقرير غياب</div>
+    </div>
+    <img src="data/logo.jpeg" style="width:60px;height:60px;object-fit:contain;visibility:hidden;" alt="">
+  </div>
+  <div style="display:flex;border:1.5px solid #0b1d3a;border-radius:6px;overflow:hidden;margin-top:10px;">
+    <div id="printMetaClass" style="flex:1;padding:7px 12px;font-size:10pt;border-left:1.5px solid #aaa;background:#f5f5f5;"></div>
+    <div id="printMetaPeriod" style="flex:1;padding:7px 12px;font-size:10pt;border-left:1.5px solid #aaa;background:#f5f5f5;"></div>
+    <div style="flex:1;padding:7px 12px;font-size:10pt;background:#f5f5f5;">
+      <span style="font-weight:900;">تاريخ الطباعة:</span> <span id="printDateStamp"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
 <div id="customAlertModal" class="modal-overlay" style="z-index:4000;">
   <div class="modal-box">
     <div class="modal-ico" id="alertIcon"><i class="fas fa-info-circle" style="color:#2563eb;"></i></div>
@@ -905,29 +928,8 @@ tr:hover td { background:var(--slate); }
     <div class="modal-ttl">تأكيد الحذف النهائي</div>
     <div class="modal-msg">هل أنت متأكد من حذف الطالب:<br><strong id="deleteStudentName" style="color:var(--danger);font-size:1rem;"></strong>؟<br><small>سيُحذف سجل غيابه ولا يمكن التراجع.</small></div>
     <div class="modal-btns">
-      <button class="m-btn btn-danger" id="confirmDeleteBtn"><i class="fas fa-trash-alt"></i> حذف</button>
+      <button class="m-btn btn-danger" style="background:var(--danger-bg);border-color:var(--danger-bd);color:var(--danger);" id="confirmDeleteBtn"><i class="fas fa-trash-alt"></i> حذف</button>
       <button class="m-btn m-btn-cancel" onclick="closeModal()">تراجع</button>
-    </div>
-  </div>
-</div>
-
-<!-- PRINT HEADER -->
-<div id="printHeader">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">
-    <img src="data/logo.jpeg" style="width:60px;height:60px;object-fit:contain;" alt="شعار" onerror="this.style.display='none'">
-    <div style="text-align:center;flex:1;">
-      <div style="font-size:9pt;color:#555;margin-bottom:2px;">سلطنة عُمان — وزارة التعليم</div>
-      <div style="font-size:9pt;color:#444;margin-bottom:4px;">المديرية العامة للتعليم بمحافظة ظفار</div>
-      <div style="font-size:14pt;font-weight:900;color:#000;margin-bottom:6px;">مدرسة صلالة الشرقية للتعليم الأساسي</div>
-      <div id="dynamicTitlePrint" style="font-size:11pt;font-weight:900;color:#fff;background:#0b1d3a;border-radius:4px;display:inline-block;padding:4px 20px;">تقرير غياب</div>
-    </div>
-    <img src="data/logo.jpeg" style="width:60px;height:60px;object-fit:contain;visibility:hidden;" alt="">
-  </div>
-  <div style="display:flex;border:1.5px solid #0b1d3a;border-radius:6px;overflow:hidden;margin-top:10px;">
-    <div id="printMetaClass" style="flex:1;padding:7px 12px;font-size:10pt;border-left:1.5px solid #aaa;background:#f5f5f5;"></div>
-    <div id="printMetaPeriod" style="flex:1;padding:7px 12px;font-size:10pt;border-left:1.5px solid #aaa;background:#f5f5f5;"></div>
-    <div style="flex:1;padding:7px 12px;font-size:10pt;background:#f5f5f5;">
-      <span style="font-weight:900;">تاريخ الطباعة:</span> <span id="printDateStamp"></span>
     </div>
   </div>
 </div>
@@ -945,6 +947,30 @@ tr:hover td { background:var(--slate); }
 let students = [], history = [], currentBatch = [];
 let currentGrade = "", currentSection = "";
 let allSelected = false;
+let deleteTargetName = '';
+
+/* ══════════════════════════════════════════
+   ✅ الدوال الناقصة — تم إضافتها
+   ══════════════════════════════════════════ */
+
+/**
+ * esc() — تحويل اسم الطالب إلى معرّف CSS آمن
+ * تُستخدم داخل id="card_${esc(name)}"
+ */
+function esc(str) {
+  return CSS.escape(String(str));
+}
+
+/**
+ * ea() — تهريب النص داخل onclick="" و HTML attributes
+ * تُستخدم داخل onclick="setAtt('${ea(name)}', ...)"
+ */
+function ea(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '&quot;');
+}
 
 /* ── AUTH ── */
 if (sessionStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'index.html';
@@ -1001,12 +1027,22 @@ function initGrades() {
   let filtered = students;
   if (role!=='admin') filtered = students.filter(s=>cls.includes(`${s.grade}-${s.section}`));
   const grades = [...new Set(filtered.map(s=>s.grade))];
+
+  /* رصد الغياب */
   const dd = document.getElementById('gradeDropdown');
   if (dd) {
     const prev = dd.value;
     dd.innerHTML = '<option value="">— اختر الصف —</option>';
     grades.forEach(g=>dd.innerHTML+=`<option value="${g}" ${g===prev?'selected':''}>${g}</option>`);
   }
+
+  /* التقارير والإدارة */
+  ['repGradeSelect','manageGradeSelect'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '<option value="">اختر الصف</option>';
+    grades.forEach(g=>el.innerHTML+=`<option value="${g}">${g}</option>`);
+  });
 }
 
 function onGradeDropdownChange() {
@@ -1108,8 +1144,6 @@ function updateStats(total) {
   const btn = document.getElementById('saveBtn');
   if (btn) btn.disabled = cnt===0;
 }
-
-
 
 /* ── SELECT ALL ── */
 function toggleSelectAll() {
@@ -1454,7 +1488,6 @@ async function submitStudentEdit() {
   } catch { students=bkS; history=bkH; showAlert("خطأ أثناء الحفظ","error"); }
 }
 
-let deleteTargetName = '';
 function showDeleteModal(name) {
   deleteTargetName = name;
   document.getElementById('deleteStudentName').innerText = name;
@@ -1513,7 +1546,7 @@ function formatPhone(phone) {
   return phone;
 }
 
-/* ── REFRESH UI ── */
+/* ── REFRESH ── */
 async function refreshData() {
   const btn = document.querySelector('.btn-refresh');
   const orig = btn.innerHTML;
@@ -1526,18 +1559,11 @@ function refreshUI() {
   initGrades();
   updateSections('manageGradeSelect','manageSectionSelect');
   renderManagerList();
-  /* sync report dropdowns */
-  const rg=document.getElementById('repGradeSelect');
-  if(rg){
-    const role=sessionStorage.getItem('userRole');
-    const cls=JSON.parse(sessionStorage.getItem('userClasses')||'[]');
-    const grades=[...new Set(students.map(s=>s.grade))];
-    rg.innerHTML='<option value="">اختر الصف</option>';
-    grades.forEach(g=>rg.innerHTML+=`<option value="${g}">${g}</option>`);
-  }
 }
 
 function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m=>m.style.display='none'); }
+
+window.onload = loadData;
 </script>
 </body>
 </html>
